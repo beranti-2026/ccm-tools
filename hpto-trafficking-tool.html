@@ -143,7 +143,7 @@ const PLACEMENTS = [
   { id: 'p4', name: 'AMZN_{Locale}_138x184_Mobile_Home_Page', device: 'Mobile', types: ['Autogen REC', 'Asset-Based Creative'] },
   { id: 'p5', name: 'AMZN_{Locale}_320x50_Mobile_App_Home_Page', device: 'Mobile', types: ['Static', 'Autogen REC', 'Custom REC'] },
   { id: 'p6', name: 'AMZN_{Locale}_320x50_Mobile_Web_Home_Page', device: 'Mobile', types: ['Static', 'Autogen REC', 'Custom REC'] },
-  { id: 'p7', name: 'AMZN_{Locale}_Mobile_414x125_Homepage_BTF', device: 'Mobile', types: ['Autogen REC'] },
+  { id: 'p7', name: 'AMZN_{Locale}_Mobile_414x125_Homepage_BTF', device: 'Mobile', types: ['Autogen REC', 'Asset-Based Creative'] },
   { id: 'p8', name: 'AMZN_{Locale}_Desktop_284x184_Homepage_Doublewide', device: 'Desktop', types: ['Asset-Based Creative'] },
   { id: 'p9', name: 'AMZN_{Locale}_Desktop_138x184_WP_1', device: 'Desktop', types: ['Asset-Based Creative'] },
   { id: 'p10', name: 'AMZN_{Locale}_Desktop_138x184_WP_2', device: 'Desktop', types: ['Autogen REC'] },
@@ -352,8 +352,8 @@ const SIBLING_LABELS = { 'p2': '300x250 ATF', 'p6': '320x50 App' };
 // Asset-Based Creative placements that need layout-driven fields
 const ABC_PLACEMENTS = ['p4', 'p8', 'p9'];
 
-// Placements where tracker is NOT allowed
-const NO_TRACKER = ['p4', 'p8', 'p9'];
+// Placements where tracker is NOT allowed — none now
+const NO_TRACKER = [];
 // Placements where clickthrough is NOT applicable (ABC only, handled in renderABCFields)
 
 function toggleAllPlacements(checked) {
@@ -440,6 +440,25 @@ function renderABCFields(vid, pid, selectedLayout) {
       <select id="layout-${vid}" onchange="onLayoutChange('${vid}', '${pid}')">${layoutOptions}</select>
     </div>
     <div id="layout-fields-${vid}" style="display:contents"></div>
+    ${['p8', 'p9'].includes(pid) ? `
+    <div class="field full" style="margin-top:0.5rem">
+      <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
+        <input type="checkbox" id="f-${vid}-horizontal_logo" onchange="toggleHorizontalLogo('${vid}')" style="width:14px;height:14px;accent-color:var(--accent2)" />
+        Horizontal logo? (DCS will provide both square + horizontal versions)
+      </label>
+    </div>
+    <div class="field" id="logo-square-field-${vid}">
+      <label>Logo Link — Square (400x400px) (optional)</label>
+      <input id="f-${vid}-logo" type="text" placeholder="https://..." />
+    </div>
+    <div class="field" id="logo-horizontal-field-${vid}" style="display:none">
+      <label>Logo Link — Horizontal (400x400px+) *</label>
+      <input id="f-${vid}-logo_horizontal" type="text" placeholder="https://..." />
+    </div>` : `
+    <div class="field">
+      <label>Logo Link (optional)</label>
+      <input id="f-${vid}-logo" type="text" placeholder="https://..." />
+    </div>`}
     <div class="field"><label>Third-party Impression Tracking URL</label><input id="f-${vid}-tracker_impression" type="text" placeholder="Optional" /></div>
     <div class="field"><label>Third-party Click Tracking URL</label><input id="f-${vid}-tracker_click" type="text" placeholder="Optional" /></div>
     <div class="field"><label>Additional HTML</label><input id="f-${vid}-additional_html" type="text" placeholder="Optional" /></div>`;
@@ -447,6 +466,28 @@ function renderABCFields(vid, pid, selectedLayout) {
   container.innerHTML = html;
   renderLayoutFields(vid, pid, selectedLayout, limits);
   applyDefaults(vid, pid);
+}
+
+function toggleHorizontalLogo(vid) {
+  const checked = document.getElementById('f-' + vid + '-horizontal_logo')?.checked;
+  const horizField = document.getElementById('logo-horizontal-field-' + vid);
+  const horizInput = document.getElementById('f-' + vid + '-logo_horizontal');
+  const squareInput = document.getElementById('f-' + vid + '-logo');
+  const squareLabel = document.querySelector('#logo-square-field-' + vid + ' label');
+
+  if (horizField) horizField.style.display = checked ? 'flex' : 'none';
+
+  if (checked) {
+    // Both become mandatory
+    if (squareInput) squareInput.setAttribute('data-req', 'true');
+    if (squareLabel) squareLabel.textContent = 'Logo Link — Square (400x400px) *';
+    if (horizInput) horizInput.setAttribute('data-req', 'true');
+  } else {
+    // Both optional
+    if (squareInput) { squareInput.removeAttribute('data-req'); }
+    if (squareLabel) squareLabel.textContent = 'Logo Link — Square (400x400px) (optional)';
+    if (horizInput) { horizInput.removeAttribute('data-req'); horizInput.value = ''; }
+  }
 }
 
 function onLayoutChange(vid, pid) {
@@ -705,7 +746,8 @@ function downloadExcel() {
       rows.push(['Image Link', get('image')]);
       rows.push(['Layout Option', getLayout()]);
       rows.push(['Headline', get('headline1') || get('headline')]);
-      if (get('logo')) rows.push(['Logo', get('logo')]);
+      if (get('logo')) rows.push(['Logo (square)', get('logo')]);
+      if (get('logo_horizontal')) rows.push(['Logo (horizontal)', get('logo_horizontal')]);
       if (get('disclaimer')) rows.push(['Disclaimer', get('disclaimer')]);
       if (get('tracker_impression')) rows.push(['Third-party Impression URL', get('tracker_impression')]);
       if (get('tracker_click')) rows.push(['Third-party Click URL', get('tracker_click')]);
