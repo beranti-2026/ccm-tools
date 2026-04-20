@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HERO / Window Display Trafficking Template</title>
+  <style>
+    :root {
+      --bg: #f5f7fa; --white: #fff; --border: #dde1e9; --text: #1a1d27;
+      --muted: #6b7280; --accent: #232f3e; --accent2: #ff9900;
+      --danger: #dc2626; --success: #16a34a; --radius: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+    header { background: var(--accent); color: white; padding: 1rem 2rem; display: flex; align-items: center; gap: 1rem; }
+    header h1 { font-size: 1.2rem; font-weight: 700; }
+    header .badge { background: var(--accent2); color: var(--accent); font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px; }
+    .container { max-width: 1000px; margin: 2rem auto; padding: 0 1.5rem; }
+    .notice { background: #fff8ee; border: 1px solid var(--accent2); border-radius: 6px; padding: 0.75rem 1rem; font-size: 0.82rem; color: var(--accent); margin-bottom: 1.5rem; }
+    .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; }
+    .card h2 { font-size: 1rem; font-weight: 600; color: var(--accent); border-bottom: 2px solid var(--accent2); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+    .field { display: flex; flex-direction: column; gap: 0.3rem; }
+    .field label { font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .field input, .field select, .field textarea { border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem 0.75rem; font-size: 0.9rem; background: var(--white); color: var(--text); width: 100%; }
+    .field input:focus, .field select:focus { outline: none; border-color: var(--accent2); }
+    .field textarea { min-height: 60px; resize: vertical; font-family: inherit; }
+    .field-note { font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem; }
+    .field-error { border-color: var(--danger) !important; background: #fff5f5 !important; }
+    .readonly-field { background: #f3f4f6 !important; color: var(--muted) !important; }
+    .section-title { background: #f8f9fb; border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; font-weight: 700; font-size: 0.9rem; color: var(--accent); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .key-preview { margin-top: 0.5rem; padding: 0.6rem 0.75rem; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; font-size: 0.8rem; color: #0369a1; min-height: 36px; }
+    .key-preview.valid { background: #f0fdf4; border-color: #86efac; color: #166534; }
+    .key-preview.invalid { background: #fff5f5; border-color: #fca5a5; color: #991b1b; }
+    .char-counter { font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem; text-align: right; }
+    .char-counter.over { color: var(--danger); font-weight: 700; }
+    .layout-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed var(--border); }
+    .actions { display: flex; gap: 1rem; margin: 2rem 0; justify-content: flex-end; }
+    .btn-primary { background: var(--accent2); color: var(--accent); border: none; padding: 0.75rem 2rem; border-radius: 6px; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
+    .btn-primary:hover { background: #e68900; }
+    .btn-secondary { background: var(--accent); color: white; border: none; padding: 0.75rem 2rem; border-radius: 6px; font-weight: 600; font-size: 0.95rem; cursor: pointer; }
+    .info-box { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; padding: 0.75rem 1rem; font-size: 0.82rem; color: #0369a1; margin-top: 1rem; }
+    .tag { display: inline-block; background: var(--accent); color: white; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.72rem; margin-right: 0.25rem; }
+    .tag.wd { background: #7c3aed; }
+    .tag.legacy { background: #0369a1; }
+    .tag.video { background: #dc2626; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>🎬 HERO / Window Display Trafficking Template</h1>
+  <span class="badge">INTERNAL TOOL</span>
+  <span style="margin-left:auto;font-size:0.72rem;opacity:0.6;font-weight:400">Tool owner: @beranti · v1.0</span>
+</header>
+
+<div class="container">
+  <div class="notice">
+    ⚠️ Fill in campaign details, then complete the WD creative and Legacy Desktop Banner sections. Click <strong>Download Excel</strong> when done.
+  </div>
+
+  <!-- Campaign Info -->
+  <div class="card">
+    <h2>Campaign Information</h2>
+    <div class="grid">
+      <div class="field"><label>Advertiser Name *</label><input id="advertiser" placeholder="e.g. Nike" /></div>
+      <div class="field"><label>Campaign Name *</label><input id="campaign-name" placeholder="e.g. Nike Summer 2025" /></div>
+      <div class="field"><label>Locale *</label>
+        <select id="locale">
+          <option value="US">US</option><option value="CA">CA</option><option value="UK">UK</option>
+          <option value="FR">FR</option><option value="IT">IT</option><option value="ES">ES</option>
+          <option value="DE">DE</option><option value="JP">JP</option><option value="AU">AU</option><option value="MX">MX</option>
+        </select>
+      </div>
+      <div class="field"><label>Flight Start Date *</label><input id="camp-flight-start" type="date" /></div>
+      <div class="field"><label>Flight End Date *</label><input id="camp-flight-end" type="date" /></div>
+      <div class="field"><label>Language *</label><input id="camp-language" placeholder="e.g. English" onchange="onLanguageChange()" /></div>
+      <div class="field"><label>Click-through URL *</label><input id="camp-clickthrough" placeholder="https://..." /></div>
+    </div>
+
+    <!-- Campaign Type Toggle -->
+    <div style="margin-top:1rem;padding:1rem;background:#f8f9fb;border:1px solid var(--border);border-radius:8px">
+      <div style="font-size:0.85rem;font-weight:700;color:var(--accent);margin-bottom:0.75rem">Campaign Type * — select one</div>
+      <div style="display:flex;gap:2rem">
+        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-weight:600;font-size:0.9rem">
+          <input type="radio" name="campaign-type" id="type-static" value="static" onchange="onCampaignTypeChange()" checked
+            style="width:16px;height:16px;accent-color:var(--accent2)" />
+          📸 Static
+        </label>
+        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-weight:600;font-size:0.9rem">
+          <input type="radio" name="campaign-type" id="type-video" value="video" onchange="onCampaignTypeChange()"
+            style="width:16px;height:16px;accent-color:var(--accent2)" />
+          🎬 Video
+        </label>
+      </div>
+      <div id="type-note" style="margin-top:0.5rem;font-size:0.8rem;color:var(--muted)">
+        Static: WD creative (Asset-Based) + Legacy Desktop Banner (1500x600 Static)
+      </div>
+    </div>
+    <div class="info-box">💡 Language drives character limits. Japanese copy = 8 chars/line headline, 11 chars/line subhead. All other languages = 16/23 chars.</div>
+  </div>
+
+  <!-- Pre-trafficking Checklist -->
+  <div class="card" style="border-left:4px solid var(--danger)">
+    <h2>✅ Pre-Trafficking Checklist — CCM Only (not sent to AdOps)</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem">
+      <label style="display:flex;align-items:flex-start;gap:0.75rem;cursor:pointer;font-size:0.9rem">
+        <input type="checkbox" id="chk-policy" style="width:16px;height:16px;margin-top:2px;accent-color:var(--accent2)" />
+        <span><strong>Ad Policy approved *</strong> — Creative mocks have been submitted to Ad Policy SIM and approved. <span style="color:var(--danger)">(Required before downloading)</span></span>
+      </label>
+      <label style="display:flex;align-items:flex-start;gap:0.75rem;cursor:pointer;font-size:0.9rem">
+        <input type="checkbox" id="chk-exceptions" style="width:16px;height:16px;margin-top:2px;accent-color:var(--accent2)" />
+        <span><strong>Creative exceptions (if applicable)</strong> — If there are any creative exceptions, Homepage Design has reviewed and approved per SOP before proceeding.</span>
+      </label>
+    </div>
+    <div id="freq-cap-note" style="display:none;margin-top:1rem;padding:0.75rem 1rem;background:#fff8ee;border:1px solid var(--accent2);border-radius:6px;font-size:0.82rem;color:#92400e">
+      ⚠️ <strong>Frequency Cap reminder for your locale:</strong> The frequency cap must be set to <strong>8/day at the Line Item level only</strong>. Do NOT apply a frequency cap at the Order level — the Order must remain uncapped. Add this in the <strong>Additional Information</strong> field if it hasn't been set at the line item level.
+    </div>
+  </div>
+  <div class="card">
+    <h2>Line Item URLs</h2>
+    <div class="grid">
+      <div class="field"><label>WD Mobile Line Item URL *</label><input id="li-wd-mobile" type="text" placeholder="https://advertising.amazon.com/..." data-req="true" /></div>
+      <div class="field"><label>WD Desktop Line Item URL *</label><input id="li-wd-desktop" type="text" placeholder="https://advertising.amazon.com/..." data-req="true" /></div>
+      <div class="field"><label>Legacy Desktop Banner Line Item URL *</label><input id="li-legacy" type="text" placeholder="https://advertising.amazon.com/..." data-req="true" /></div>
+    </div>
+    <div class="info-box">💡 The same WD creative will be trafficked to both WD Mobile and WD Desktop line items.</div>
+  </div>
+
+  <!-- WD Creative -->
+  <div class="card">
+    <h2>WD Creative <span class="tag wd">Component-Based Creative</span> <span class="tag wd">WD Mobile + WD Desktop</span></h2>
+
+    <div class="grid">
+      <div class="field"><label>Ad Experience</label><input class="readonly-field" value="Component-Based Creative → Other Website" readonly /></div>
+      <div class="field"><label>Landing Page</label><input class="readonly-field" value="Other Website" readonly /></div>
+      <div class="field"><label>Takeover</label><input class="readonly-field" value="Yes" readonly /></div>
+      <div class="field"><label>Name *</label><input id="wd-name" placeholder="e.g. Nike_WD_EN_v1" data-req="true" /></div>
+      <div class="field"><label>Language *</label><input id="wd-language" placeholder="e.g. English" data-req="true" oninput="updateCharLimits()" /></div>
+      <div class="field"><label>Click-through URL *</label><input id="wd-clickthrough" placeholder="https://..." data-req="true" /></div>
+      <div class="field"><label>Inventory Type (Rodeo)</label><input class="readonly-field" value="Standard display inventory ✓ + Third-party native inventory ✓" readonly /></div>
+      <div class="field"><label>Display Ad Sizes (Rodeo)</label><input class="readonly-field" value="Choose specific sizes → 980x55 only" readonly /></div>
+    </div>
+
+    <!-- Brand Name Key -->
+    <div style="margin-top:1rem">
+      <div class="section-title">🔑 Brand Name (Custom Styling Key)</div>
+      <div class="grid">
+        <div class="field" style="grid-column:1/-1">
+          <label>Brand Name Key * (provided by CS — enter exactly as given)</label>
+          <input id="wd-brand" placeholder="e.g. #fi#lfi:f or N/A" data-req="true" oninput="parseKey()" />
+          <div class="key-preview" id="key-preview">Enter the key above to see what it does</div>
+          <!-- #blank# exception warning -->
+          <div id="blank-exception-box" style="display:none;margin-top:0.75rem;padding:0.75rem 1rem;background:#fef2f2;border:2px solid #dc2626;border-radius:6px">
+            <p style="font-size:0.85rem;font-weight:700;color:#991b1b;margin-bottom:0.5rem">⚠️ Embedded Creative Exception Detected (#blank#)</p>
+            <p style="font-size:0.82rem;color:#7f1d1d;margin-bottom:0.75rem">This key means all headline, subheadline, and logo elements are embedded directly in the background image. The Headline field in Rodeo must be set to <strong>#blank#</strong>. Layout, Headline, Body text, and Logo fields are not required. Disclaimer must still be entered in Rodeo.</p>
+            <label style="display:flex;align-items:flex-start;gap:0.5rem;cursor:pointer;font-size:0.85rem;font-weight:600;color:#991b1b">
+              <input type="checkbox" id="chk-blank-exception" style="width:14px;height:14px;margin-top:2px;accent-color:#dc2626" />
+              I confirm this advertiser has received an approved exception for embedded creative elements.
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Layout -->
+    <div style="margin-top:1rem">
+      <div class="section-title">📐 Layout</div>
+      <div class="grid">
+        <div class="field">
+          <label>Layout Option *</label>
+          <select id="wd-layout" onchange="renderLayoutFields(); parseKey();" data-req="true">
+            <option value="">-- Select layout --</option>
+            <option value="1h0s">1-line headline only</option>
+            <option value="1h1s">1-line headline + 1-line subhead</option>
+            <option value="1h2s">1-line headline + 2-line subhead</option>
+            <option value="2h0s">2-line headline only</option>
+            <option value="2h1s">2-line headline + 1-line subhead</option>
+            <option value="2h2s">2-line headline + 2-line subhead (non-EN only)</option>
+            <option value="3h0s">3-line headline only (exception/non-EN)</option>
+            <option value="3h1s">3-line headline + 1-line subhead (non-EN)</option>
+            <option value="4h0s">4-line headline only (non-EN HVE)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Headline Placement</label>
+          <select id="wd-headline-placement" onchange="parseKey()">
+            <option value="above">Headline above subhead</option>
+            <option value="below">Headline below subhead (use #sf key)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Headline Color *</label>
+          <select id="wd-headline-color" data-req="true" onchange="parseKey()">
+            <option value="Black">Black</option>
+            <option value="White">White</option>
+          </select>
+        </div>
+        <div class="field" id="subhead-color-field" style="display:none">
+          <label>Subhead Color *</label>
+          <select id="wd-subhead-color" onchange="parseKey()">
+            <option value="Black">Black</option>
+            <option value="White">White</option>
+          </select>
+        </div>
+      </div>
+      <div id="layout-fields" class="layout-fields"></div>
+    </div>
+
+    <!-- Assets -->
+    <div style="margin-top:1rem">
+      <div class="section-title">🖼️ Assets</div>
+      <div class="grid">
+        <div class="field"><label>Background Image Link * (855x1368px PSD)</label><input id="wd-bg-image" placeholder="https://..." data-req="true" /></div>
+        <div class="field"><label>Logo Link — Square (400x400px) (optional)</label><input id="wd-logo-square" placeholder="https://..." /></div>
+        <div class="field full">
+          <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
+            <input type="checkbox" id="wd-horizontal-logo-chk" onchange="toggleWDHorizontalLogo()" style="width:14px;height:14px;accent-color:var(--accent2)" />
+            Horizontal logo? (CS will provide both square 400x400px + horizontal 400x400px+ versions)
+          </label>
+        </div>
+        <div class="field" id="wd-logo-horizontal-field" style="display:none">
+          <label>Logo Link — Horizontal (400x400px+) *</label>
+          <input id="wd-logo-nonsquare" placeholder="https://..." />
+        </div>
+        <div class="field" id="wd-video-field" style="display:none"><label>Video Link * (854x1368px, H.264 MP4, max 8s)</label><input id="wd-video" placeholder="https://..." /></div>
+      </div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div style="margin-top:1rem">
+      <div class="section-title">⚖️ Disclaimer (Optional)</div>
+      <div class="grid">
+        <div class="field">
+          <label>Disclaimer (max 42 chars incl. spaces)</label>
+          <input id="wd-disclaimer" maxlength="42" placeholder="Optional" oninput="countField(this, 'wd-disclaimer-count', 42)" />
+          <div class="char-counter" id="wd-disclaimer-count">0 / 42</div>
+        </div>
+        <div class="field">
+          <label>Disclaimer Color</label>
+          <select id="wd-disclaimer-color">
+            <option value="Black">Black</option>
+            <option value="White">White</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legacy Desktop Banner -->
+  <div class="card" id="legacy-card">
+    <h2 id="legacy-title">Legacy Desktop Banner <span class="tag legacy">Standard Display</span> <span class="tag legacy">1500x600 + 3000x1200</span></h2>
+    <div class="grid">
+      <div class="field"><label>Name *</label><input id="leg-name" placeholder="e.g. Nike_Legacy_Desktop_v1" data-req="true" /></div>
+      <div class="field"><label>Language *</label><input id="leg-language" placeholder="e.g. English" data-req="true" /></div>
+      <div class="field" id="leg-creative-type-field"><label>Creative Type (Rodeo)</label><input id="leg-creative-type" class="readonly-field" value="Standard Display" readonly /></div>
+      <div class="field" id="leg-ad-exp-field"><label>Ad Experience</label><input id="leg-ad-exp" class="readonly-field" value="Single Image" readonly /></div>
+      <div class="field"><label>Click-through Type *</label>
+        <select id="leg-clickthrough-type" data-req="true">
+          <option value="Brand Store">Brand Store</option>
+          <option value="Other Website">Other Website</option>
+        </select>
+      </div>
+      <div class="field"><label>Click-through URL *</label><input id="leg-clickthrough" placeholder="https://..." data-req="true" /></div>
+
+      <!-- Static fields -->
+      <div class="field" id="leg-static-fields" style="display:contents">
+        <div class="field"><label>Image Link 1500x600 *</label><input id="leg-image-1x" placeholder="https://..." data-req="true" /></div>
+        <div class="field"><label>Image Link 3000x1200 (2x) *</label><input id="leg-image-2x" placeholder="https://..." data-req="true" /></div>
+      </div>
+
+      <!-- Video fields -->
+      <div id="leg-video-fields" style="display:contents">
+        <div class="field" id="leg-video-link-field" style="display:none"><label id="leg-video-label">Video Link * (854x1368px, H.264 MP4, max 8s)</label><input id="leg-video" placeholder="https://..." /></div>
+        <div class="field" id="leg-companion-field" style="display:none"><label>Companion Banner Image Link * (required — upload on top of video)</label><input id="leg-companion" placeholder="https://..." /></div>
+        <div class="field" id="leg-native-video-field" style="display:none">
+          <label>Native Display with Video</label>
+          <input class="readonly-field" value="OFF — Do NOT enable" readonly />
+          <span class="field-note" style="color:var(--danger)">⚠️ Keep this toggle OFF in Rodeo. Enabling it will prevent the creative from being associated with video line items.</span>
+        </div>
+      </div>
+
+      <div class="field"><label>Third-party Click URL</label><input id="leg-tracker-click" placeholder="Optional" /></div>
+      <div class="field"><label>Third-party Impression URL</label><input id="leg-tracker-impression" placeholder="Optional" /></div>
+      <div class="field"><label>Additional HTML</label><input id="leg-additional-html" placeholder="Optional" /></div>
+    </div>
+  </div>
+
+  <!-- QA Reminder -->
+  <div class="card" style="border-left:4px solid var(--danger);background:#fff5f5">
+    <h2 style="color:var(--danger)">🚨 MANDATORY: Creative Preview QA</h2>
+    <p style="font-size:0.9rem;line-height:1.6;margin-bottom:0.75rem">
+      <strong>After AdOps completes trafficking, you MUST preview every creative before launch.</strong> This is not optional. The preview confirms that copy is cropping correctly, custom styling keys are rendering as expected, and there are no overlapping elements.
+    </p>
+    <p style="font-size:0.9rem;line-height:1.6;margin-bottom:0.75rem">
+      ⚡ <strong>Quick and easy — each WD Static and WD Video creative only takes about 1 minute to complete!</strong>
+    </p>
+    <p style="font-size:0.9rem">
+      📖 Follow the SOP to download and use the Chrome extension:<br/>
+      <a href="https://amazon.sharepoint.com/:w:/r/sites/APM-Stores/_layouts/15/Doc.aspx?sourcedoc=%7BE8C457C4-DA26-4629-B708-C471A8BFD5BB%7D&file=Creative%20Preview%20Extension%20-%20User%20Guide.docx&action=default&mobileredirect=true"
+        target="_blank" style="color:var(--danger);font-weight:700">
+        Creative Preview Extension — User Guide ↗
+      </a>
+    </p>
+  </div>
+
+  <div class="actions">
+    <button class="btn-secondary" onclick="clearAll()">Clear All</button>
+    <button class="btn-primary" onclick="downloadExcel()">⬇ Download Excel</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<script>
+
+function toggleWDHorizontalLogo() {
+  const checked = document.getElementById('wd-horizontal-logo-chk')?.checked;
+  const horizField = document.getElementById('wd-logo-horizontal-field');
+  const horizInput = document.getElementById('wd-logo-nonsquare');
+  const squareInput = document.getElementById('wd-logo-square');
+  const squareLabel = squareInput?.previousElementSibling;
+
+  if (horizField) horizField.style.display = checked ? 'flex' : 'none';
+
+  if (checked) {
+    if (squareInput) squareInput.setAttribute('data-req', 'true');
+    if (squareLabel) squareLabel.textContent = 'Logo Link — Square (400x400px) *';
+    if (horizInput) horizInput.setAttribute('data-req', 'true');
+  } else {
+    if (squareInput) squareInput.removeAttribute('data-req');
+    if (squareLabel) squareLabel.textContent = 'Logo Link — Square (400x400px) (optional)';
+    if (horizInput) { horizInput.removeAttribute('data-req'); horizInput.value = ''; }
+  }
+}
+
+// ── Campaign type toggle ──
+function onCampaignTypeChange() {
+  const isVideo = document.getElementById('type-video').checked;
+  const note = document.getElementById('type-note');
+  const legTitle = document.getElementById('legacy-title');
+  const legCreativeType = document.getElementById('leg-creative-type');
+  const wdCreativeTypeNote = document.getElementById('wd-creative-type-note');
+
+  // Static image fields
+  const legImage1x = document.getElementById('leg-image-1x');
+  const legImage2x = document.getElementById('leg-image-2x');
+
+  // Video fields
+  const legVideoLinkField = document.getElementById('leg-video-link-field');
+  const legCompanionField = document.getElementById('leg-companion-field');
+  const legNativeVideoField = document.getElementById('leg-native-video-field');
+  const legVideo = document.getElementById('leg-video');
+  const legCompanion = document.getElementById('leg-companion');
+  const wdVideoField = document.getElementById('wd-video');
+
+  if (isVideo) {
+    note.textContent = 'Video: WD creative (Component-Based Creative) + Legacy Desktop Banner (Online Video)';
+    legTitle.innerHTML = 'Legacy Desktop Banner <span class="tag video">Online Video</span>';
+    if (legCreativeType) legCreativeType.value = 'Online Video';
+    if (document.getElementById('leg-ad-exp')) document.getElementById('leg-ad-exp').value = 'Online Video';
+
+    if (legVideoLinkField) legVideoLinkField.style.display = 'flex';
+    if (legCompanionField) legCompanionField.style.display = 'flex';
+    if (legNativeVideoField) legNativeVideoField.style.display = 'flex';
+    if (legVideo) legVideo.setAttribute('data-req', 'true');
+    if (legCompanion) legCompanion.setAttribute('data-req', 'true');
+    if (legImage1x) legImage1x.removeAttribute('data-req');
+    if (legImage2x) legImage2x.removeAttribute('data-req');
+    // Show WD video field and make mandatory
+    const wdVF = document.getElementById('wd-video-field');
+    const wdV = document.getElementById('wd-video');
+    if (wdVF) wdVF.style.display = 'flex';
+    if (wdV) wdV.setAttribute('data-req', 'true');
+  } else {
+    note.textContent = 'Static: WD creative (Component-Based Creative) + Legacy Desktop Banner (Standard Display)';
+    legTitle.innerHTML = 'Legacy Desktop Banner <span class="tag legacy">Standard Display</span> <span class="tag legacy">1500x600 + 3000x1200</span>';
+    if (legCreativeType) legCreativeType.value = 'Standard Display';
+    if (document.getElementById('leg-ad-exp')) document.getElementById('leg-ad-exp').value = 'Single Image';
+
+    if (legVideoLinkField) legVideoLinkField.style.display = 'none';
+    if (legCompanionField) legCompanionField.style.display = 'none';
+    if (legNativeVideoField) legNativeVideoField.style.display = 'none';
+    if (legVideo) { legVideo.removeAttribute('data-req'); legVideo.value = ''; }
+    if (legCompanion) { legCompanion.removeAttribute('data-req'); legCompanion.value = ''; }
+    if (legImage1x) legImage1x.setAttribute('data-req', 'true');
+    if (legImage2x) legImage2x.setAttribute('data-req', 'true');
+    // Hide WD video field
+    const wdVF = document.getElementById('wd-video-field');
+    const wdV = document.getElementById('wd-video');
+    if (wdVF) wdVF.style.display = 'none';
+    if (wdV) { wdV.removeAttribute('data-req'); wdV.value = ''; }
+  }
+}
+
+// Show frequency cap note for applicable locales
+function checkFreqCapLocale() {
+  const locale = document.getElementById('locale').value;
+  const freqLocales = ['US', 'CA', 'UK', 'DE', 'FR', 'IT', 'ES'];
+  const note = document.getElementById('freq-cap-note');
+  if (note) note.style.display = freqLocales.includes(locale) ? 'block' : 'none';
+}
+
+document.getElementById('locale')?.addEventListener('change', checkFreqCapLocale);
+
+// ── Key parsing ──
+const KEY_MAP = {
+  'fi':    'All text (headline, subhead, disclaimer) → White',
+  'lfi':   'Disclaimer → White (headline/subhead stay Black)',
+  'lfi:f': 'Disclaimer → Black (used with #fi to make headline/subhead White, disclaimer Black)',
+  'tr':    'Headline → 1 line',
+  'tr:3':  'Headline → 3 lines',
+  'tr:4':  'Headline → 4 lines',
+  'sr':    'Subhead → 2 lines',
+  'sf':    'Subhead appears BEFORE headline',
+  'lb':    'Adds a box/border around disclaimer text',
+};
+
+function parseKey() {
+  const raw = document.getElementById('wd-brand').value.trim();
+  const preview = document.getElementById('key-preview');
+  const blankBox = document.getElementById('blank-exception-box');
+
+  // Detect #blank# exception
+  const isBlank = raw.toLowerCase() === '#blank#';
+  if (blankBox) blankBox.style.display = isBlank ? 'block' : 'none';
+
+  // Hide layout section and logo fields when #blank#
+  const layoutSection = document.getElementById('wd-layout')?.closest('div[style*="margin-top:1rem"]');
+  if (layoutSection) layoutSection.style.display = isBlank ? 'none' : 'block';
+  ['wd-logo-square','wd-horizontal-logo-chk','wd-logo-nonsquare'].forEach(id => {
+    const el = document.getElementById(id)?.closest('.field');
+    if (el) el.style.display = isBlank ? 'none' : 'flex';
+  });
+
+  if (isBlank) {
+    preview.className = 'key-preview invalid';
+    preview.innerHTML = '⚠️ Embedded exception — Headline field in Rodeo = <strong>#blank#</strong>. Layout, Headline, Body text, and Logo are embedded in the image. Disclaimer must still be entered in Rodeo.';
+    return;
+  }
+
+  validateKeyVsLayout(raw, preview);
+}
+
+function validateKeyVsLayout(raw, preview) {
+  if (!preview) return;
+
+  if (!raw || raw === 'N/A') {
+    preview.className = 'key-preview valid';
+    preview.innerHTML = raw === 'N/A'
+      ? '✅ N/A — Default formatting: Black text, headline above subhead, 2-line headline, 1-line subhead'
+      : 'Enter the key above to see what it does';
+    return;
+  }
+
+  if (!raw.startsWith('#')) {
+    preview.className = 'key-preview invalid';
+    preview.innerHTML = '⚠️ Key must start with # (or enter N/A for default formatting)';
+    return;
+  }
+
+  const parts = raw.replace(/^#/, '').split('#').filter(Boolean);
+  const descriptions = [];
+  const unknown = [];
+  const warnings = [];
+
+  for (const part of parts) {
+    if (KEY_MAP[part]) descriptions.push(`<b>#${part}</b>: ${KEY_MAP[part]}`);
+    else unknown.push(`#${part}`);
+  }
+
+  const layout = document.getElementById('wd-layout')?.value || '';
+  const headlineColor = document.getElementById('wd-headline-color')?.value || 'Black';
+  const disclaimerColor = document.getElementById('wd-disclaimer-color')?.value || 'Black';
+  const placement = document.getElementById('wd-headline-placement')?.value;
+  const hasFi   = parts.includes('fi');
+  const hasLfi  = parts.includes('lfi');
+  const hasLfif = parts.includes('lfi:f');
+  const hasSf   = parts.includes('sf');
+  const hasTr   = parts.includes('tr');
+  const hasTr3  = parts.includes('tr:3');
+  const hasTr4  = parts.includes('tr:4');
+  const hasSr   = parts.includes('sr');
+
+  if (layout) {
+    const headlineLines = parseInt(layout[0] || '0');
+    const subheadLines  = parseInt(layout[2] || '0');
+
+    if (headlineLines === 1 && !hasTr && !hasTr3 && !hasTr4)
+      warnings.push('⚠️ Layout says 1-line headline but key has no <b>#tr</b>');
+    if (headlineLines === 3 && !hasTr3)
+      warnings.push('⚠️ Layout says 3-line headline but key is missing <b>#tr:3</b>');
+    if (headlineLines === 4 && !hasTr4)
+      warnings.push('⚠️ Layout says 4-line headline but key is missing <b>#tr:4</b>');
+    if ((hasTr3 || hasTr4) && headlineLines < 3)
+      warnings.push(`⚠️ Key has ${hasTr3 ? '#tr:3' : '#tr:4'} but layout only uses ${headlineLines} headline line(s)`);
+    if (subheadLines === 2 && !hasSr)
+      warnings.push('⚠️ Layout says 2-line subhead but key is missing <b>#sr</b>');
+    if (hasSr && subheadLines < 2)
+      warnings.push('⚠️ Key has <b>#sr</b> but layout only uses 1 subhead line');
+    if (subheadLines === 0 && hasSr)
+      warnings.push('⚠️ Key has <b>#sr</b> but layout has no subhead');
+    if (placement === 'below' && !hasSf)
+      warnings.push('⚠️ Headline placement is "below subhead" but key is missing <b>#sf</b>');
+    if (placement === 'above' && hasSf)
+      warnings.push('⚠️ Key has <b>#sf</b> but placement is set to "above subhead"');
+  }
+
+  // Headline color validation
+  if (headlineColor === 'White' && !hasFi)
+    warnings.push('⚠️ Headline color is White but key is missing <b>#fi</b>');
+  if (headlineColor === 'Black' && hasFi)
+    warnings.push('⚠️ Key has <b>#fi</b> (White text) but Headline color is set to Black');
+
+  // Disclaimer color validation
+  if (disclaimerColor === 'White' && !hasLfi && !hasLfif)
+    warnings.push('⚠️ Disclaimer color is White but key is missing <b>#lfi</b>');
+  if (disclaimerColor === 'Black' && (hasLfi || hasLfif) && !hasFi)
+    warnings.push('⚠️ Key has <b>#lfi</b> (White disclaimer) but Disclaimer color is set to Black');
+
+  if (unknown.length) {
+    preview.className = 'key-preview invalid';
+    preview.innerHTML = `⚠️ Unknown key(s): ${unknown.join(', ')} — verify with CS<br>${descriptions.join('<br>')}`;
+    return;
+  }
+  if (warnings.length) {
+    preview.className = 'key-preview invalid';
+    preview.innerHTML = warnings.join('<br>') + (descriptions.length ? '<br><br>' + descriptions.join('<br>') : '');
+    return;
+  }
+  preview.className = 'key-preview valid';
+  preview.innerHTML = '✅ Key matches layout, placement, and color selections<br>' + descriptions.join('<br>');
+}
+
+// ── Character limits based on language ──
+function getCharLimits() {
+  const lang = (document.getElementById('wd-language')?.value || document.getElementById('camp-language')?.value || '').trim().toLowerCase();
+  const isJP = lang === 'japanese' || lang === 'jp' || lang === '日本語';
+  return { headline: isJP ? 8 : 16, subhead: isJP ? 11 : 23 };
+}
+
+function onLanguageChange() {
+  const lang = document.getElementById('camp-language').value.trim();
+  const wdLang = document.getElementById('wd-language');
+  const legLang = document.getElementById('leg-language');
+  if (wdLang && !wdLang.value) wdLang.value = lang;
+  if (legLang && !legLang.value) legLang.value = lang;
+  updateCharLimits();
+}
+
+function updateCharLimits() {
+  renderLayoutFields();
+}
+
+// ── Layout-driven fields ──
+function renderLayoutFields() {
+  const layout = document.getElementById('wd-layout').value;
+  const container = document.getElementById('layout-fields');
+  const limits = getCharLimits();
+  const subheadColorField = document.getElementById('subhead-color-field');
+
+  if (!layout) { container.innerHTML = ''; return; }
+
+  const headlineLines = parseInt(layout[0]);
+  const subheadLines = parseInt(layout[2]);
+  const hasSubhead = subheadLines > 0;
+
+  subheadColorField.style.display = hasSubhead ? 'flex' : 'none';
+
+  let html = '';
+
+  // Headline fields — single field, limit multiplied by number of lines
+  const totalHeadlineChars = headlineLines * limits.headline;
+  html += `
+    <div class="field">
+      <label>Headline * (${headlineLines > 1 ? headlineLines + ' lines, ' : ''}max ${totalHeadlineChars} chars incl. spaces)</label>
+      <input id="wd-headline-1" maxlength="${totalHeadlineChars}" placeholder="Max ${totalHeadlineChars} chars${headlineLines > 1 ? ' (' + limits.headline + ' per line)' : ''}" data-req="true"
+        oninput="countField(this, 'count-hl-1', ${totalHeadlineChars})" />
+      <div class="char-counter" id="count-hl-1">0 / ${totalHeadlineChars}</div>
+    </div>`;
+
+  // Subhead fields — single field, limit multiplied by number of lines
+  if (subheadLines > 0) {
+    const totalSubheadChars = subheadLines * limits.subhead;
+    html += `
+      <div class="field">
+        <label>Subhead * (${subheadLines > 1 ? subheadLines + ' lines, ' : ''}max ${totalSubheadChars} chars incl. spaces)</label>
+        <input id="wd-subhead-1" maxlength="${totalSubheadChars}" placeholder="Max ${totalSubheadChars} chars${subheadLines > 1 ? ' (' + limits.subhead + ' per line)' : ''}" data-req="true"
+          oninput="countField(this, 'count-sh-1', ${totalSubheadChars})" />
+        <div class="char-counter" id="count-sh-1">0 / ${totalSubheadChars}</div>
+      </div>`;
+  }
+
+  container.innerHTML = html;
+}
+
+function countField(input, counterId, max) {
+  const el = document.getElementById(counterId);
+  if (!el) return;
+  const len = input.value.length;
+  el.textContent = `${len} / ${max}`;
+  el.className = len > max ? 'char-counter over' : 'char-counter';
+}
+
+// ── Apply campaign defaults ──
+function applyDefaults() {
+  const fields = {
+    'wd-flight-start': document.getElementById('camp-flight-start')?.value,
+    'wd-flight-end':   document.getElementById('camp-flight-end')?.value,
+    'wd-language':     document.getElementById('camp-language')?.value,
+    'wd-clickthrough': document.getElementById('camp-clickthrough')?.value,
+    'leg-flight-start': document.getElementById('camp-flight-start')?.value,
+    'leg-flight-end':   document.getElementById('camp-flight-end')?.value,
+    'leg-language':     document.getElementById('camp-language')?.value,
+    'leg-clickthrough': document.getElementById('camp-clickthrough')?.value,
+  };
+  Object.entries(fields).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el && !el.value && val) el.value = val;
+  });
+}
+
+// Auto-apply defaults when campaign fields change
+['camp-flight-start','camp-flight-end','camp-language','camp-clickthrough'].forEach(id => {
+  document.getElementById(id)?.addEventListener('change', applyDefaults);
+});
+
+// ── Validation ──
+function validate() {
+  document.querySelectorAll('.field-error').forEach(el => el.classList.remove('field-error'));
+  document.getElementById('error-banner')?.remove();
+
+  const errors = [];
+
+  // #blank# exception — must confirm checkbox
+  const isBlankKey = document.getElementById('wd-brand')?.value.trim().toLowerCase() === '#blank#';
+  if (isBlankKey && !document.getElementById('chk-blank-exception')?.checked) {
+    const b = document.createElement('div');
+    b.style.cssText = 'background:#fee2e2;border:2px solid #dc2626;border-radius:8px;padding:1rem;margin-bottom:1rem;color:#991b1b;font-weight:700;font-size:0.9rem;';
+    b.textContent = '🚫 You must confirm the embedded creative exception checkbox before downloading.';
+    document.querySelector('.container').prepend(b);
+    setTimeout(() => b.remove(), 5000);
+    return [true];
+  }
+
+  // Ad Policy must be checked
+  if (!document.getElementById('chk-policy')?.checked) {
+    const banner2 = document.createElement('div');
+    banner2.style.cssText = 'background:#fee2e2;border:2px solid #dc2626;border-radius:8px;padding:1rem;margin-bottom:1rem;color:#991b1b;font-weight:700;font-size:0.9rem;';
+    banner2.textContent = '🚫 You must confirm Ad Policy approval before downloading.';
+    document.querySelector('.container').prepend(banner2);
+    setTimeout(() => banner2.remove(), 5000);
+    return [true];
+  }
+
+  ['advertiser','campaign-name','camp-flight-start','camp-flight-end','camp-language','camp-clickthrough'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el?.value.trim()) { el?.classList.add('field-error'); errors.push(el); }
+  });
+
+  ['li-wd-mobile','li-wd-desktop','li-legacy'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el?.value.trim()) { el?.classList.add('field-error'); errors.push(el); }
+  });
+
+  document.querySelectorAll('[data-req="true"]').forEach(el => {
+    if (!el.value.trim()) { el.classList.add('field-error'); errors.push(el); }
+  });
+
+  if (errors.length > 0) {
+    const banner = document.createElement('div');
+    banner.id = 'error-banner';
+    banner.style.cssText = 'background:#fee2e2;border:2px solid #dc2626;border-radius:8px;padding:1rem;margin-bottom:1.5rem;color:#991b1b;font-weight:600;font-size:0.9rem;';
+    const firstEl = errors[0];
+    banner.innerHTML = `⚠️ ${errors.length} required field${errors.length > 1 ? 's are' : ' is'} missing.
+      ${firstEl?.id ? `<br><a href="#" onclick="document.getElementById('${firstEl.id}').scrollIntoView({behavior:'smooth',block:'center'});return false;" style="color:#991b1b">↓ Jump to first missing field</a>` : ''}`;
+    document.querySelector('.container').prepend(banner);
+    banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  return errors;
+}
+
+// ── Excel generation ──
+function downloadExcel() {
+  if (validate().length > 0) return;
+  document.getElementById('error-banner')?.remove();
+
+  const advertiser = document.getElementById('advertiser').value;
+  const campaignName = document.getElementById('campaign-name').value;
+  const locale = document.getElementById('locale').value;
+  const flightStart = document.getElementById('camp-flight-start').value;
+  const flightEnd = document.getElementById('camp-flight-end').value;
+
+  const isVideo = document.getElementById('type-video').checked;
+  const campaignType = isVideo ? 'Video' : 'Static';
+  const wdCreativeType = 'Component-Based Creative → Other Website';
+  const legCreativeType = isVideo ? 'Online Video' : 'Standard Display';
+
+  const wb = XLSX.utils.book_new();
+  const ws = {};
+  const merges = [];
+  let row = 0;
+
+  function c(r, col, value, fill, font, align) {
+    const addr = XLSX.utils.encode_cell({ r, c: col });
+    ws[addr] = {
+      v: value ?? '', t: 's',
+      s: {
+        fill: fill ? { patternType: 'solid', fgColor: fill } : undefined,
+        font: font || { sz: 10 },
+        alignment: align || { vertical: 'center', wrapText: true },
+        border: {
+          top: { style: 'thin', color: { rgb: 'CCCCCC' } },
+          bottom: { style: 'thin', color: { rgb: 'CCCCCC' } },
+          left: { style: 'thin', color: { rgb: 'CCCCCC' } },
+          right: { style: 'thin', color: { rgb: 'CCCCCC' } },
+        }
+      }
+    };
+  }
+  function merge(r1, c1, r2, c2) { merges.push({ s: { r: r1, c: c1 }, e: { r: r2, c: c2 } }); }
+
+  function addRow(label, value, labelFill, valueFill) {
+    c(row, 0, label, labelFill || { rgb: 'E8E8E8' }, { bold: true, sz: 10 }, { vertical: 'center', wrapText: true });
+    merge(row, 1, row, 3);
+    c(row, 1, value, valueFill || { rgb: 'FFFFFF' }, { sz: 10 }, { vertical: 'center', wrapText: true });
+    row++;
+  }
+
+  function addHeader(title, color) {
+    merge(row, 0, row, 3);
+    c(row, 0, title, color, { bold: true, color: { rgb: 'FFFFFF' }, sz: 11 }, { horizontal: 'left', vertical: 'center' });
+    row++;
+  }
+
+  // Campaign header
+  merge(row, 0, row, 3);
+  c(row, 0, `HERO / WINDOW DISPLAY TRAFFICKING TEMPLATE  ·  ${advertiser}  ·  ${campaignName}  ·  ${locale}  ·  ${campaignType}  ·  ${flightStart} → ${flightEnd}`,
+    { rgb: '232F3E' }, { bold: true, color: { rgb: 'FFFFFF' }, sz: 12 },
+    { horizontal: 'center', vertical: 'center' });
+  row += 2;
+
+  // ── WD Creative (Mobile + Desktop) ──
+  const wdColor = { rgb: '5B21B6' };
+  const wdLabel = { rgb: 'EDE9FE' };
+  const wdValue = { rgb: 'FAF5FF' };
+  const wdNote = { rgb: 'FFF7ED' }; // orange tint for instructions
+
+  const layout = document.getElementById('wd-layout').value;
+  const headlineLines = parseInt(layout?.[0] || '0');
+  const subheadLines = parseInt(layout?.[2] || '0');
+  const headlineVal = document.getElementById('wd-headline-1')?.value || '';
+  const subheadVal = document.getElementById('wd-subhead-1')?.value || '';
+  const disclaimer = document.getElementById('wd-disclaimer').value;
+
+  addHeader(`WD CREATIVE — Asset-Based Creative → Other Website  |  WD Mobile + WD Desktop`, wdColor);
+  addRow('WD Mobile Line Item URL', document.getElementById('li-wd-mobile').value, wdLabel, wdValue);
+  addRow('WD Desktop Line Item URL', document.getElementById('li-wd-desktop').value, wdLabel, wdValue);
+
+  // Rodeo field order for WD (Asset-Based Creative)
+  addRow('Name', document.getElementById('wd-name').value, wdLabel, wdValue);
+  addRow('Marketplace', locale, wdLabel, wdValue);
+  addRow('Language', document.getElementById('wd-language').value, wdLabel, wdValue);
+  addRow('Flight Start', document.getElementById('wd-flight-start').value, wdLabel, wdValue);
+  addRow('Flight End', document.getElementById('wd-flight-end').value, wdLabel, wdValue);
+  addRow('Landing page', 'Other website', wdLabel, wdValue);
+  addRow('URL', document.getElementById('wd-clickthrough').value, wdLabel, wdValue);
+  addRow('Ad experiences', 'Asset-based creative', wdLabel, wdValue);
+  addRow('Brand name', document.getElementById('wd-brand').value, wdLabel, wdValue);
+  addRow('Native video', isVideo ? 'ON — Enable native video' : 'OFF — Do NOT enable', isVideo ? { rgb: 'DCFCE7' } : { rgb: 'FEF2F2' }, wdValue);
+
+  const isBlankException = document.getElementById('wd-brand').value.trim().toLowerCase() === '#blank#';
+
+  // Images
+  addRow('Images', document.getElementById('wd-bg-image').value, wdLabel, wdValue);
+
+  if (isBlankException) {
+    addRow('Headline', '#blank#', { rgb: 'FEF2F2' }, { rgb: 'FFF5F5' });
+    addRow('⚠️ AdOps instruction', 'Enter #blank# in the Headline field. All headline, body text, and logo elements are embedded in the background image. Do NOT add any other content to these fields.', { rgb: 'FEF2F2' }, { rgb: 'FFF5F5' });
+    addRow('Body text', 'Leave empty — embedded in image', { rgb: 'FEF2F2' }, { rgb: 'FFF5F5' });
+    addRow('Logo', 'Leave empty — embedded in image', { rgb: 'FEF2F2' }, { rgb: 'FFF5F5' });
+  } else {
+
+  // Headline — one field, enter all on one line
+  if (headlineVal) {
+    addRow('Headline', headlineVal, wdLabel, wdValue);
+    addRow('⚠️ AdOps instruction', 'Enter all headline copy in ONE single field. Do NOT click "+ Add another headline". Character limit: ' + getCharLimits().headline + ' chars per line.', { rgb: 'FFF7ED' }, { rgb: 'FFFBEB' });
+  }
+
+  // Logo
+  const logoSquare = document.getElementById('wd-logo-square').value;
+  const logoNonSquare = document.getElementById('wd-logo-nonsquare').value;
+  if (logoSquare) addRow('Logo (primary — square, 400x400px)', logoSquare, wdLabel, wdValue);
+  if (logoNonSquare) addRow('Logo (secondary — horizontal, 400x400px+)', logoNonSquare, wdLabel, wdValue);
+
+  // Body text (= subheadline in CCM language)
+  if (subheadVal) {
+    addRow('Body text', subheadVal, wdLabel, wdValue);
+    addRow('⚠️ AdOps instruction', 'Enter all body text copy in ONE single field. Do NOT click "+ Add another body text". Character limit: ' + getCharLimits().subhead + ' chars per line.', { rgb: 'FFF7ED' }, { rgb: 'FFFBEB' });
+  }
+
+  // Call-to-action
+  addRow('Call-to-action', 'Leave as is — do not change', { rgb: 'FEF2F2' }, { rgb: 'FFF5F5' });
+
+  // Disclaimer
+  if (disclaimer) {
+    addRow('Disclaimer', disclaimer, wdLabel, wdValue);
+    addRow('⚠️ AdOps instruction', 'Enter disclaimer in ONE single field. Do NOT click "+ Add another disclaimer". Max 42 chars.', { rgb: 'FFF7ED' }, { rgb: 'FFFBEB' });
+  }
+  } // end else (non-blank)
+
+  // Placements — different for Static vs Video
+  if (!isVideo) {
+    addRow('Placements — Inventory type', 'Allow delivery on: Standard display inventory ✓ + Third-party native inventory ✓', wdLabel, wdValue);
+    addRow('Placements — Display ad sizes', 'Choose specific sizes → On-Amazon only: 980x55 ✓ (all others unchecked)', wdLabel, wdValue);
+  } else {
+    addRow('Placements — Native display with video', 'OFF — Do NOT enable. Enabling this will prevent the creative from being associated with video line items.', { rgb: 'FEF2F2' }, { rgb: 'FFF5F5' });
+  }
+
+  // Advanced
+  const wdTrackerImp = document.getElementById('wd-tracker-impression')?.value || '';
+  const wdTrackerClick = document.getElementById('wd-tracker-click')?.value || '';
+  if (wdTrackerImp) addRow('Third-party impression tracking URL', wdTrackerImp, wdLabel, wdValue);
+  if (wdTrackerClick) addRow('Third-party click tracking URL', wdTrackerClick, wdLabel, wdValue);
+
+  // Video
+  if (isVideo) {
+    const wdVideo = document.getElementById('wd-video')?.value || '';
+    if (wdVideo) addRow('Video (854x1368px, H.264 MP4, max 8s)', wdVideo, wdLabel, wdValue);
+  }
+
+  row++; // spacer
+
+  // ── Legacy Desktop Banner ──
+  const legColor = { rgb: '0369A1' };
+  const legLabel = { rgb: 'E0F2FE' };
+  const legValue = { rgb: 'F0F9FF' };
+
+  addHeader(`LEGACY DESKTOP BANNER — ${legCreativeType}  |  ${isVideo ? 'Video + Companion Image' : '1500x600 + 3000x1200'}`, legColor);
+  addRow('Line Item URL', document.getElementById('li-legacy').value, legLabel, legValue);
+
+  if (!isVideo) {
+    // Static — Standard Display — Rodeo field order from screenshot
+    addRow('Name', document.getElementById('leg-name').value, legLabel, legValue);
+    addRow('Size', '1500x600', legLabel, legValue);
+    addRow('Marketplace', locale, legLabel, legValue);
+    addRow('Language', document.getElementById('leg-language').value, legLabel, legValue);
+    addRow('Creative Type (Rodeo)', 'Standard Display', legLabel, legValue);
+    addRow('2x image (3000x1200)', document.getElementById('leg-image-2x').value, legLabel, legValue);
+    addRow('1x image (1500x600)', document.getElementById('leg-image-1x').value, legLabel, legValue);
+    addRow('Click-through URL', document.getElementById('leg-clickthrough').value, legLabel, legValue);
+    addRow('Click-through destination', document.getElementById('leg-clickthrough-type').value, legLabel, legValue);
+    const legImp = document.getElementById('leg-tracker-impression').value;
+    if (legImp) addRow('Third party impression URL', legImp, legLabel, legValue);
+    const legHtml = document.getElementById('leg-additional-html').value;
+    if (legHtml) addRow('Additional HTML', legHtml, legLabel, legValue);
+  } else {
+    // Video — Online Video — Rodeo field order from screenshot
+    addRow('Name', document.getElementById('leg-name').value, legLabel, legValue);
+    addRow('Marketplace', locale, legLabel, legValue);
+    addRow('Language', document.getElementById('leg-language').value, legLabel, legValue);
+    addRow('Creative Type (Rodeo)', 'Online Video', legLabel, legValue);
+    addRow('Click-through destination', document.getElementById('leg-clickthrough-type').value, legLabel, legValue);
+    addRow('Click-through URL', document.getElementById('leg-clickthrough').value, legLabel, legValue);
+    addRow('Video', document.getElementById('leg-video').value, legLabel, legValue);
+    addRow('Ad experiences', 'Online Video', legLabel, legValue);
+    addRow('Companion Image (3000x600, JPG only, 110KB max)', document.getElementById('leg-companion').value, legLabel, legValue);
+    addRow('Native Display with Video', 'OFF — Do NOT enable', { rgb: 'FEF2F2' }, { rgb: 'FFF5F5' });
+    const legImp = document.getElementById('leg-tracker-impression').value;
+    if (legImp) addRow('Third-party impression tracking URL', legImp, legLabel, legValue);
+    const legClick = document.getElementById('leg-tracker-click').value;
+    if (legClick) addRow('Third-party click tracking URL', legClick, legLabel, legValue);
+    const legHtml = document.getElementById('leg-additional-html').value;
+    if (legHtml) addRow('Additional HTML', legHtml, legLabel, legValue);
+  }
+
+  // Finalize
+  ws['!ref'] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: row, c: 3 } });
+  ws['!merges'] = merges;
+  ws['!cols'] = [{ wch: 38 }, { wch: 65 }, { wch: 5 }, { wch: 5 }];
+  ws['!rows'] = Array(row).fill({ hpt: 20 });
+  ws['!rows'][0] = { hpt: 30 };
+
+  XLSX.utils.book_append_sheet(wb, ws, 'Trafficking Sheet');
+
+  const filename = `HERO_WD_${advertiser.replace(/\s+/g, '_')}_${locale}_${campaignName.replace(/\s+/g, '_')}.xlsx`;
+  XLSX.writeFile(wb, filename);
+}
+
+function clearAll() {
+  if (!confirm('Clear all entries?')) return;
+  document.querySelectorAll('input, select, textarea').forEach(el => {
+    if (!el.classList.contains('readonly-field')) el.value = '';
+  });
+  document.getElementById('layout-fields').innerHTML = '';
+  document.getElementById('key-preview').className = 'key-preview';
+  document.getElementById('key-preview').textContent = 'Enter the key above to see what it does';
+}
+</script>
+</body>
+</html>
