@@ -140,8 +140,16 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<script src="https://unpkg.com/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 <script>
+// Fallback if CDN blocked
+window.addEventListener('load', function() {
+  if (typeof XLSX === 'undefined') {
+    var s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    document.head.appendChild(s);
+  }
+});
 // ── Placement definitions ──
 const PLACEMENTS = [
   { id: 'p1', name: 'AMZN_{Locale}_300x250_Gateway_ATF', device: 'Desktop', types: ['Static', 'Autogen REC', 'Custom REC'] },
@@ -650,10 +658,18 @@ function validate() {
   document.querySelectorAll('.field-error').forEach(el => el.classList.remove('field-error'));
   document.getElementById('error-banner')?.remove();
 
-  // Campaign level
-  ['advertiser', 'campaign-name', 'camp-flight-start', 'camp-flight-end', 'camp-clickthrough'].forEach(id => {
+  // Campaign level — clickthrough only required if Static or ABC placements are selected
+  const hasStaticOrABC = PLACEMENTS.some(p => {
+    const chk = document.getElementById('chk-' + p.id);
+    if (!chk?.checked) return false;
+    return ['p1','p2','p3','p5','p6','p7','p8','p9','p10'].includes(p.id) ||
+      document.getElementById('versions-' + p.id)?.querySelector('select')?.value === 'Static' ||
+      document.getElementById('versions-' + p.id)?.querySelector('select')?.value === 'Asset-Based Creative';
+  });
+
+  ['advertiser', 'campaign-name', 'camp-flight-start', 'camp-flight-end'].forEach(id => {
     const el = document.getElementById(id);
-    if (!el.value.trim()) { el.classList.add('field-error'); errors.push(el); }
+    if (!el?.value.trim()) { el?.classList.add('field-error'); errors.push(el); }
   });
 
   // Check at least one placement selected
@@ -701,6 +717,10 @@ function validate() {
 
 // ── Excel generation ──
 function downloadExcel() {
+  if (typeof XLSX === 'undefined') {
+    alert('The Excel library failed to load. Please check your internet connection or try a different browser.');
+    return;
+  }
   const errors = validate();
   if (errors.length > 0) return;
   document.getElementById('error-banner')?.remove();
