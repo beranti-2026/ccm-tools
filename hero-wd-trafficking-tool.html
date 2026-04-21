@@ -309,9 +309,16 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<script src="https://unpkg.com/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 <script>
-
+// Fallback if CDN blocked
+window.addEventListener('load', function() {
+  if (typeof XLSX === 'undefined') {
+    var s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    document.head.appendChild(s);
+  }
+});
 function toggleWDHorizontalLogo() {
   const checked = document.getElementById('wd-horizontal-logo-chk')?.checked;
   const horizField = document.getElementById('wd-logo-horizontal-field');
@@ -681,6 +688,10 @@ function validate() {
 
 // ── Excel generation ──
 function downloadExcel() {
+  if (typeof XLSX === 'undefined') {
+    alert('The Excel library failed to load. Please check your internet connection or try a different browser.');
+    return;
+  }
   if (validate().length > 0) return;
   document.getElementById('error-banner')?.remove();
 
