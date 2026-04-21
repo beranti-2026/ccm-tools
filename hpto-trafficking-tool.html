@@ -106,7 +106,6 @@
       </div>
       <div class="field"><label>Flight Start Date *</label><input id="camp-flight-start" type="date" /></div>
       <div class="field"><label>Flight End Date *</label><input id="camp-flight-end" type="date" /></div>
-      <div class="field"><label>Language *</label><input id="camp-language" placeholder="e.g. English" /></div>
       <div class="field"><label>Click-through URL * (Static &amp; ABC only)</label><input id="camp-clickthrough" placeholder="https://..." /></div>
       <div class="field"><label>Third-Party Tracker</label><input id="camp-tracker" placeholder="Optional" /></div>
     </div>
@@ -156,8 +155,7 @@ const FIELDS = {
     { id: 'language', label: 'Language *', type: 'text', placeholder: 'e.g. English', req: true },
     { id: 'flight_start', label: 'Flight Start Date *', type: 'date', req: true },
     { id: 'flight_end', label: 'Flight End Date *', type: 'date', req: true },
-    { id: 'clickthrough_type', label: 'Click-through Type *', type: 'select', options: ['Brand Store', 'Other Website'], req: true },
-    { id: 'clickthrough', label: 'Click-through URL *', type: 'text', placeholder: 'https://...', req: true },
+    { id: 'clickthrough_type', label: 'Click-through Type *', type: 'select', options: ['Brand Store', 'Other Website'], req: true },    { id: 'clickthrough', label: 'Click-through URL *', type: 'text', placeholder: 'https://...', req: true },
     { id: 'ad_experience', label: 'Ad Experience', type: 'text', placeholder: 'Single Image', readonly: true, default: 'Single Image' },
     { id: 'image', label: 'Image (upload link) *', type: 'text', placeholder: 'https://...', req: true },
     { id: 'tracker_click', label: 'Third-party Click URL', type: 'text', placeholder: 'Optional' },
@@ -289,7 +287,6 @@ function applyDefaults(vid, pid) {
   const fields = {
     'flight_start':   document.getElementById('camp-flight-start')?.value,
     'flight_end':     document.getElementById('camp-flight-end')?.value,
-    'language':       document.getElementById('camp-language')?.value,
     'clickthrough':   document.getElementById('camp-clickthrough')?.value,
     'tracker_click':  noTracker ? null : document.getElementById('camp-tracker')?.value,
     'tracker_impression': noTracker ? null : document.getElementById('camp-tracker')?.value,
@@ -423,8 +420,7 @@ function renderABCFields(vid, pid, selectedLayout) {
   // Base fields always shown
   let html = `
     <div class="field"><label>Name *</label><input id="f-${vid}-uid" type="text" placeholder="e.g. Nike_ABC_WP1_v1" data-req="true" /></div>
-    <div class="field"><label>Language *</label><input id="f-${vid}-language" type="text" placeholder="e.g. English" data-req="true" ${pid === 'p8' ? `oninput="onDoubleWideLanguageChange('${vid}', '${pid}')"` : ''} /></div>
-    <div class="field"><label>Flight Start Date *</label><input id="f-${vid}-flight_start" type="date" data-req="true" /></div>
+    <div class="field"><label>Language *</label><input id="f-${vid}-language" type="text" placeholder="e.g. English" data-req="true" ${pid === 'p8' ? `oninput="onDoubleWideLanguageChange('${vid}', '${pid}')"` : ''} /></div>    <div class="field"><label>Flight Start Date *</label><input id="f-${vid}-flight_start" type="date" data-req="true" /></div>
     <div class="field"><label>Flight End Date *</label><input id="f-${vid}-flight_end" type="date" data-req="true" /></div>
     <div class="field"><label>Landing Page</label><input id="f-${vid}-landing_page" type="text" value="Other website" readonly style="background:#f3f4f6;color:#6b7280" /></div>
     <div class="field"><label>Click-through URL *</label><input id="f-${vid}-clickthrough" type="text" placeholder="https://..." data-req="true" /></div>
@@ -441,10 +437,10 @@ function renderABCFields(vid, pid, selectedLayout) {
     </div>
     <div id="layout-fields-${vid}" style="display:contents"></div>
     ${['p8', 'p9'].includes(pid) ? `
-    <div class="field full" style="margin-top:0.5rem">
+    <div class="field full" id="logo-section-${vid}" style="margin-top:0.5rem">
       <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
         <input type="checkbox" id="f-${vid}-horizontal_logo" onchange="toggleHorizontalLogo('${vid}')" style="width:14px;height:14px;accent-color:var(--accent2)" />
-        Horizontal logo? (DCS will provide both square + horizontal versions)
+        Horizontal logo? (CS will provide both square + horizontal versions)
       </label>
     </div>
     <div class="field" id="logo-square-field-${vid}">
@@ -493,8 +489,19 @@ function toggleHorizontalLogo(vid) {
 function onLayoutChange(vid, pid) {
   const layout = document.getElementById('layout-' + vid).value;
   const limits = HEADLINE_LIMITS[pid] || { line1: 12, line2: 15 };
-  const shortLayout = layout.split(':')[0]; // "Layout 1", "Layout 2", "Layout 3"
+  const shortLayout = layout.split(':')[0];
   renderLayoutFields(vid, pid, shortLayout, limits);
+
+  // Show/hide logo fields based on layout (only Layout 1 has logo)
+  if (['p8', 'p9'].includes(pid)) {
+    const hasLogo = shortLayout === 'Layout 1';
+    const logoSection = document.getElementById('logo-section-' + vid);
+    const logoSquare = document.getElementById('logo-square-field-' + vid);
+    const logoHoriz = document.getElementById('logo-horizontal-field-' + vid);
+    if (logoSection) logoSection.style.display = hasLogo ? 'flex' : 'none';
+    if (logoSquare) logoSquare.style.display = hasLogo ? 'flex' : 'none';
+    if (logoHoriz) logoHoriz.style.display = 'none'; // reset horizontal
+  }
 }
 
 function onDoubleWideLanguageChange(vid, pid) {
@@ -595,7 +602,7 @@ function validate() {
   document.getElementById('error-banner')?.remove();
 
   // Campaign level
-  ['advertiser', 'campaign-name', 'camp-flight-start', 'camp-flight-end', 'camp-language', 'camp-clickthrough'].forEach(id => {
+  ['advertiser', 'campaign-name', 'camp-flight-start', 'camp-flight-end', 'camp-clickthrough'].forEach(id => {
     const el = document.getElementById(id);
     if (!el.value.trim()) { el.classList.add('field-error'); errors.push(el); }
   });
@@ -744,7 +751,7 @@ function downloadExcel() {
       rows.push(['Ad Experience', 'Asset-based creative']);
       rows.push(['Brand Name', get('brand')]);
       rows.push(['Image Link', get('image')]);
-      rows.push(['Layout Option', getLayout()]);
+      // Layout Option intentionally excluded from output
       rows.push(['Headline', get('headline1') || get('headline')]);
       if (get('logo')) rows.push(['Logo (square)', get('logo')]);
       if (get('logo_horizontal')) rows.push(['Logo (horizontal)', get('logo_horizontal')]);
@@ -757,7 +764,7 @@ function downloadExcel() {
     return rows;
   }
 
-  // ── Build one section per line item ──
+  // ── Build one section per line item (all versions grouped) ──
   PLACEMENTS.forEach(p => {
     const chk = document.getElementById('chk-' + p.id);
     if (!chk?.checked) return;
@@ -765,37 +772,46 @@ function downloadExcel() {
     const placementName = p.name.replace('{Locale}', locale);
     const lineItemUrl = document.getElementById('lineitem-' + p.id)?.value || '';
     const versionsEl = document.getElementById('versions-' + p.id);
+    const versionBlocks = versionsEl?.querySelectorAll('.version-block') || [];
+    if (!versionBlocks.length) return;
 
-    versionsEl?.querySelectorAll('.version-block').forEach((block, idx) => {
+    // Determine header color from first version's type
+    const firstVid = versionBlocks[0].id.replace('version-', '');
+    const firstType = document.getElementById('type-' + firstVid)?.value || '';
+    const headerColor = TYPE_HEADER_COLOR[firstType] || { rgb: '444444' };
+
+    // ── Line item header (once per placement) ──
+    merge(row, 0, row, 3);
+    c(row, 0, `LINE ITEM: ${placementName}`,
+      headerColor, { bold: true, color: { rgb: 'FFFFFF' }, sz: 11 },
+      { horizontal: 'left', vertical: 'center' });
+    row++;
+
+    // Line item URL
+    c(row, 0, 'Line Item URL', { rgb: 'E8E8E8' }, { bold: true, sz: 10 }, { vertical: 'center' });
+    merge(row, 1, row, 3);
+    c(row, 1, lineItemUrl, { rgb: 'FFFFFF' }, { sz: 10, color: { rgb: '0563C1' } }, { vertical: 'center', wrapText: true });
+    row++;
+
+    // ── Each version ──
+    versionBlocks.forEach((block, idx) => {
       const vid = block.id.replace('version-', '');
       const type = document.getElementById('type-' + vid)?.value || '';
       const get = (fid) => document.getElementById('f-' + vid + '-' + fid)?.value || '';
       const getLayout = () => document.getElementById('layout-' + vid)?.value || '';
 
-      const headerColor = TYPE_HEADER_COLOR[type] || { rgb: '444444' };
-      const labelColor  = TYPE_LABEL_COLOR[type]  || { rgb: 'F5F5F5' };
-      const valueColor  = TYPE_VALUE_COLOR[type]  || { rgb: 'FFFFFF' };
+      const labelColor = TYPE_LABEL_COLOR[type] || { rgb: 'F5F5F5' };
+      const valueColor = TYPE_VALUE_COLOR[type] || { rgb: 'FFFFFF' };
+      const versionLabel = versionBlocks.length > 1 ? `VERSION ${idx + 1}` : 'CREATIVE';
 
-      // ── Line item header ──
+      // Version sub-header
       merge(row, 0, row, 3);
-      c(row, 0, `LINE ITEM: ${placementName}${idx > 0 ? '  ·  Version ' + (idx + 1) : ''}`,
-        headerColor, { bold: true, color: { rgb: 'FFFFFF' }, sz: 11 },
+      c(row, 0, `${versionLabel} — ${type}`,
+        { rgb: 'E8E8E8' }, { bold: true, sz: 10 },
         { horizontal: 'left', vertical: 'center' });
       row++;
 
-      // Line item URL row
-      c(row, 0, 'Line Item URL', { rgb: 'E8E8E8' }, { bold: true, sz: 10 }, { vertical: 'center' });
-      merge(row, 1, row, 3);
-      c(row, 1, lineItemUrl, { rgb: 'FFFFFF' }, { sz: 10, color: { rgb: '0563C1' } }, { vertical: 'center', wrapText: true });
-      row++;
-
-      // Creative type row
-      c(row, 0, 'Creative Type', { rgb: 'E8E8E8' }, { bold: true, sz: 10 }, { vertical: 'center' });
-      merge(row, 1, row, 3);
-      c(row, 1, type, labelColor, { bold: true, sz: 10 }, { vertical: 'center' });
-      row++;
-
-      // ── Field rows ──
+      // Field rows
       const fields = getFieldRows(type, get, getLayout, p.id);
       fields.forEach(([label, value]) => {
         c(row, 0, label, labelColor, { bold: true, sz: 10 }, { vertical: 'center', wrapText: true });
@@ -803,9 +819,9 @@ function downloadExcel() {
         c(row, 1, value, valueColor, { sz: 10 }, { vertical: 'center', wrapText: true });
         row++;
       });
-
-      row++; // spacer between line items
     });
+
+    row++; // spacer between placements
   });
 
   // ── Finalize ──
@@ -823,7 +839,7 @@ function downloadExcel() {
 
 function clearAll() {
   if (confirm('Clear all entries?')) {
-    ['advertiser','campaign-name','camp-flight-start','camp-flight-end','camp-language','camp-clickthrough','camp-tracker'].forEach(id => {
+    ['advertiser','campaign-name','camp-flight-start','camp-flight-end','camp-clickthrough','camp-tracker'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
