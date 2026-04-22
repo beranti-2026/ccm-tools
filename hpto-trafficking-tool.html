@@ -492,7 +492,7 @@ function renderABCFields(vid, pid, selectedLayout) {
       <select id="layout-${vid}" onchange="onLayoutChange('${vid}', '${pid}')">${layoutOptions}</select>
     </div>
     <div id="layout-fields-${vid}" style="display:contents"></div>
-    ${['p8', 'p9'].includes(pid) ? `
+    ${['p4', 'p8', 'p9'].includes(pid) ? `
     <div class="field full" id="logo-section-${vid}" style="margin-top:0.5rem">
       <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
         <input type="checkbox" id="f-${vid}-horizontal_logo" onchange="toggleHorizontalLogo('${vid}')" style="width:14px;height:14px;accent-color:var(--accent2)" />
@@ -532,12 +532,12 @@ function toggleHorizontalLogo(vid) {
   if (checked) {
     // Both become mandatory
     if (squareInput) squareInput.setAttribute('data-req', 'true');
-    if (squareLabel) squareLabel.textContent = 'Logo Link — Square (400x400px) *';
+    if (squareLabel) squareLabel.textContent = 'Logo File Name — Square (400x400px) *';
     if (horizInput) horizInput.setAttribute('data-req', 'true');
   } else {
     // Both optional
     if (squareInput) { squareInput.removeAttribute('data-req'); }
-    if (squareLabel) squareLabel.textContent = 'Logo Link — Square (400x400px) (optional)';
+    if (squareLabel) squareLabel.textContent = 'Logo File Name — Square (400x400px) (optional)';
     if (horizInput) { horizInput.removeAttribute('data-req'); horizInput.value = ''; }
   }
 }
@@ -549,7 +549,7 @@ function onLayoutChange(vid, pid) {
   renderLayoutFields(vid, pid, shortLayout, limits);
 
   // Show/hide logo fields based on layout (only Layout 1 has logo)
-  if (['p8', 'p9'].includes(pid)) {
+  if (['p4', 'p8', 'p9'].includes(pid)) {
     const hasLogo = shortLayout === 'Layout 1';
     const logoSection = document.getElementById('logo-section-' + vid);
     const logoSquare = document.getElementById('logo-square-field-' + vid);
@@ -583,8 +583,8 @@ function renderLayoutFields(vid, pid, layout, limits) {
         <span class="field-note" id="count-${vid}-headline1">0 / ${limits.line1}</span>
       </div>
       <div class="field">
-        <label>Logo Link *</label>
-        <input id="f-${vid}-logo" type="text" placeholder="https://..." data-req="true" />
+        <label>Logo File Name *</label>
+        <input id="f-${vid}-logo" type="text" placeholder="e.g. Nike_Logo.png" data-req="true" />
       </div>`;
   } else if (layout === 'Layout 2') {
     // Doublewide: English = 1 line (32 chars), other languages = 2 lines (64 chars)
