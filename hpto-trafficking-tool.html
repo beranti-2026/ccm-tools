@@ -140,9 +140,8 @@
   </div>
 </div>
 
-<script src="https://unpkg.com/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<script src="./xlsx.bundle.js"></script>
 <script>
-// Fallback if CDN blocked
 window.addEventListener('load', function() {
   if (typeof XLSX === 'undefined') {
     var s = document.createElement('script');
@@ -158,7 +157,7 @@ const PLACEMENTS = [
   { id: 'p4', name: 'AMZN_{Locale}_138x184_Mobile_Home_Page', device: 'Mobile', types: ['Autogen REC', 'Asset-Based Creative'] },
   { id: 'p5', name: 'AMZN_{Locale}_320x50_Mobile_App_Home_Page', device: 'Mobile', types: ['Static', 'Autogen REC', 'Custom REC'] },
   { id: 'p6', name: 'AMZN_{Locale}_320x50_Mobile_Web_Home_Page', device: 'Mobile', types: ['Static', 'Autogen REC', 'Custom REC'] },
-  { id: 'p7', name: 'AMZN_{Locale}_Mobile_414x125_Homepage_BTF', device: 'Mobile', types: ['Autogen REC', 'Asset-Based Creative'] },
+  { id: 'p7', name: 'AMZN_{Locale}_Mobile_414x125_Homepage_BTF', device: 'Mobile', types: ['Autogen REC'] },
   { id: 'p8', name: 'AMZN_{Locale}_Desktop_284x184_Homepage_Doublewide', device: 'Desktop', types: ['Asset-Based Creative'] },
   { id: 'p9', name: 'AMZN_{Locale}_Desktop_138x184_WP_1', device: 'Desktop', types: ['Asset-Based Creative'] },
   { id: 'p10', name: 'AMZN_{Locale}_Desktop_138x184_WP_2', device: 'Desktop', types: ['Autogen REC'] },
@@ -171,9 +170,10 @@ const FIELDS = {
     { id: 'language', label: 'Language *', type: 'text', placeholder: 'e.g. English', req: true },
     { id: 'flight_start', label: 'Flight Start Date *', type: 'date', req: true },
     { id: 'flight_end', label: 'Flight End Date *', type: 'date', req: true },
-    { id: 'clickthrough_type', label: 'Click-through Type *', type: 'select', options: ['Brand Store', 'Other Website'], req: true },    { id: 'clickthrough', label: 'Click-through URL *', type: 'text', placeholder: 'https://...', req: true },
+    { id: 'clickthrough_type', label: 'Click-through Type *', type: 'select', options: ['Brand Store', 'Other Website'], req: true },
+    { id: 'clickthrough', label: 'Click-through URL *', type: 'text', placeholder: 'https://...', req: true },
     { id: 'ad_experience', label: 'Ad Experience', type: 'text', placeholder: 'Single Image', readonly: true, default: 'Single Image' },
-    { id: 'image', label: 'Image (upload link) *', type: 'text', placeholder: 'https://...', req: true },
+    { id: 'image', label: 'Image File Name * (e.g. Nike_Static_300x250.jpg)', type: 'text', placeholder: 'e.g. Nike_Static_300x250.jpg', req: true },
     { id: 'tracker_click', label: 'Third-party Click URL', type: 'text', placeholder: 'Optional' },
     { id: 'tracker_impression', label: 'Third-party Impression URL', type: 'text', placeholder: 'Optional' },
     { id: 'additional_html', label: 'Additional HTML', type: 'text', placeholder: 'Optional' },
@@ -183,12 +183,11 @@ const FIELDS = {
     { id: 'language', label: 'Language *', type: 'text', placeholder: 'e.g. English', req: true },
     { id: 'flight_start', label: 'Flight Start Date *', type: 'date', req: true },
     { id: 'flight_end', label: 'Flight End Date *', type: 'date', req: true },
-    { id: 'landing_page', label: 'Landing Page', type: 'text', placeholder: 'Products on Amazon', readonly: true, default: 'Products on Amazon' },
-    { id: 'ad_experience', label: 'Ad Experience', type: 'text', placeholder: 'Responsive eCommerce', readonly: true, default: 'Responsive eCommerce' },
+    { id: 'landing_page', label: 'Landing Page', type: 'text', readonly: true, default: 'Products on Amazon' },
+    { id: 'ad_experience', label: 'Ad Experience', type: 'text', readonly: true, default: 'Responsive eCommerce' },
     { id: 'asins', label: 'ASIN List (up to 20, comma-separated) *', type: 'textarea', placeholder: 'B0001, B0002, ...', full: true, req: true },
-    { id: 'images', label: 'Images', type: 'text', placeholder: 'Use default product image', readonly: true, default: 'Use default product image' },
+    { id: 'images', label: 'Images', type: 'text', readonly: true, default: 'Use default product image' },
     { id: 'headline', label: 'Headline (optional, 50 chars max)', type: 'text', placeholder: 'Recommended' },
-    { id: 'logo', label: 'Logo Link (optional)', type: 'text', placeholder: 'https://...' },
     { id: 'disclaimer', label: 'Disclaimer (optional, 40 chars max)', type: 'text', placeholder: 'Optional' },
     { id: 'inventory_type', label: 'Inventory Type', type: 'text', readonly: true, default: 'Standard display inventory + Third-party native inventory' },
     { id: 'display_ad_sizes', label: 'Display Ad Sizes', type: 'text', readonly: true, default: 'Use responsive sizing' },
@@ -204,9 +203,9 @@ const FIELDS = {
     { id: 'landing_page', label: 'Landing Page', type: 'text', placeholder: 'Products on Amazon', readonly: true, default: 'Products on Amazon' },
     { id: 'ad_experience', label: 'Ad Experience', type: 'text', placeholder: 'Responsive eCommerce', readonly: true, default: 'Responsive eCommerce' },
     { id: 'asins', label: 'ASIN List (up to 20, comma-separated) *', type: 'textarea', placeholder: 'B0001, B0002, ...', full: true, req: true },
-    { id: 'custom_image', label: 'Custom Image Link *', type: 'text', placeholder: 'https://...', req: true },
+    { id: 'custom_image', label: 'Custom Image File Name * (e.g. Nike_CustomREC_300x250.jpg)', type: 'text', placeholder: 'e.g. Nike_CustomREC_300x250.jpg', req: true },
     { id: 'headline', label: 'Headline (optional, 50 chars max)', type: 'text', placeholder: 'Recommended' },
-    { id: 'logo', label: 'Logo Link (optional)', type: 'text', placeholder: 'https://...' },
+    { id: 'logo', label: 'Logo File Name (optional, e.g. Nike_Logo.png)', type: 'text', placeholder: 'e.g. Nike_Logo.png' },
     { id: 'disclaimer', label: 'Disclaimer (optional, 40 chars max)', type: 'text', placeholder: 'Optional' },
     { id: 'inventory_type', label: 'Inventory Type', type: 'text', placeholder: 'Standard display + Third-party native', readonly: true, default: 'Standard display inventory + Third-party native inventory' },
     { id: 'display_ad_sizes', label: 'Display Ad Sizes', type: 'text', placeholder: 'Use responsive sizing', readonly: true, default: 'Use responsive sizing' },
@@ -487,7 +486,7 @@ function renderABCFields(vid, pid, selectedLayout) {
       <select id="f-${vid}-brand" data-req="true">${brandOptions}</select>
       <span class="field-note">Controls text/disclaimer color combination</span>
     </div>
-    <div class="field"><label>Image (upload link) *</label><input id="f-${vid}-image" type="text" placeholder="https://..." data-req="true" /></div>
+    <div class="field"><label>Image File Name * (e.g. Nike_WP_Background.psd)</label><input id="f-${vid}-image" type="text" placeholder="e.g. Nike_WP_Background.psd" data-req="true" /></div>
     <div class="field full">
       <label>Layout Option *</label>
       <select id="layout-${vid}" onchange="onLayoutChange('${vid}', '${pid}')">${layoutOptions}</select>
@@ -501,16 +500,16 @@ function renderABCFields(vid, pid, selectedLayout) {
       </label>
     </div>
     <div class="field" id="logo-square-field-${vid}">
-      <label>Logo Link — Square (400x400px) (optional)</label>
-      <input id="f-${vid}-logo" type="text" placeholder="https://..." />
+      <label>Logo File Name — Square (400x400px) (optional)</label>
+      <input id="f-${vid}-logo" type="text" placeholder="e.g. Nike_Logo_Square.png" />
     </div>
     <div class="field" id="logo-horizontal-field-${vid}" style="display:none">
-      <label>Logo Link — Horizontal (400x400px+) *</label>
-      <input id="f-${vid}-logo_horizontal" type="text" placeholder="https://..." />
+      <label>Logo File Name — Horizontal (400x400px+) *</label>
+      <input id="f-${vid}-logo_horizontal" type="text" placeholder="e.g. Nike_Logo_Horizontal.png" />
     </div>` : `
     <div class="field">
-      <label>Logo Link (optional)</label>
-      <input id="f-${vid}-logo" type="text" placeholder="https://..." />
+      <label>Logo File Name (optional)</label>
+      <input id="f-${vid}-logo" type="text" placeholder="e.g. Nike_Logo.png" />
     </div>`}
     <div class="field"><label>Third-party Impression Tracking URL</label><input id="f-${vid}-tracker_impression" type="text" placeholder="Optional" /></div>
     <div class="field"><label>Third-party Click Tracking URL</label><input id="f-${vid}-tracker_click" type="text" placeholder="Optional" /></div>
