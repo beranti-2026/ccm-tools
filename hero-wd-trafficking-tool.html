@@ -118,9 +118,6 @@
         <span><strong>Creative exceptions (if applicable)</strong> — If there are any creative exceptions, Homepage Design has reviewed and approved per SOP before proceeding.</span>
       </label>
     </div>
-    <div id="freq-cap-note" style="display:none;margin-top:1rem;padding:0.75rem 1rem;background:#fff8ee;border:1px solid var(--accent2);border-radius:6px;font-size:0.82rem;color:#92400e">
-      ⚠️ <strong>Frequency Cap reminder for your locale:</strong> The frequency cap must be set to <strong>8/day at the Line Item level only</strong>. Do NOT apply a frequency cap at the Order level — the Order must remain uncapped. Add this in the <strong>Additional Information</strong> field if it hasn't been set at the line item level.
-    </div>
   </div>
   <div class="card">
     <h2>Line Item URLs</h2>
@@ -207,6 +204,9 @@ function parseKeyFor(vid) {
   const blankBox = document.getElementById(vid + '-blank-box');
   const layoutSection = document.getElementById(vid + '-layout-section');
 
+  // Show preview only when there's a key entered
+  if (preview) preview.style.display = raw ? 'block' : 'none';
+
   const isBlank = raw.toLowerCase() === '#blank#';
   if (blankBox) blankBox.style.display = isBlank ? 'block' : 'none';
   if (layoutSection) layoutSection.style.display = isBlank ? 'none' : 'block';
@@ -239,6 +239,7 @@ function validateKeyVsLayoutFor(vid, raw, preview) {
   const hasFi = parts.includes('fi'), hasLfi = parts.includes('lfi'), hasSf = parts.includes('sf');
   const hasTr = parts.includes('tr'), hasTr3 = parts.includes('tr:3'), hasTr4 = parts.includes('tr:4'), hasSr = parts.includes('sr');
 
+  // Layout-specific checks (only when layout is selected)
   if (layout) {
     const hl = parseInt(layout[0] || '0'), sl = parseInt(layout[2] || '0');
     if (hl === 1 && !hasTr && !hasTr3 && !hasTr4) warnings.push('⚠️ 1-line headline but missing <b>#tr</b>');
@@ -246,12 +247,34 @@ function validateKeyVsLayoutFor(vid, raw, preview) {
     if (hl === 4 && !hasTr4) warnings.push('⚠️ 4-line headline but missing <b>#tr:4</b>');
     if (sl === 2 && !hasSr) warnings.push('⚠️ 2-line subhead but missing <b>#sr</b>');
     if (hasSr && sl < 2) warnings.push('⚠️ <b>#sr</b> set but layout uses 1 subhead line');
-    if (placement === 'below' && !hasSf) warnings.push('⚠️ Headline below subhead but missing <b>#sf</b>');
-    if (placement === 'above' && hasSf) warnings.push('⚠️ <b>#sf</b> set but placement is above');
   }
-  if (headlineColor === 'White' && !hasFi) warnings.push('⚠️ Headline White but missing <b>#fi</b>');
-  if (headlineColor === 'Black' && hasFi) warnings.push('⚠️ <b>#fi</b> set but Headline color is Black');
-  if (disclaimerColor === 'White' && !hasLfi) warnings.push('⚠️ Disclaimer White but missing <b>#lfi</b>');
+
+  // Placement check (always, even without layout selected)
+  if (placement === 'below' && !hasSf) warnings.push('⚠️ Headline placement is "below subhead" but key is missing <b>#sf</b>');
+  if (placement === 'above' && hasSf) warnings.push('⚠️ Key has <b>#sf</b> but placement is set to "above subhead"');
+
+  // Color checks (always) — per spec table:
+  // Black H + Black D = no key | Black H + White D = #lfi | White H + Black D = #fi#lfi:f | White H + White D = #fi
+  if (headlineColor === 'White' && !hasFi) warnings.push('⚠️ Headline & Subhead color is White but key is missing <b>#fi</b>');
+  if (headlineColor === 'Black' && hasFi) warnings.push('⚠️ Key has <b>#fi</b> (White text) but Headline & Subhead color is Black');
+
+  // Disclaimer color validation — only if disclaimer is entered
+  const disclaimerText = document.getElementById(vid + '-disclaimer')?.value?.trim() || '';
+  if (disclaimerText) {
+    const hasLfif = parts.includes('lfi:f');
+    if (headlineColor === 'Black' && disclaimerColor === 'White' && !hasLfi) {
+      warnings.push('⚠️ Black headline + White disclaimer requires <b>#lfi</b>');
+    }
+    if (headlineColor === 'Black' && disclaimerColor === 'Black' && hasLfi) {
+      warnings.push('⚠️ Key has <b>#lfi</b> (White disclaimer) but Disclaimer color is Black');
+    }
+    if (headlineColor === 'White' && disclaimerColor === 'Black' && !hasLfif) {
+      warnings.push('⚠️ White headline + Black disclaimer requires <b>#fi#lfi:f</b> — key is missing <b>#lfi:f</b>');
+    }
+    if (headlineColor === 'White' && disclaimerColor === 'White' && hasLfif) {
+      warnings.push('⚠️ Key has <b>#lfi:f</b> (Black disclaimer) but Disclaimer color is White — use <b>#fi</b> only');
+    }
+  }
 
   if (unknown.length) { preview.className = 'key-preview invalid'; preview.innerHTML = `⚠️ Unknown: ${unknown.map(u=>'#'+u).join(', ')}<br>${descriptions.join('<br>')}`; return; }
   if (warnings.length) { preview.className = 'key-preview invalid'; preview.innerHTML = warnings.join('<br>') + (descriptions.length ? '<br><br>' + descriptions.join('<br>') : ''); return; }
@@ -327,6 +350,7 @@ function buildWDCreativeHTML(n) {
         <div class="field" style="grid-column:1/-1">
           <label>Brand Name Key * (provided by CS)</label>
           <input id="${vid}-brand" placeholder="e.g. #fi#lfi:f or N/A" data-req="true" oninput="parseKeyFor('${vid}')" />
+          <div class="key-preview" id="${vid}-key-preview" style="display:none"></div>
           <div id="${vid}-blank-box" style="display:none;margin-top:0.75rem;padding:0.75rem 1rem;background:#fef2f2;border:2px solid #dc2626;border-radius:6px">
             <p style="font-size:0.85rem;font-weight:700;color:#991b1b;margin-bottom:0.5rem">⚠️ Embedded Creative Exception (#blank#)</p>
             <p style="font-size:0.82rem;color:#7f1d1d;margin-bottom:0.5rem">Headline = #blank#. Layout, Headline, Body text, Logo embedded in image. Disclaimer still required in Rodeo.</p>
@@ -364,16 +388,14 @@ function buildWDCreativeHTML(n) {
           </select>
         </div>
         <div class="field">
-          <label>Headline Color *</label>
+          <label>Headline & Subhead Color *</label>
           <select id="${vid}-headline-color" data-req="true" onchange="parseKeyFor('${vid}')">
             <option value="Black">Black</option><option value="White">White</option>
           </select>
         </div>
         <div class="field" id="${vid}-subhead-color-field" style="display:none">
           <label>Subhead Color</label>
-          <select id="${vid}-subhead-color" onchange="parseKeyFor('${vid}')">
-            <option value="Black">Black</option><option value="White">White</option>
-          </select>
+          <input class="readonly-field" value="Same as Headline (per spec)" readonly />
         </div>
       </div>
       <div id="${vid}-layout-fields" class="layout-fields"></div>
@@ -576,122 +598,6 @@ const KEY_MAP = {
   'sf':    'Subhead appears BEFORE headline',
   'lb':    'Adds a box/border around disclaimer text',
 };
-
-function parseKey() {
-  const raw = document.getElementById('wd-brand').value.trim();
-  const preview = document.getElementById('key-preview');
-  const blankBox = document.getElementById('blank-exception-box');
-
-  // Detect #blank# exception
-  const isBlank = raw.toLowerCase() === '#blank#';
-  if (blankBox) blankBox.style.display = isBlank ? 'block' : 'none';
-
-  // Hide layout section and logo fields when #blank#
-  const layoutSection = document.getElementById('wd-layout')?.closest('div[style*="margin-top:1rem"]');
-  if (layoutSection) layoutSection.style.display = isBlank ? 'none' : 'block';
-  ['wd-logo-square','wd-horizontal-logo-chk','wd-logo-nonsquare'].forEach(id => {
-    const el = document.getElementById(id)?.closest('.field');
-    if (el) el.style.display = isBlank ? 'none' : 'flex';
-  });
-
-  if (isBlank) {
-    preview.className = 'key-preview invalid';
-    preview.innerHTML = '⚠️ Embedded exception — Headline field in Rodeo = <strong>#blank#</strong>. Layout, Headline, Body text, and Logo are embedded in the image. Disclaimer must still be entered in Rodeo.';
-    return;
-  }
-
-  validateKeyVsLayout(raw, preview);
-}
-
-function validateKeyVsLayout(raw, preview) {
-  if (!preview) return;
-
-  if (!raw || raw === 'N/A') {
-    preview.className = 'key-preview valid';
-    preview.innerHTML = raw === 'N/A'
-      ? '✅ N/A — Default formatting: Black text, headline above subhead, 2-line headline, 1-line subhead'
-      : '';
-    return;
-  }
-
-  if (!raw.startsWith('#')) {
-    preview.className = 'key-preview invalid';
-    preview.innerHTML = '⚠️ Key must start with # (or enter N/A for default formatting)';
-    return;
-  }
-
-  const parts = raw.replace(/^#/, '').split('#').filter(Boolean);
-  const descriptions = [];
-  const unknown = [];
-  const warnings = [];
-
-  for (const part of parts) {
-    if (KEY_MAP[part]) descriptions.push(`<b>#${part}</b>: ${KEY_MAP[part]}`);
-    else unknown.push(`#${part}`);
-  }
-
-  const layout = document.getElementById('wd-layout')?.value || '';
-  const headlineColor = document.getElementById('wd-headline-color')?.value || 'Black';
-  const disclaimerColor = document.getElementById('wd-disclaimer-color')?.value || 'Black';
-  const placement = document.getElementById('wd-headline-placement')?.value;
-  const hasFi   = parts.includes('fi');
-  const hasLfi  = parts.includes('lfi');
-  const hasLfif = parts.includes('lfi:f');
-  const hasSf   = parts.includes('sf');
-  const hasTr   = parts.includes('tr');
-  const hasTr3  = parts.includes('tr:3');
-  const hasTr4  = parts.includes('tr:4');
-  const hasSr   = parts.includes('sr');
-
-  if (layout) {
-    const headlineLines = parseInt(layout[0] || '0');
-    const subheadLines  = parseInt(layout[2] || '0');
-
-    if (headlineLines === 1 && !hasTr && !hasTr3 && !hasTr4)
-      warnings.push('⚠️ Layout says 1-line headline but key has no <b>#tr</b>');
-    if (headlineLines === 3 && !hasTr3)
-      warnings.push('⚠️ Layout says 3-line headline but key is missing <b>#tr:3</b>');
-    if (headlineLines === 4 && !hasTr4)
-      warnings.push('⚠️ Layout says 4-line headline but key is missing <b>#tr:4</b>');
-    if ((hasTr3 || hasTr4) && headlineLines < 3)
-      warnings.push(`⚠️ Key has ${hasTr3 ? '#tr:3' : '#tr:4'} but layout only uses ${headlineLines} headline line(s)`);
-    if (subheadLines === 2 && !hasSr)
-      warnings.push('⚠️ Layout says 2-line subhead but key is missing <b>#sr</b>');
-    if (hasSr && subheadLines < 2)
-      warnings.push('⚠️ Key has <b>#sr</b> but layout only uses 1 subhead line');
-    if (subheadLines === 0 && hasSr)
-      warnings.push('⚠️ Key has <b>#sr</b> but layout has no subhead');
-    if (placement === 'below' && !hasSf)
-      warnings.push('⚠️ Headline placement is "below subhead" but key is missing <b>#sf</b>');
-    if (placement === 'above' && hasSf)
-      warnings.push('⚠️ Key has <b>#sf</b> but placement is set to "above subhead"');
-  }
-
-  // Headline color validation
-  if (headlineColor === 'White' && !hasFi)
-    warnings.push('⚠️ Headline color is White but key is missing <b>#fi</b>');
-  if (headlineColor === 'Black' && hasFi)
-    warnings.push('⚠️ Key has <b>#fi</b> (White text) but Headline color is set to Black');
-
-  // Disclaimer color validation
-  if (disclaimerColor === 'White' && !hasLfi && !hasLfif)
-    warnings.push('⚠️ Disclaimer color is White but key is missing <b>#lfi</b>');
-  if (disclaimerColor === 'Black' && (hasLfi || hasLfif) && !hasFi)
-    warnings.push('⚠️ Key has <b>#lfi</b> (White disclaimer) but Disclaimer color is set to Black');
-
-  if (unknown.length) {
-    preview.className = 'key-preview invalid';
-    preview.innerHTML = `⚠️ Unknown key(s): ${unknown.join(', ')} — verify with CS<br>${descriptions.join('<br>')}`;
-    return;
-  }
-  if (warnings.length) {
-    preview.className = 'key-preview invalid';
-    preview.innerHTML = warnings.join('<br>') + (descriptions.length ? '<br><br>' + descriptions.join('<br>') : '');
-    return;
-  }
-  preview.className = 'key-preview valid';
-  preview.innerHTML = '✅ Key matches layout, placement, and color selections<br>' + descriptions.join('<br>');
-}
 
 // ── Character limits based on language ──
 function getCharLimits() {
