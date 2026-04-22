@@ -68,23 +68,9 @@
   <!-- Campaign Info -->
   <div class="card">
     <h2>Campaign Information</h2>
-    <div class="grid">
-      <div class="field"><label>Advertiser Name *</label><input id="advertiser" placeholder="e.g. Nike" /></div>
-      <div class="field"><label>Campaign Name *</label><input id="campaign-name" placeholder="e.g. Nike Summer 2025" /></div>
-      <div class="field"><label>Locale *</label>
-        <select id="locale">
-          <option value="US">US</option><option value="CA">CA</option><option value="UK">UK</option>
-          <option value="FR">FR</option><option value="IT">IT</option><option value="ES">ES</option>
-          <option value="DE">DE</option><option value="JP">JP</option><option value="AU">AU</option><option value="MX">MX</option>
-        </select>
-      </div>
-      <div class="field"><label>Flight Start Date *</label><input id="camp-flight-start" type="date" /></div>
-      <div class="field"><label>Flight End Date *</label><input id="camp-flight-end" type="date" /></div>
-      <div class="field"><label>Click-through URL *</label><input id="camp-clickthrough" placeholder="https://..." /></div>
-    </div>
 
     <!-- Campaign Type Toggle -->
-    <div style="margin-top:1rem;padding:1rem;background:#f8f9fb;border:1px solid var(--border);border-radius:8px">
+    <div style="padding:1rem;background:#f8f9fb;border:1px solid var(--border);border-radius:8px">
       <div style="font-size:0.85rem;font-weight:700;color:var(--accent);margin-bottom:0.75rem">Campaign Type * — select one</div>
       <div style="display:flex;gap:2rem">
         <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-weight:600;font-size:0.9rem">
@@ -102,7 +88,6 @@
         Static: WD creative (Asset-Based) + Legacy Desktop Banner (1500x600 Static)
       </div>
     </div>
-    <div class="info-box">💡 Language drives character limits. Japanese copy = 8 chars/line headline, 11 chars/line subhead. All other languages = 16/23 chars.</div>
   </div>
 
   <!-- Pre-trafficking Checklist -->
@@ -132,14 +117,18 @@
   <!-- WD Creative -->
   <div class="card">
     <h2>WD Creative <span class="tag wd">Component-Based Creative</span> <span class="tag wd">WD Mobile + WD Desktop</span></h2>
-    <div id="wd-creatives-container"></div>
+    <div id="wd-creatives-container">
+      <!-- Version 1 fields rendered inline by default — visible without user action -->
+    </div>
     <button class="add-version-btn" onclick="addWDCreative()" style="margin-top:0.5rem">+ Add Version</button>
   </div>
 
   <!-- Legacy Desktop Banner -->
   <div class="card" id="legacy-card">
     <h2 id="legacy-title">Legacy Desktop Banner <span class="tag legacy">Standard Display</span> <span class="tag legacy">1500x600 + 3000x1200</span></h2>
-    <div id="legacy-creatives-container"></div>
+    <div id="legacy-creatives-container">
+      <!-- Version 1 fields rendered inline by default — visible without user action -->
+    </div>
     <button class="add-version-btn" onclick="addLegacyCreative()" style="margin-top:0.5rem">+ Add Version</button>
   </div>
 
@@ -181,21 +170,18 @@ window.addEventListener('load', function() {
 let wdCreativeCount = 0;
 let legCreativeCount = 0;
 
-function addWDCreative() {
-  wdCreativeCount++;
-  const container = document.getElementById('wd-creatives-container');
-  const div = document.createElement('div');
-  div.innerHTML = buildWDCreativeHTML(wdCreativeCount);
-  container.appendChild(div.firstElementChild);
-}
-
-function addLegacyCreative() {
-  legCreativeCount++;
-  const container = document.getElementById('legacy-creatives-container');
-  const div = document.createElement('div');
-  div.innerHTML = buildLegacyCreativeHTML(legCreativeCount);
-  container.appendChild(div.firstElementChild);
-}
+// ── Key parsing map — must be defined before any function that references it ──
+const KEY_MAP = {
+  'fi':    'All text (headline, subhead, disclaimer) → White',
+  'lfi':   'Disclaimer → White (headline/subhead stay Black)',
+  'lfi:f': 'Disclaimer → Black (used with #fi to make headline/subhead White, disclaimer Black)',
+  'tr':    'Headline → 1 line',
+  'tr:3':  'Headline → 3 lines',
+  'tr:4':  'Headline → 4 lines',
+  'sr':    'Subhead → 2 lines',
+  'sf':    'Subhead appears BEFORE headline',
+  'lb':    'Adds a box/border around disclaimer text',
+};
 
 // Per-creative key parsing and layout rendering
 function parseKeyFor(vid) {
@@ -417,13 +403,21 @@ function buildWDCreativeHTML(n) {
         </div>
         ${isVideo ? `<div class="field"><label>Video File Name *</label><input id="${vid}-video" placeholder="e.g. Nike_WD_Video.mp4" data-req="true" /></div>` : ''}
       </div>
+      ${isVideo ? `<div style="margin-top:0.75rem">
+        <label style="display:flex;align-items:center;gap:0.5rem;cursor:not-allowed;font-size:0.85rem;font-weight:600;color:var(--muted)">
+          <input type="checkbox" id="${vid}-native-video" checked disabled
+            style="width:16px;height:16px;accent-color:var(--accent2);cursor:not-allowed" />
+          Choose Native Video (enable native video in Rodeo)
+        </label>
+        <span class="field-note">Always enabled for Video WD campaigns.</span>
+      </div>` : ''}
     </div>
     <div style="margin-top:1rem">
       <div class="section-title">⚖️ Disclaimer (Optional)</div>
       <div class="grid">
         <div class="field">
           <label>Disclaimer (max 42 chars)</label>
-          <input id="${vid}-disclaimer" maxlength="42" placeholder="Optional" oninput="countField(this, '${vid}-disc-count', 42)" />
+          <input id="${vid}-disclaimer" maxlength="42" placeholder="Optional" oninput="countField(this, '${vid}-disc-count', 42); parseKeyFor('${vid}')" />
           <div class="char-counter" id="${vid}-disc-count">0 / 42</div>
         </div>
         <div class="field">
@@ -465,9 +459,6 @@ function buildLegacyCreativeHTML(n) {
       <div class="field"><label>Companion Banner File Name *</label><input id="${lid}-companion" placeholder="e.g. Nike_Companion_3000x600.jpg" data-req="true" /></div>
       <div class="field full"><label>Native Display with Video</label><input class="readonly-field" value="OFF — Do NOT enable" readonly /><span class="field-note" style="color:var(--danger)">⚠️ Keep OFF in Rodeo</span></div>
       `}
-      <div class="field"><label>Third-party Click URL</label><input id="${lid}-tracker-click" placeholder="Optional" /></div>
-      <div class="field"><label>Third-party Impression URL</label><input id="${lid}-tracker-impression" placeholder="Optional" /></div>
-      <div class="field"><label>Additional HTML</label><input id="${lid}-additional-html" placeholder="Optional" /></div>
     </div>
   </div>`;
 }
@@ -574,7 +565,9 @@ function onCampaignTypeChange() {
   addLegacyCreative();
 }
 function checkFreqCapLocale() {
-  const locale = document.getElementById('locale').value;
+  const localeEl = document.getElementById('locale');
+  if (!localeEl) return;
+  const locale = localeEl.value;
   const freqLocales = ['US', 'CA', 'UK', 'DE', 'FR', 'IT', 'ES'];
   const note = document.getElementById('freq-cap-note');
   if (note) note.style.display = freqLocales.includes(locale) ? 'block' : 'none';
@@ -582,22 +575,10 @@ function checkFreqCapLocale() {
 
 document.getElementById('locale')?.addEventListener('change', checkFreqCapLocale);
 
-// Init
+// Init — checkFreqCapLocale is safe even without locale element
 checkFreqCapLocale();
+// Render version 1 of WD Creative and Legacy Desktop Banner on page load
 initCreatives();
-
-// ── Key parsing ──
-const KEY_MAP = {
-  'fi':    'All text (headline, subhead, disclaimer) → White',
-  'lfi':   'Disclaimer → White (headline/subhead stay Black)',
-  'lfi:f': 'Disclaimer → Black (used with #fi to make headline/subhead White, disclaimer Black)',
-  'tr':    'Headline → 1 line',
-  'tr:3':  'Headline → 3 lines',
-  'tr:4':  'Headline → 4 lines',
-  'sr':    'Subhead → 2 lines',
-  'sf':    'Subhead appears BEFORE headline',
-  'lb':    'Adds a box/border around disclaimer text',
-};
 
 // ── Character limits based on language ──
 function getCharLimits() {
@@ -720,10 +701,7 @@ function validate() {
     return [true];
   }
 
-  ['advertiser','campaign-name','camp-flight-start','camp-flight-end','camp-clickthrough'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el?.value.trim()) { el?.classList.add('field-error'); errors.push(el); }
-  });
+  // Campaign fields removed — no validation needed for campaign level
 
   ['li-wd-mobile','li-wd-desktop','li-legacy'].forEach(id => {
     const el = document.getElementById(id);
@@ -757,11 +735,11 @@ function downloadExcel() {
   if (validate().length > 0) return;
   document.getElementById('error-banner')?.remove();
 
-  const advertiser = document.getElementById('advertiser').value;
-  const campaignName = document.getElementById('campaign-name').value;
-  const locale = document.getElementById('locale').value;
-  const flightStart = document.getElementById('camp-flight-start').value;
-  const flightEnd = document.getElementById('camp-flight-end').value;
+  const advertiser = document.getElementById('advertiser')?.value || '';
+  const campaignName = document.getElementById('campaign-name')?.value || '';
+  const locale = document.getElementById('locale')?.value || '';
+  const flightStart = document.getElementById('camp-flight-start')?.value || '';
+  const flightEnd = document.getElementById('camp-flight-end')?.value || '';
 
   const isVideo = document.getElementById('type-video').checked;
   const campaignType = isVideo ? 'Video' : 'Static';
@@ -840,7 +818,8 @@ function downloadExcel() {
     addRow('URL', get('clickthrough'), wdLabel, wdValue);
     addRow('Ad experiences', 'Asset-based creative', wdLabel, wdValue);
     addRow('Brand name', get('brand'), wdLabel, wdValue);
-    addRow('Native video', isVideo ? 'ON — Enable native video' : 'OFF — Do NOT enable', isVideo ? { rgb: 'DCFCE7' } : { rgb: 'FEF2F2' }, wdValue);
+    const nativeVideoOn = isVideo;
+    addRow('Native video', nativeVideoOn ? 'ON — Enable native video' : 'OFF — Do NOT enable', nativeVideoOn ? { rgb: 'DCFCE7' } : { rgb: 'FEF2F2' }, wdValue);
     addRow('Images (file name)', get('bg-image'), wdLabel, wdValue);
 
     if (isBlankException) {
@@ -863,8 +842,8 @@ function downloadExcel() {
       addRow('Placements — Inventory type', 'Standard display inventory ✓ + Third-party native inventory ✓', wdLabel, wdValue);
       addRow('Placements — Display ad sizes', 'Choose specific sizes → On-Amazon only: 980x55 ✓', wdLabel, wdValue);
     } else {
-      addRow('Placements — Native display with video', 'OFF — Do NOT enable', { rgb: 'FEF2F2' }, { rgb: 'FFF5F5' });
-      if (isVideo) { const wdVid = get('video'); if (wdVid) addRow('Video file name', wdVid, wdLabel, wdValue); }
+      addRow('Placements — Native display with video', 'ON — Native video enabled', { rgb: 'DCFCE7' }, wdValue);
+      const wdVid = get('video'); if (wdVid) addRow('Video file name', wdVid, wdLabel, wdValue);
     }
     row++;
   });
@@ -926,11 +905,17 @@ function downloadExcel() {
 function clearAll() {
   if (!confirm('Clear all entries?')) return;
   document.querySelectorAll('input, select, textarea').forEach(el => {
-    if (!el.classList.contains('readonly-field')) el.value = '';
+    if (!el.classList.contains('readonly-field') && el.type !== 'radio') el.value = '';
   });
-  document.getElementById('layout-fields').innerHTML = '';
-  document.getElementById('key-preview').className = 'key-preview';
-  document.getElementById('key-preview').textContent = '';
+  document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+  // Re-init creatives with 1 visible version each
+  const wdContainer = document.getElementById('wd-creatives-container');
+  const legContainer = document.getElementById('legacy-creatives-container');
+  if (wdContainer) wdContainer.innerHTML = '';
+  if (legContainer) legContainer.innerHTML = '';
+  wdCreativeCount = 0; legCreativeCount = 0;
+  addWDCreative();
+  addLegacyCreative();
 }
 </script>
 </body>
