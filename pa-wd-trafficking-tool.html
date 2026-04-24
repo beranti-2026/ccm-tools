@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Private Auction — WD Mobile Trafficking Template</title>
+  <style>
+    :root {
+      --bg: #f5f7fa; --white: #fff; --border: #dde1e9; --text: #1a1d27;
+      --muted: #6b7280; --accent: #232f3e; --accent2: #ff9900;
+      --danger: #dc2626; --success: #16a34a; --radius: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+    header { background: var(--accent); color: white; padding: 1rem 2rem; display: flex; align-items: center; gap: 1rem; }
+    header h1 { font-size: 1.2rem; font-weight: 700; }
+    header .badge { background: var(--accent2); color: var(--accent); font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px; }
+    .container { max-width: 1000px; margin: 2rem auto; padding: 0 1.5rem; }
+    .notice { background: #fff8ee; border: 1px solid var(--accent2); border-radius: 6px; padding: 0.75rem 1rem; font-size: 0.82rem; color: var(--accent); margin-bottom: 1.5rem; }
+    .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; }
+    .card h2 { font-size: 1rem; font-weight: 600; color: var(--accent); border-bottom: 2px solid var(--accent2); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+    .field { display: flex; flex-direction: column; gap: 0.3rem; }
+    .field label { font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .field input, .field select, .field textarea { border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem 0.75rem; font-size: 0.9rem; background: var(--white); color: var(--text); width: 100%; }
+    .field input:focus, .field select:focus { outline: none; border-color: var(--accent2); }
+    .field textarea { min-height: 60px; resize: vertical; font-family: inherit; }
+    .field-note { font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem; }
+    .field-error { border-color: var(--danger) !important; background: #fff5f5 !important; }
+    .readonly-field { background: #f3f4f6 !important; color: var(--muted) !important; }
+    .section-title { background: #f8f9fb; border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; font-weight: 700; font-size: 0.9rem; color: var(--accent); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .key-preview { margin-top: 0.5rem; padding: 0.6rem 0.75rem; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; font-size: 0.8rem; color: #0369a1; min-height: 36px; }
+    .key-preview.valid { background: #f0fdf4; border-color: #86efac; color: #166534; }
+    .key-preview.invalid { background: #fff5f5; border-color: #fca5a5; color: #991b1b; }
+    .char-counter { font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem; text-align: right; }
+    .char-counter.over { color: var(--danger); font-weight: 700; }
+    .layout-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed var(--border); }
+    .actions { display: flex; gap: 1rem; margin: 2rem 0; justify-content: flex-end; }
+    .btn-primary { background: var(--accent2); color: var(--accent); border: none; padding: 0.75rem 2rem; border-radius: 6px; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
+    .btn-primary:hover { background: #e68900; }
+    .btn-secondary { background: var(--accent); color: white; border: none; padding: 0.75rem 2rem; border-radius: 6px; font-weight: 600; font-size: 0.95rem; cursor: pointer; }
+    .info-box { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; padding: 0.75rem 1rem; font-size: 0.82rem; color: #0369a1; margin-top: 1rem; }
+    .add-version-btn { background: none; border: 1px dashed var(--accent2); color: var(--accent); padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.82rem; margin-top: 0.5rem; width: 100%; }
+    .add-version-btn:hover { background: #fff8ee; }
+    .version-block { border: 1px solid var(--border); border-radius: 6px; padding: 1rem; background: #fafbfc; margin-bottom: 1rem; }
+    .version-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+    .version-header span { font-weight: 600; font-size: 0.85rem; color: var(--accent); }
+    .remove-version { background: none; border: 1px solid var(--danger); color: var(--danger); padding: 0.2rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
+    .remove-version:hover { background: var(--danger); color: white; }
+    .tag { display: inline-block; background: var(--accent); color: white; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.72rem; margin-right: 0.25rem; }
+    .tag.wd { background: #7c3aed; }
+    .tag.pa { background: #0d9488; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>📱 Private Auction — WD Mobile Trafficking Template</h1>
+  <span class="badge">INTERNAL TOOL</span>
+  <span style="margin-left:auto;font-size:0.72rem;opacity:0.6;font-weight:400">Tool owner: @beranti · v1.0</span>
+</header>
+
+<div class="container">
+  <div class="notice">
+    ⚠️ Fill in campaign details, then complete the WD Mobile creative section. Click <strong>Download Excel</strong> when done. This template is for <strong>Private Auction — WD Static (Mobile only)</strong>.
+  </div>
+
+  <!-- Pre-trafficking Checklist -->
+  <div class="card" style="border-left:4px solid var(--danger)">
+    <h2>✅ Pre-Trafficking Checklist</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem">
+      <label style="display:flex;align-items:flex-start;gap:0.75rem;cursor:pointer;font-size:0.9rem">
+        <input type="checkbox" id="chk-policy" style="width:16px;height:16px;margin-top:2px;accent-color:var(--accent2)" />
+        <span><strong>Ad Policy approved *</strong> — Creative mocks have been submitted to Ad Policy SIM and approved. <span style="color:var(--danger)">(Required before downloading)</span></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Line Item URL -->
+  <div class="card">
+    <h2>Line Item URL</h2>
+    <div class="grid">
+      <div class="field" style="grid-column:1/-1"><label>WD Mobile Line Item URL *</label><input id="li-wd-mobile" type="text" placeholder="https://advertising.amazon.com/..." data-req="true" /></div>
+    </div>
+  </div>
+
+  <!-- WD Mobile Creative -->
+  <div class="card">
+    <h2>WD Mobile Creative <span class="tag wd">Component-Based Creative</span> <span class="tag pa">Private Auction · Static</span></h2>
+    <div id="wd-creatives-container">
+      <!-- Version 1 rendered on page load -->
+    </div>
+    <button class="add-version-btn" onclick="addWDCreative()" style="margin-top:0.5rem">+ Add Version</button>
+  </div>
+
+  <!-- QA Reminder -->
+  <div class="card" style="border-left:4px solid var(--danger);background:#fff5f5">
+    <h2 style="color:var(--danger)">🚨 MANDATORY: Creative Preview QA</h2>
+    <p style="font-size:0.9rem;line-height:1.6;margin-bottom:0.75rem">
+      <strong>After AdOps completes trafficking, you MUST preview every creative before launch.</strong> This is not optional. The preview confirms that copy is cropping correctly, custom styling keys are rendering as expected, and there are no overlapping elements.
+    </p>
+    <p style="font-size:0.9rem;line-height:1.6">
+      ⚡ <strong>Quick and easy — each WD Static creative only takes about 1 minute to complete!</strong>
+    </p>
+  </div>
+
+  <div class="actions">
+    <button class="btn-secondary" onclick="clearAll()">Clear All</button>
+    <button class="btn-primary" onclick="downloadExcel()">⬇ Download Excel</button>
+  </div>
+</div>
+
+<script src="./xlsx.bundle.js"></script>
+<script>
+// Fallback if CDN blocked
+window.addEventListener('load', function() {
+  if (typeof XLSX === 'undefined') {
+    var s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    document.head.appendChild(s);
+  }
+});
+
+// ── WD multi-creative support ──
+let wdCreativeCount = 0;
+
+// ── Key parsing map ──
+const KEY_MAP = {
+  'fi':    'All text (headline, subhead, disclaimer) → White',
+  'lfi':   'Disclaimer → White (headline/subhead stay Black)',
+  'lfi:f': 'Disclaimer → Black (used with #fi to make headline/subhead White, disclaimer Black)',
+  'tr':    'Headline → 1 line',
+  'tr:3':  'Headline → 3 lines',
+  'tr:4':  'Headline → 4 lines',
+  'sr':    'Subhead → 2 lines',
+  'sf':    'Subhead appears BEFORE headline',
+  'lb':    'Adds a box/border around disclaimer text',
+};
+
+// ── Key parsing and validation ──
+function parseKeyFor(vid) {
+  const raw = document.getElementById(vid + '-brand')?.value.trim() || '';
+  const preview = document.getElementById(vid + '-key-preview');
+  const layoutSection = document.getElementById(vid + '-layout-section');
+
+  if (preview) preview.style.display = raw ? 'block' : 'none';
+  if (layoutSection) layoutSection.style.display = 'block';
+
+  validateKeyVsLayoutFor(vid, raw, preview);
+}
+
+function validateKeyVsLayoutFor(vid, raw, preview) {
+  if (!preview) return;
+  if (!raw || raw === 'N/A') {
+    preview.className = 'key-preview valid';
+    preview.innerHTML = raw === 'N/A' ? '✅ N/A — Default formatting' : 'Enter key to see what it does';
+    return;
+  }
+  if (!raw.startsWith('#')) { preview.className = 'key-preview invalid'; preview.innerHTML = '⚠️ Key must start with #'; return; }
+
+  const parts = raw.replace(/^#/, '').split('#').filter(Boolean);
+  const descriptions = parts.map(p => KEY_MAP[p] ? `<b>#${p}</b>: ${KEY_MAP[p]}` : null).filter(Boolean);
+  const unknown = parts.filter(p => !KEY_MAP[p]);
+  const warnings = [];
+
+  const layout = document.getElementById(vid + '-layout')?.value || '';
+  const headlineColor = document.getElementById(vid + '-headline-color')?.value || 'Black';
+  const disclaimerColor = document.getElementById(vid + '-disclaimer-color')?.value || 'Black';
+  const placement = document.getElementById(vid + '-headline-placement')?.value;
+  const hasFi = parts.includes('fi'), hasLfi = parts.includes('lfi'), hasSf = parts.includes('sf');
+  const hasTr = parts.includes('tr'), hasTr3 = parts.includes('tr:3'), hasTr4 = parts.includes('tr:4'), hasSr = parts.includes('sr');
+
+  // Layout-specific checks
+  if (layout) {
+    const hl = parseInt(layout[0] || '0'), sl = parseInt(layout[2] || '0');
+    if (hl === 1 && !hasTr && !hasTr3 && !hasTr4) warnings.push('⚠️ 1-line headline but missing <b>#tr</b>');
+    if (hl === 3 && !hasTr3) warnings.push('⚠️ 3-line headline but missing <b>#tr:3</b>');
+    if (hl === 4 && !hasTr4) warnings.push('⚠️ 4-line headline but missing <b>#tr:4</b>');
+    if (sl === 2 && !hasSr) warnings.push('⚠️ 2-line subhead but missing <b>#sr</b>');
+    if (hasSr && sl < 2) warnings.push('⚠️ <b>#sr</b> set but layout uses 1 subhead line');
+  }
+
+  // Placement check
+  if (placement === 'below' && !hasSf) warnings.push('⚠️ Headline placement is "below subhead" but key is missing <b>#sf</b>');
+  if (placement === 'above' && hasSf) warnings.push('⚠️ Key has <b>#sf</b> but placement is set to "above subhead"');
+
+  // Color checks
+  if (headlineColor === 'White' && !hasFi) warnings.push('⚠️ Headline & Subhead color is White but key is missing <b>#fi</b>');
+  if (headlineColor === 'Black' && hasFi) warnings.push('⚠️ Key has <b>#fi</b> (White text) but Headline & Subhead color is Black');
+
+  // Disclaimer color validation — only if disclaimer is entered
+  const disclaimerText = document.getElementById(vid + '-disclaimer')?.value?.trim() || '';
+  if (disclaimerText) {
+    const hasLfif = parts.includes('lfi:f');
+    if (headlineColor === 'Black' && disclaimerColor === 'White' && !hasLfi) warnings.push('⚠️ Black headline + White disclaimer requires <b>#lfi</b>');
+    if (headlineColor === 'Black' && disclaimerColor === 'Black' && hasLfi) warnings.push('⚠️ Key has <b>#lfi</b> (White disclaimer) but Disclaimer color is Black');
+    if (headlineColor === 'White' && disclaimerColor === 'Black' && !hasLfif) warnings.push('⚠️ White headline + Black disclaimer requires <b>#fi#lfi:f</b> — key is missing <b>#lfi:f</b>');
+    if (headlineColor === 'White' && disclaimerColor === 'White' && hasLfif) warnings.push('⚠️ Key has <b>#lfi:f</b> (Black disclaimer) but Disclaimer color is White — use <b>#fi</b> only');
+  }
+
+  if (unknown.length) { preview.className = 'key-preview invalid'; preview.innerHTML = `⚠️ Unknown: ${unknown.map(u=>'#'+u).join(', ')}<br>${descriptions.join('<br>')}`; return; }
+  if (warnings.length) { preview.className = 'key-preview invalid'; preview.innerHTML = warnings.join('<br>') + (descriptions.length ? '<br><br>' + descriptions.join('<br>') : ''); return; }
+  preview.className = 'key-preview valid';
+  preview.innerHTML = '✅ Key matches selections<br>' + descriptions.join('<br>');
+}
+
+function renderLayoutFieldsFor(vid) {
+  const layout = document.getElementById(vid + '-layout')?.value || '';
+  const container = document.getElementById(vid + '-layout-fields');
+  const subheadColorField = document.getElementById(vid + '-subhead-color-field');
+  if (!container || !layout) return;
+
+  const lang = (document.getElementById(vid + '-language')?.value || '').trim().toLowerCase();
+  const isJP = lang === 'japanese' || lang === 'jp';
+  const limits = { headline: isJP ? 8 : 16, subhead: isJP ? 11 : 23 };
+  const hl = parseInt(layout[0] || '0'), sl = parseInt(layout[2] || '0');
+
+  if (subheadColorField) subheadColorField.style.display = sl > 0 ? 'flex' : 'none';
+
+  let html = '';
+  if (hl > 0) {
+    const maxH = hl * limits.headline;
+    html += `<div class="field"><label>Headline (max ${maxH} chars)</label><input id="${vid}-headline-1" maxlength="${maxH}" placeholder="Max ${maxH} chars" data-req="true" oninput="countField(this,'${vid}-hl-count',${maxH})" /><div class="char-counter" id="${vid}-hl-count">0 / ${maxH}</div></div>`;
+  }
+  if (sl > 0) {
+    const maxS = sl * limits.subhead;
+    html += `<div class="field"><label>Body text (max ${maxS} chars)</label><input id="${vid}-subhead-1" maxlength="${maxS}" placeholder="Max ${maxS} chars" data-req="true" oninput="countField(this,'${vid}-sh-count',${maxS})" /><div class="char-counter" id="${vid}-sh-count">0 / ${maxS}</div></div>`;
+  }
+  container.innerHTML = html;
+}
+
+function updateCharLimitsFor(vid) { renderLayoutFieldsFor(vid); }
+
+function countField(input, counterId, max) {
+  const el = document.getElementById(counterId);
+  if (!el) return;
+  const len = input.value.length;
+  el.textContent = `${len} / ${max}`;
+  el.className = len > max ? 'char-counter over' : 'char-counter';
+}
+
+function toggleHorizLogoFor(vid) {
+  const checked = document.getElementById(vid + '-horiz-chk')?.checked;
+  const field = document.getElementById(vid + '-logo-horiz-field');
+  const input = document.getElementById(vid + '-logo-nonsquare');
+  const squareInput = document.getElementById(vid + '-logo-square');
+  if (field) field.style.display = checked ? 'flex' : 'none';
+  if (input) checked ? input.setAttribute('data-req','true') : input.removeAttribute('data-req');
+  if (squareInput) checked ? squareInput.setAttribute('data-req','true') : squareInput.removeAttribute('data-req');
+}
+
+// ── Build WD Creative HTML (Static only, no #blank# exception) ──
+function buildWDCreativeHTML(n) {
+  const vid = `wd${n}`;
+  return `<div class="version-block" id="wd-creative-${n}" style="margin-bottom:1rem">
+    <div class="version-header">
+      <span>WD Mobile Creative ${n}</span>
+      ${n > 1 ? `<button class="remove-version" onclick="document.getElementById('wd-creative-${n}').remove()">Remove</button>` : ''}
+    </div>
+    <div class="grid">
+      <div class="field"><label>Ad Experience</label><input class="readonly-field" value="Component-Based Creative → Other Website" readonly /></div>
+      <div class="field"><label>Landing Page</label><input class="readonly-field" value="Other Website" readonly /></div>
+      <div class="field"><label>Takeover</label><input class="readonly-field" value="Yes" readonly /></div>
+      <div class="field"><label>Name *</label><input id="${vid}-name" placeholder="e.g. Nike_PA_WD_Mobile_EN_v1" data-req="true" /></div>
+      <div class="field"><label>Language *</label><input id="${vid}-language" placeholder="e.g. English" data-req="true" oninput="updateCharLimitsFor('${vid}')" /></div>
+      <div class="field"><label>Click-through URL *</label><input id="${vid}-clickthrough" placeholder="https://..." data-req="true" /></div>
+      <div class="field"><label>Inventory Type (Rodeo)</label><input class="readonly-field" value="Standard display inventory ✓ + Third-party native inventory ✓" readonly /></div>
+      <div class="field"><label>Display Ad Sizes (Rodeo)</label><input class="readonly-field" value="Choose specific sizes → 980x55 only" readonly /></div>
+    </div>
+    <div style="margin-top:1rem">
+      <div class="section-title">🔑 Brand Name (Custom Styling Key)</div>
+      <div class="grid">
+        <div class="field" style="grid-column:1/-1">
+          <label>Brand Name Key * (provided by CS)</label>
+          <input id="${vid}-brand" placeholder="e.g. #fi#lfi:f or N/A" data-req="true" oninput="parseKeyFor('${vid}')" />
+          <div class="key-preview" id="${vid}-key-preview" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:1rem" id="${vid}-layout-section">
+      <div class="section-title">📐 Layout</div>
+      <div class="grid">
+        <div class="field">
+          <label>Layout Option *</label>
+          <select id="${vid}-layout" onchange="renderLayoutFieldsFor('${vid}'); parseKeyFor('${vid}');" data-req="true">
+            <option value="">-- Select layout --</option>
+            <option value="1h0s">1-line headline only</option>
+            <option value="1h1s">1-line headline + 1-line subhead</option>
+            <option value="1h2s">1-line headline + 2-line subhead</option>
+            <option value="2h0s">2-line headline only</option>
+            <option value="2h1s">2-line headline + 1-line subhead</option>
+            <option value="2h2s">2-line headline + 2-line subhead (non-EN only)</option>
+            <option value="3h0s">3-line headline only (exception/non-EN)</option>
+            <option value="3h1s">3-line headline + 1-line subhead (non-EN)</option>
+            <option value="4h0s">4-line headline only (non-EN HVE)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Headline Placement</label>
+          <select id="${vid}-headline-placement" onchange="parseKeyFor('${vid}')">
+            <option value="above">Headline above subhead</option>
+            <option value="below">Headline below subhead (use #sf key)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Headline & Subhead Color *</label>
+          <select id="${vid}-headline-color" data-req="true" onchange="parseKeyFor('${vid}')">
+            <option value="Black">Black</option><option value="White">White</option>
+          </select>
+        </div>
+        <div class="field" id="${vid}-subhead-color-field" style="display:none">
+          <label>Subhead Color</label>
+          <input class="readonly-field" value="Same as Headline (per spec)" readonly />
+        </div>
+      </div>
+      <div id="${vid}-layout-fields" class="layout-fields"></div>
+    </div>
+    <div style="margin-top:1rem">
+      <div class="section-title">🖼️ Assets</div>
+      <div class="grid">
+        <div class="field"><label>Background Image File Name *</label><input id="${vid}-bg-image" placeholder="e.g. Nike_WD_Background.psd" data-req="true" /></div>
+        <div class="field" id="${vid}-logo-square-field"><label>Logo File Name — Square (400x400px) (optional)</label><input id="${vid}-logo-square" placeholder="e.g. Nike_Logo_Square.png" /></div>
+        <div class="field full">
+          <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
+            <input type="checkbox" id="${vid}-horiz-chk" onchange="toggleHorizLogoFor('${vid}')" style="width:14px;height:14px;accent-color:var(--accent2)" />
+            Horizontal logo? (CS provides both square + horizontal)
+          </label>
+        </div>
+        <div class="field" id="${vid}-logo-horiz-field" style="display:none">
+          <label>Logo File Name — Horizontal (400x400px+) *</label>
+          <input id="${vid}-logo-nonsquare" placeholder="e.g. Nike_Logo_Horizontal.png" />
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:1rem">
+      <div class="section-title">⚖️ Disclaimer (Optional)</div>
+      <div class="grid">
+        <div class="field">
+          <label>Disclaimer (max 42 chars)</label>
+          <input id="${vid}-disclaimer" maxlength="42" placeholder="Optional" oninput="countField(this, '${vid}-disc-count', 42); parseKeyFor('${vid}')" />
+          <div class="char-counter" id="${vid}-disc-count">0 / 42</div>
+        </div>
+        <div class="field">
+          <label>Disclaimer Color</label>
+          <select id="${vid}-disclaimer-color" onchange="parseKeyFor('${vid}')">
+            <option value="Black">Black</option><option value="White">White</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function addWDCreative() {
+  wdCreativeCount++;
+  const container = document.getElementById('wd-creatives-container');
+  if (!container) return;
+  const div = document.createElement('div');
+  div.innerHTML = buildWDCreativeHTML(wdCreativeCount);
+  container.appendChild(div.firstElementChild);
+}
+
+// Initialize — render version 1 on page load
+function initCreatives() {
+  wdCreativeCount = 0;
+  addWDCreative();
+}
+initCreatives();
+
+// ── Validation ──
+function validate() {
+  document.querySelectorAll('.field-error').forEach(el => el.classList.remove('field-error'));
+  document.getElementById('error-banner')?.remove();
+  const errors = [];
+
+  // Ad Policy must be checked
+  if (!document.getElementById('chk-policy')?.checked) {
+    const banner = document.createElement('div');
+    banner.style.cssText = 'background:#fee2e2;border:2px solid #dc2626;border-radius:8px;padding:1rem;margin-bottom:1rem;color:#991b1b;font-weight:700;font-size:0.9rem;';
+    banner.textContent = '🚫 You must confirm Ad Policy approval before downloading.';
+    document.querySelector('.container').prepend(banner);
+    setTimeout(() => banner.remove(), 5000);
+    return [true];
+  }
+
+  // Line item URL
+  const liEl = document.getElementById('li-wd-mobile');
+  if (!liEl?.value.trim()) { liEl?.classList.add('field-error'); errors.push(liEl); }
+
+  // All required fields
+  document.querySelectorAll('[data-req="true"]').forEach(el => {
+    if (!el.value.trim()) { el.classList.add('field-error'); errors.push(el); }
+  });
+
+  if (errors.length > 0) {
+    const banner = document.createElement('div');
+    banner.id = 'error-banner';
+    banner.style.cssText = 'background:#fee2e2;border:2px solid #dc2626;border-radius:8px;padding:1rem;margin-bottom:1.5rem;color:#991b1b;font-weight:600;font-size:0.9rem;';
+    const firstEl = errors[0];
+    banner.innerHTML = `⚠️ ${errors.length} required field${errors.length > 1 ? 's are' : ' is'} missing.
+      ${firstEl?.id ? `<br><a href="#" onclick="document.getElementById('${firstEl.id}').scrollIntoView({behavior:'smooth',block:'center'});return false;" style="color:#991b1b">↓ Jump to first missing field</a>` : ''}`;
+    document.querySelector('.container').prepend(banner);
+    banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  return errors;
+}
+
+// ── Excel generation ──
+function downloadExcel() {
+  if (typeof XLSX === 'undefined') {
+    alert('The Excel library failed to load. Please check your internet connection or try a different browser.');
+    return;
+  }
+  if (validate().length > 0) return;
+  document.getElementById('error-banner')?.remove();
+
+  const wb = XLSX.utils.book_new();
+  const ws = {};
+  const merges = [];
+  let row = 0;
+
+  function c(r, col, value, fill, font, align) {
+    const addr = XLSX.utils.encode_cell({ r, c: col });
+    ws[addr] = {
+      v: value ?? '', t: 's',
+      s: {
+        fill: fill ? { patternType: 'solid', fgColor: fill } : undefined,
+        font: font || { sz: 10 },
+        alignment: align || { vertical: 'center', wrapText: true },
+        border: {
+          top: { style: 'thin', color: { rgb: 'CCCCCC' } },
+          bottom: { style: 'thin', color: { rgb: 'CCCCCC' } },
+          left: { style: 'thin', color: { rgb: 'CCCCCC' } },
+          right: { style: 'thin', color: { rgb: 'CCCCCC' } },
+        }
+      }
+    };
+  }
+  function merge(r1, c1, r2, c2) { merges.push({ s: { r: r1, c: c1 }, e: { r: r2, c: c2 } }); }
+
+  function addRow(label, value, labelFill, valueFill) {
+    c(row, 0, label, labelFill || { rgb: 'E8E8E8' }, { bold: true, sz: 10 }, { vertical: 'center', wrapText: true });
+    merge(row, 1, row, 3);
+    c(row, 1, value, valueFill || { rgb: 'FFFFFF' }, { sz: 10 }, { vertical: 'center', wrapText: true });
+    row++;
+  }
+
+  function addHeader(title, color) {
+    merge(row, 0, row, 3);
+    c(row, 0, title, color, { bold: true, color: { rgb: 'FFFFFF' }, sz: 11 }, { horizontal: 'left', vertical: 'center' });
+    row++;
+  }
+
+  // Campaign header
+  merge(row, 0, row, 3);
+  c(row, 0, 'PRIVATE AUCTION — WD MOBILE TRAFFICKING TEMPLATE  ·  Static',
+    { rgb: '232F3E' }, { bold: true, color: { rgb: 'FFFFFF' }, sz: 12 },
+    { horizontal: 'center', vertical: 'center' });
+  row += 2;
+
+  // ── WD Mobile Creative ──
+  const wdColor = { rgb: '5B21B6' };
+  const wdLabel = { rgb: 'EDE9FE' };
+  const wdValue = { rgb: 'FAF5FF' };
+
+  const wdBlocks = document.getElementById('wd-creatives-container')?.querySelectorAll('.version-block') || [];
+  wdBlocks.forEach((block, idx) => {
+    const n = idx + 1;
+    const vid = `wd${n}`;
+    const get = (fid) => document.getElementById(`${vid}-${fid}`)?.value || '';
+    const headlineVal = get('headline-1');
+    const subheadVal = get('subhead-1');
+    const disclaimer = get('disclaimer');
+
+    addHeader(`WD MOBILE CREATIVE ${n} — Component-Based Creative → Other Website  |  Private Auction`, wdColor);
+    addRow('WD Mobile Line Item URL', document.getElementById('li-wd-mobile').value, wdLabel, wdValue);
+    addRow('Name', get('name'), wdLabel, wdValue);
+    addRow('Language', get('language'), wdLabel, wdValue);
+    addRow('Landing page', 'Other website', wdLabel, wdValue);
+    addRow('URL', get('clickthrough'), wdLabel, wdValue);
+    addRow('Ad experiences', 'Asset-based creative', wdLabel, wdValue);
+    addRow('Brand name', get('brand'), wdLabel, wdValue);
+    addRow('Native video', 'OFF — Do NOT enable', { rgb: 'FEF2F2' }, wdValue);
+    addRow('Images (file name)', get('bg-image'), wdLabel, wdValue);
+
+    const logoSquare = get('logo-square');
+    const logoNonSquare = get('logo-nonsquare');
+    if (logoSquare) addRow('Logo (primary — square, 400x400px) file name', logoSquare, wdLabel, wdValue);
+    if (logoNonSquare) addRow('Logo (secondary — horizontal, 400x400px+) file name', logoNonSquare, wdLabel, wdValue);
+    if (headlineVal) {
+      addRow('Headline', headlineVal, wdLabel, wdValue);
+      addRow('⚠️ AdOps instruction', 'Enter all headline copy in ONE single field. Do NOT click "+ Add another headline".', { rgb: 'FFF7ED' }, { rgb: 'FFFBEB' });
+    }
+    if (subheadVal) {
+      addRow('Body text', subheadVal, wdLabel, wdValue);
+      addRow('⚠️ AdOps instruction', 'Enter all body text in ONE single field. Do NOT click "+ Add another body text".', { rgb: 'FFF7ED' }, { rgb: 'FFFBEB' });
+    }
+    addRow('Call-to-action', 'Leave as is — do not change', { rgb: 'FEF2F2' }, { rgb: 'FFF5F5' });
+    if (disclaimer) {
+      addRow('Disclaimer', disclaimer, wdLabel, wdValue);
+      addRow('⚠️ AdOps instruction', 'Enter disclaimer in ONE single field. Max 42 chars.', { rgb: 'FFF7ED' }, { rgb: 'FFFBEB' });
+    }
+
+    addRow('Placements — Inventory type', 'Standard display inventory ✓ + Third-party native inventory ✓', wdLabel, wdValue);
+    addRow('Placements — Display ad sizes', 'Choose specific sizes → On-Amazon only: 980x55 ✓', wdLabel, wdValue);
+    row++;
+  });
+
+  // Finalize
+  ws['!ref'] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: row, c: 3 } });
+  ws['!merges'] = merges;
+  ws['!cols'] = [{ wch: 38 }, { wch: 65 }, { wch: 5 }, { wch: 5 }];
+  ws['!rows'] = Array(row).fill({ hpt: 20 });
+  ws['!rows'][0] = { hpt: 30 };
+
+  XLSX.utils.book_append_sheet(wb, ws, 'Trafficking Sheet');
+
+  const filename = `PA_WD_Mobile_Trafficking.xlsx`;
+  XLSX.writeFile(wb, filename);
+}
+
+function clearAll() {
+  if (!confirm('Clear all entries?')) return;
+  document.querySelectorAll('input, select, textarea').forEach(el => {
+    if (!el.classList.contains('readonly-field')) el.value = '';
+  });
+  document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+  const wdContainer = document.getElementById('wd-creatives-container');
+  if (wdContainer) wdContainer.innerHTML = '';
+  wdCreativeCount = 0;
+  addWDCreative();
+}
+</script>
+</body>
+</html>
