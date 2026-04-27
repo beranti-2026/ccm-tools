@@ -170,7 +170,7 @@ const PLACEMENTS = [
 // ── Field definitions per creative type ──
 const FIELDS = {
   'Static': [
-    { id: 'uid', label: 'Name *', type: 'text', placeholder: 'e.g. Nike_Static_300x250_v1', req: true },
+    { id: 'uid', label: 'Unique Identifier *', type: 'text', placeholder: 'e.g. Nike_Static_300x250_v1', req: true },
     { id: 'language', label: 'Language *', type: 'text', placeholder: 'e.g. English', req: true },
     { id: 'flight_start', label: 'Flight Start Date *', type: 'date', req: true },
     { id: 'flight_end', label: 'Flight End Date *', type: 'date', req: true },
@@ -183,7 +183,7 @@ const FIELDS = {
     { id: 'additional_html', label: 'Additional HTML', type: 'text', placeholder: 'Optional' },
   ],
   'Autogen REC': [
-    { id: 'uid', label: 'Name *', type: 'text', placeholder: 'e.g. Nike_AutogenREC_300x250_v1', req: true },
+    { id: 'uid', label: 'Unique Identifier *', type: 'text', placeholder: 'e.g. Nike_AutogenREC_300x250_v1', req: true },
     { id: 'language', label: 'Language *', type: 'text', placeholder: 'e.g. English', req: true },
     { id: 'flight_start', label: 'Flight Start Date *', type: 'date', req: true },
     { id: 'flight_end', label: 'Flight End Date *', type: 'date', req: true },
@@ -200,7 +200,7 @@ const FIELDS = {
     { id: 'additional_html', label: 'Additional HTML', type: 'text', placeholder: 'Optional' },
   ],
   'Custom REC': [
-    { id: 'uid', label: 'Name *', type: 'text', placeholder: 'e.g. Nike_CustomREC_300x250_v1', req: true },
+    { id: 'uid', label: 'Unique Identifier *', type: 'text', placeholder: 'e.g. Nike_CustomREC_300x250_v1', req: true },
     { id: 'language', label: 'Language *', type: 'text', placeholder: 'e.g. English', req: true },
     { id: 'flight_start', label: 'Flight Start Date *', type: 'date', req: true },
     { id: 'flight_end', label: 'Flight End Date *', type: 'date', req: true },
@@ -517,7 +517,7 @@ function renderABCFields(vid, pid, selectedLayout) {
 
   // Base fields always shown
   let html = `
-    <div class="field"><label>Name *</label><input id="f-${vid}-uid" type="text" placeholder="e.g. Nike_ABC_WP1_v1" data-req="true" /></div>
+    <div class="field"><label>Unique Identifier *</label><input id="f-${vid}-uid" type="text" placeholder="e.g. Nike_ABC_WP1_v1" data-req="true" /></div>
     <div class="field"><label>Language *</label><input id="f-${vid}-language" type="text" placeholder="e.g. English" data-req="true" ${pid === 'p8' ? `oninput="onDoubleWideLanguageChange('${vid}', '${pid}')"` : ''} /></div>    <div class="field"><label>Flight Start Date *</label><input id="f-${vid}-flight_start" type="date" data-req="true" /></div>
     <div class="field"><label>Flight End Date *</label><input id="f-${vid}-flight_end" type="date" data-req="true" /></div>
     <div class="field"><label>Landing Page</label><input id="f-${vid}-landing_page" type="text" value="Other website" readonly style="background:#f3f4f6;color:#6b7280" /></div>
@@ -831,7 +831,7 @@ function downloadExcel() {
     const isStatic = type === 'Static';
 
     const rows = [];
-    rows.push(['Name', get('uid')]);
+    rows.push(['Unique Identifier', get('uid')]);
     rows.push(['Marketplace', locale]);
     rows.push(['Language', get('language')]);
     rows.push(['Flight Start', get('flight_start')]);
