@@ -324,7 +324,7 @@ function buildWDCreativeHTML(n) {
       <div class="field"><label>Ad Experience</label><input class="readonly-field" value="Component-Based Creative → Other Website" readonly /></div>
       <div class="field"><label>Landing Page</label><input class="readonly-field" value="Other Website" readonly /></div>
       <div class="field"><label>Takeover</label><input class="readonly-field" value="Yes" readonly /></div>
-      <div class="field"><label>Name *</label><input id="${vid}-name" placeholder="e.g. Nike_WD_EN_v1" data-req="true" /></div>
+      <div class="field"><label>Unique Identifier *</label><input id="${vid}-name" placeholder="e.g. Nike_WD_EN_v1" data-req="true" /></div>
       <div class="field"><label>Language *</label><input id="${vid}-language" placeholder="e.g. English" data-req="true" oninput="updateCharLimitsFor('${vid}')" /></div>
       <div class="field"><label>Click-through URL *</label><input id="${vid}-clickthrough" placeholder="https://..." data-req="true" /></div>
       <div class="field"><label>Inventory Type (Rodeo)</label><input class="readonly-field" value="Standard display inventory ✓ + Third-party native inventory ✓" readonly /></div>
@@ -442,7 +442,7 @@ function buildLegacyCreativeHTML(n) {
     <div class="grid">
       <div class="field"><label>Creative Type (Rodeo)</label><input class="readonly-field" value="${isVideo ? 'Online Video' : 'Standard Display'}" readonly /></div>
       <div class="field"><label>Ad Experience</label><input class="readonly-field" value="${isVideo ? 'Online Video' : 'Single Image'}" readonly /></div>
-      <div class="field"><label>Name *</label><input id="${lid}-name" placeholder="e.g. Nike_Legacy_EN_v1" data-req="true" /></div>
+      <div class="field"><label>Unique Identifier *</label><input id="${lid}-name" placeholder="e.g. Nike_Legacy_EN_v1" data-req="true" /></div>
       <div class="field"><label>Language *</label><input id="${lid}-language" placeholder="e.g. English" data-req="true" /></div>
       <div class="field"><label>Click-through Type *</label>
         <select id="${lid}-clickthrough-type" data-req="true">
@@ -809,7 +809,7 @@ function downloadExcel() {
     addHeader(`WD CREATIVE ${n} — Component-Based Creative → Other Website  |  WD Mobile + WD Desktop`, wdColor);
     addRow('WD Mobile Line Item URL', document.getElementById('li-wd-mobile').value, wdLabel, wdValue);
     addRow('WD Desktop Line Item URL', document.getElementById('li-wd-desktop').value, wdLabel, wdValue);
-    addRow('Name', get('name'), wdLabel, wdValue);
+    addRow('Unique Identifier', get('name'), wdLabel, wdValue);
     addRow('Marketplace', locale, wdLabel, wdValue);
     addRow('Language', get('language'), wdLabel, wdValue);
     addRow('Flight Start', flightStart, wdLabel, wdValue);
@@ -861,7 +861,7 @@ function downloadExcel() {
 
     addHeader(`LEGACY DESKTOP BANNER ${n} — ${legCreativeType}  |  ${isVideo ? 'Video + Companion Image' : '1500x600 + 3000x1200'}`, legColor);
     addRow('Line Item URL', document.getElementById('li-legacy').value, legLabel, legValue);
-    addRow('Name', get('name'), legLabel, legValue);
+    addRow('Unique Identifier', get('name'), legLabel, legValue);
     addRow('Marketplace', locale, legLabel, legValue);
     addRow('Language', get('language'), legLabel, legValue);
     addRow('Flight Start', flightStart, legLabel, legValue);
