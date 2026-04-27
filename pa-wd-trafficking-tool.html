@@ -260,7 +260,7 @@ function buildWDCreativeHTML(n) {
       <div class="field"><label>Ad Experience</label><input class="readonly-field" value="Component-Based Creative → Other Website" readonly /></div>
       <div class="field"><label>Landing Page</label><input class="readonly-field" value="Other Website" readonly /></div>
       <div class="field"><label>Takeover</label><input class="readonly-field" value="Yes" readonly /></div>
-      <div class="field"><label>Name *</label><input id="${vid}-name" placeholder="e.g. Nike_PA_WD_Mobile_EN_v1" data-req="true" /></div>
+      <div class="field"><label>Unique Identifier *</label><input id="${vid}-name" placeholder="e.g. Nike_PA_WD_Mobile_EN_v1" data-req="true" /></div>
       <div class="field"><label>Language *</label><input id="${vid}-language" placeholder="e.g. English" data-req="true" oninput="updateCharLimitsFor('${vid}')" /></div>
       <div class="field"><label>Click-through URL *</label><input id="${vid}-clickthrough" placeholder="https://..." data-req="true" /></div>
       <div class="field"><label>Inventory Type (Rodeo)</label><input class="readonly-field" value="Standard display inventory ✓ + Third-party native inventory ✓" readonly /></div>
@@ -473,7 +473,7 @@ function downloadExcel() {
 
     addHeader(`WD MOBILE CREATIVE ${n} — Component-Based Creative → Other Website  |  Private Auction`, wdColor);
     addRow('WD Mobile Line Item URL', document.getElementById('li-wd-mobile').value, wdLabel, wdValue);
-    addRow('Name', get('name'), wdLabel, wdValue);
+    addRow('Unique Identifier', get('name'), wdLabel, wdValue);
     addRow('Language', get('language'), wdLabel, wdValue);
     addRow('Landing page', 'Other website', wdLabel, wdValue);
     addRow('URL', get('clickthrough'), wdLabel, wdValue);
