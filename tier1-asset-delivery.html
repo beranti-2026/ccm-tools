@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tier 1 Asset Delivery Template</title>
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "witjjhlgqw");
+  </script>
+  <style>
+    :root {
+      --bg: #f5f7fa; --white: #fff; --border: #dde1e9; --text: #1a1d27;
+      --muted: #6b7280; --accent: #232f3e; --accent2: #ff9900;
+      --danger: #dc2626; --success: #16a34a; --radius: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+    header { background: var(--accent); color: white; padding: 1rem 2rem; display: flex; align-items: center; gap: 1rem; }
+    header h1 { font-size: 1.2rem; font-weight: 700; }
+    header .badge { background: var(--accent2); color: var(--accent); font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px; }
+    .container { max-width: 1000px; margin: 2rem auto; padding: 0 1.5rem; }
+    .notice { background: #fff8ee; border: 1px solid var(--accent2); border-radius: 6px; padding: 0.75rem 1rem; font-size: 0.82rem; color: var(--accent); margin-bottom: 1.5rem; }
+    .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; }
+    .card h2 { font-size: 1rem; font-weight: 600; color: var(--accent); border-bottom: 2px solid var(--accent2); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+    .field { display: flex; flex-direction: column; gap: 0.3rem; }
+    .field label { font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .field input, .field select, .field textarea { border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem 0.75rem; font-size: 0.9rem; background: var(--white); color: var(--text); width: 100%; }
+    .field input:focus, .field select:focus { outline: none; border-color: var(--accent2); }
+    .field textarea { min-height: 60px; resize: vertical; font-family: inherit; }
+    .field-note { font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem; }
+    .field-error { border-color: var(--danger) !important; background: #fff5f5 !important; }
+    .readonly-field { background: #f3f4f6 !important; color: var(--muted) !important; }
+    .section-title { background: #f8f9fb; border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; font-weight: 700; font-size: 0.9rem; color: var(--accent); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .key-preview { margin-top: 0.5rem; padding: 0.6rem 0.75rem; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; font-size: 0.8rem; color: #0369a1; min-height: 36px; }
+    .key-preview.valid { background: #f0fdf4; border-color: #86efac; color: #166534; }
+    .key-preview.invalid { background: #fff5f5; border-color: #fca5a5; color: #991b1b; }
+    .char-counter { font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem; text-align: right; }
+    .char-counter.over { color: var(--danger); font-weight: 700; }
+    .layout-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed var(--border); }
+    .actions { display: flex; gap: 1rem; margin: 2rem 0; justify-content: flex-end; }
+    .btn-primary { background: var(--accent2); color: var(--accent); border: none; padding: 0.75rem 2rem; border-radius: 6px; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
+    .btn-primary:hover { background: #e68900; }
+    .btn-secondary { background: var(--accent); color: white; border: none; padding: 0.75rem 2rem; border-radius: 6px; font-weight: 600; font-size: 0.95rem; cursor: pointer; }
+    .info-box { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; padding: 0.75rem 1rem; font-size: 0.82rem; color: #0369a1; margin-top: 1rem; }
+    .add-version-btn { background: none; border: 1px dashed var(--accent2); color: var(--accent); padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.82rem; margin-top: 0.5rem; width: 100%; }
+    .add-version-btn:hover { background: #fff8ee; }
+    .version-block { border: 1px solid var(--border); border-radius: 6px; padding: 1rem; background: #fafbfc; margin-bottom: 1rem; }
+    .version-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+    .version-header span { font-weight: 600; font-size: 0.85rem; color: var(--accent); }
+    .remove-version { background: none; border: 1px solid var(--danger); color: var(--danger); padding: 0.2rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
+    .remove-version:hover { background: var(--danger); color: white; }
+    .tag { display: inline-block; background: var(--accent); color: white; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.72rem; margin-right: 0.25rem; }
+    .tag.wd { background: #7c3aed; }
+    .tag.legacy { background: #0369a1; }
+    .tag.video { background: #dc2626; }
+    .tag.t1 { background: #0d9488; }
+    .legacy-sunset-note { background: #fef2f2; border: 1px solid #fca5a5; border-radius: 6px; padding: 0.75rem 1rem; font-size: 0.82rem; color: #991b1b; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>📦 Tier 1 Asset Delivery Template</h1>
+  <span class="badge">INTERNAL TOOL</span>
+  <span style="margin-left:auto;font-size:0.72rem;opacity:0.6;font-weight:400">Tool owner: @beranti · v1.0</span>
+</header>
+
+<div class="container">
+  <div class="notice">
+    📦 <strong>Tier 1 Asset Delivery Template</strong> — Use this template to provide the exact creative assets needed for your Tier 1 activation.<br/><br/>
+    <strong>How to use:</strong><br/>
+    1. Select the product(s) you are launching, then complete all required fields based on your selections.<br/>
+    2. Ensure all links you upload are accessible — <strong>grant permissions before sharing</strong>.<br/>
+    3. Once complete, click <strong>Download Excel</strong> and share the file with the CCM in the Tier 1 SIM.
+  </div>
+
+  <!-- Product Selection -->
+  <div class="card">
+    <h2>Product Selection</h2>
+    <div style="font-size:0.85rem;color:var(--muted);margin-bottom:0.75rem">Select one or both products for this launch:</div>
+    <div style="display:flex;flex-direction:column;gap:0.75rem">
+      <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;font-size:0.9rem;font-weight:600">
+        <input type="checkbox" id="chk-hero-wd" onchange="onProductSelectionChange()" style="width:16px;height:16px;accent-color:var(--accent2)" />
+        Hero / WD
+      </label>
+      <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;font-size:0.9rem;font-weight:600">
+        <input type="checkbox" id="chk-product-spotlight" onchange="onProductSelectionChange()" style="width:16px;height:16px;accent-color:var(--accent2)" />
+        Product Spotlight
+      </label>
+    </div>
+  </div>
+
+  <!-- Launch Details -->
+  <div class="card">
+    <h2>Launch Details</h2>
+    <div class="grid">
+      <div class="field">
+        <label>Launch Date *</label>
+        <input id="launch-date" type="date" data-req="true" onchange="evaluateLegacyVisibility()" />
+      </div>
+      <div class="field">
+        <label>Locale (Country) *</label>
+        <select id="locale" data-req="true" onchange="evaluateLegacyVisibility()">
+          <option value="">-- Select --</option>
+          <option value="DE">DE</option>
+          <option value="ES">ES</option>
+          <option value="FR">FR</option>
+          <option value="IT">IT</option>
+          <option value="UK">UK</option>
+          <option value="US">US</option>
+        </select>
+      </div>
+    </div>
+    <div id="legacy-sunset-msg" class="legacy-sunset-note" style="display:none;margin-top:1rem"></div>
+  </div>
+
+  <!-- ═══ Hero/WD Section (conditional on checkbox) ═══ -->
+  <div id="hero-wd-section" style="display:none">
+
+  <!-- Campaign Info — carried over as-is -->
+  <div class="card">
+    <h2>Campaign Information</h2>
+    <div style="padding:1rem;background:#f8f9fb;border:1px solid var(--border);border-radius:8px">
+      <div style="font-size:0.85rem;font-weight:700;color:var(--accent);margin-bottom:0.75rem">Campaign Type * — select one</div>
+      <div style="display:flex;gap:2rem">
+        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-weight:600;font-size:0.9rem">
+          <input type="radio" name="campaign-type" id="type-static" value="static" onchange="onCampaignTypeChange()" checked
+            style="width:16px;height:16px;accent-color:var(--accent2)" />
+          📸 Static
+        </label>
+        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-weight:600;font-size:0.9rem">
+          <input type="radio" name="campaign-type" id="type-video" value="video" onchange="onCampaignTypeChange()"
+            style="width:16px;height:16px;accent-color:var(--accent2)" />
+          🎬 Video
+        </label>
+      </div>
+      <div id="type-note" style="margin-top:0.5rem;font-size:0.8rem;color:var(--muted)">
+        Static: WD creative (Asset-Based) + Legacy Desktop Banner (1500x600 Static)
+      </div>
+    </div>
+  </div>
+
+  <!-- WD Creative -->
+  <div class="card">
+    <h2>WD Creative <span class="tag wd">Component-Based Creative</span> <span class="tag wd">WD Mobile + WD Desktop</span></h2>
+    <div id="wd-creatives-container"></div>
+    <button class="add-version-btn" onclick="addWDCreative()" style="margin-top:0.5rem">+ Add Version</button>
+  </div>
+
+  <!-- Legacy Desktop Banner (conditionally shown) -->
+  <div class="card" id="legacy-card">
+    <h2 id="legacy-title">Legacy Desktop Banner <span class="tag legacy">Standard Display</span> <span class="tag legacy">1500x600 + 3000x1200</span></h2>
+    <div id="legacy-creatives-container"></div>
+    <button class="add-version-btn" onclick="addLegacyCreative()" style="margin-top:0.5rem">+ Add Version</button>
+  </div>
+
+  </div><!-- /hero-wd-section -->
+
+  <!-- ═══ Product Spotlight Section (conditional on checkbox) ═══ -->
+  <div id="product-spotlight-section" style="display:none">
+    <div class="card">
+      <h2>Product Spotlight <span class="tag t1">ASIN REC</span></h2>
+      <div style="margin-bottom:1rem">
+        <div class="section-title">📋 ASIN REC Upload</div>
+        <div class="field" style="max-width:500px">
+          <label>ASIN REC File *</label>
+          <input id="ps-asin-file" type="file" accept=".xlsx,.xls,.csv,.txt" style="border:1px solid var(--border);border-radius:6px;padding:0.5rem 0.75rem;font-size:0.9rem;background:var(--white)" />
+          <span class="field-note">Upload the ASIN REC file for the Product Spotlight placement.</span>
+        </div>
+      </div>
+      <div style="padding:0.75rem 1rem;background:#fff8ee;border:1px solid var(--accent2);border-radius:6px;font-size:0.85rem;color:var(--accent);line-height:1.5">
+        📌 <strong>Reminder:</strong> You should have already provided a separate ASIN list to APM to set up the browse node. Browse nodes are the pages where ASIN RECs will render.
+      </div>
+    </div>
+  </div><!-- /product-spotlight-section -->
+
+  <div class="actions">
+    <button class="btn-secondary" onclick="clearAll()">Clear All</button>
+    <button class="btn-primary" onclick="downloadExcel()">⬇ Download Excel</button>
+  </div>
+</div>
+
+<script src="./xlsx.bundle.js"></script>
+<script>
+window.addEventListener('load', function() {
+  if (typeof XLSX === 'undefined') {
+    var s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    document.head.appendChild(s);
+  }
+});
+
+let wdCreativeCount = 0;
+let legCreativeCount = 0;
+
+const KEY_MAP = {
+  'fi':    'All text (headline, subhead, disclaimer) → White',
+  'lfi':   'Disclaimer → White (headline/subhead stay Black)',
+  'lfi:f': 'Disclaimer → Black (used with #fi to make headline/subhead White, disclaimer Black)',
+  'tr':    'Headline → 1 line',
+  'tr:3':  'Headline → 3 lines',
+  'tr:4':  'Headline → 4 lines',
+  'sr':    'Subhead → 2 lines',
+  'sf':    'Subhead appears BEFORE headline',
+  'lb':    'Adds a box/border around disclaimer text',
+};
+
+// ── Legacy sunset logic ──
+function isLegacySunset() {
+  const launchDate = document.getElementById('launch-date')?.value;
+  const locale = document.getElementById('locale')?.value;
+  if (!launchDate || !locale) return false;
+  const d = new Date(launchDate + 'T00:00:00');
+  if (locale === 'US' && d > new Date('2026-05-11T00:00:00')) return true;
+  if (['UK','DE','FR','IT','ES'].includes(locale) && d > new Date('2026-06-01T00:00:00')) return true;
+  return false;
+}
+
+function evaluateLegacyVisibility() {
+  const sunset = isLegacySunset();
+  const legacyCard = document.getElementById('legacy-card');
+  const msg = document.getElementById('legacy-sunset-msg');
+  const locale = document.getElementById('locale')?.value || '';
+  const launchDate = document.getElementById('launch-date')?.value || '';
+
+  if (sunset) {
+    if (legacyCard) legacyCard.style.display = 'none';
+    if (msg) {
+      const cutoff = locale === 'US' ? 'May 11, 2026' : 'June 1, 2026';
+      msg.style.display = 'block';
+      msg.innerHTML = `⚠️ Legacy Desktop Banner is <strong>not required</strong> for ${locale} launches after ${cutoff}. This section has been hidden.`;
+    }
+  } else {
+    if (legacyCard) legacyCard.style.display = document.getElementById('chk-hero-wd')?.checked ? 'block' : 'none';
+    if (msg) msg.style.display = 'none';
+    // Ensure at least 1 legacy version exists when shown
+    const legContainer = document.getElementById('legacy-creatives-container');
+    if (legContainer && legContainer.children.length === 0) { legCreativeCount = 0; addLegacyCreative(); }
+  }
+  // Update type note
+  updateTypeNote();
+}
+
+function updateTypeNote() {
+  const isVideo = document.getElementById('type-video')?.checked;
+  const sunset = isLegacySunset();
+  const note = document.getElementById('type-note');
+  if (!note) return;
+  if (sunset) {
+    note.textContent = isVideo ? 'Video: WD creative (Component-Based Creative)' : 'Static: WD creative (Asset-Based)';
+  } else {
+    note.textContent = isVideo
+      ? 'Video: WD creative (Component-Based Creative) + Legacy Desktop Banner (Online Video)'
+      : 'Static: WD creative (Asset-Based) + Legacy Desktop Banner (1500x600 Static)';
+  }
+}
+
+// ── Product selection toggle ──
+function onProductSelectionChange() {
+  const heroWDChecked = document.getElementById('chk-hero-wd')?.checked;
+  const spotlightChecked = document.getElementById('chk-product-spotlight')?.checked;
+
+  const heroWDSection = document.getElementById('hero-wd-section');
+  const spotlightSection = document.getElementById('product-spotlight-section');
+
+  if (heroWDSection) {
+    heroWDSection.style.display = heroWDChecked ? 'block' : 'none';
+    // Init WD creatives if showing for the first time
+    if (heroWDChecked) {
+      const wdContainer = document.getElementById('wd-creatives-container');
+      if (wdContainer && wdContainer.children.length === 0) { wdCreativeCount = 0; addWDCreative(); }
+      if (!isLegacySunset()) {
+        const legContainer = document.getElementById('legacy-creatives-container');
+        if (legContainer && legContainer.children.length === 0) { legCreativeCount = 0; addLegacyCreative(); }
+      }
+    }
+  }
+  if (spotlightSection) spotlightSection.style.display = spotlightChecked ? 'block' : 'none';
+}
+
+// ── Key parsing ──
+function parseKeyFor(vid) {
+  const raw = document.getElementById(vid + '-brand')?.value.trim() || '';
+  const preview = document.getElementById(vid + '-key-preview');
+  const blankBox = document.getElementById(vid + '-blank-box');
+  const layoutSection = document.getElementById(vid + '-layout-section');
+  if (preview) preview.style.display = raw ? 'block' : 'none';
+  const isBlank = raw.toLowerCase() === '#blank#';
+  if (blankBox) blankBox.style.display = isBlank ? 'block' : 'none';
+  if (layoutSection) layoutSection.style.display = isBlank ? 'none' : 'block';
+  if (isBlank) {
+    if (preview) { preview.className = 'key-preview invalid'; preview.innerHTML = '⚠️ Embedded exception — Headline = <strong>#blank#</strong>'; }
+    return;
+  }
+  validateKeyVsLayoutFor(vid, raw, preview);
+}
+
+function validateKeyVsLayoutFor(vid, raw, preview) {
+  if (!preview) return;
+  if (!raw || raw === 'N/A') {
+    preview.className = 'key-preview valid';
+    preview.innerHTML = raw === 'N/A' ? '✅ N/A — Default formatting' : 'Enter key to see what it does';
+    return;
+  }
+  if (!raw.startsWith('#')) { preview.className = 'key-preview invalid'; preview.innerHTML = '⚠️ Key must start with #'; return; }
+  const parts = raw.replace(/^#/, '').split('#').filter(Boolean);
+  const descriptions = parts.map(p => KEY_MAP[p] ? `<b>#${p}</b>: ${KEY_MAP[p]}` : null).filter(Boolean);
+  const unknown = parts.filter(p => !KEY_MAP[p]);
+  const warnings = [];
+  const layout = document.getElementById(vid + '-layout')?.value || '';
+  const headlineColor = document.getElementById(vid + '-headline-color')?.value || 'Black';
+  const disclaimerColor = document.getElementById(vid + '-disclaimer-color')?.value || 'Black';
+  const placement = document.getElementById(vid + '-headline-placement')?.value;
+  const hasFi = parts.includes('fi'), hasLfi = parts.includes('lfi'), hasSf = parts.includes('sf');
+  const hasTr = parts.includes('tr'), hasTr3 = parts.includes('tr:3'), hasTr4 = parts.includes('tr:4'), hasSr = parts.includes('sr');
+  if (layout) {
+    const hl = parseInt(layout[0] || '0'), sl = parseInt(layout[2] || '0');
+    if (hl === 1 && !hasTr && !hasTr3 && !hasTr4) warnings.push('⚠️ 1-line headline but missing <b>#tr</b>');
+    if (hl === 3 && !hasTr3) warnings.push('⚠️ 3-line headline but missing <b>#tr:3</b>');
+    if (hl === 4 && !hasTr4) warnings.push('⚠️ 4-line headline but missing <b>#tr:4</b>');
+    if (sl === 2 && !hasSr) warnings.push('⚠️ 2-line subhead but missing <b>#sr</b>');
+    if (hasSr && sl < 2) warnings.push('⚠️ <b>#sr</b> set but layout uses 1 subhead line');
+  }
+  if (placement === 'below' && !hasSf) warnings.push('⚠️ Headline placement is "below subhead" but key is missing <b>#sf</b>');
+  if (placement === 'above' && hasSf) warnings.push('⚠️ Key has <b>#sf</b> but placement is set to "above subhead"');
+  if (headlineColor === 'White' && !hasFi) warnings.push('⚠️ Headline & Subhead color is White but key is missing <b>#fi</b>');
+  if (headlineColor === 'Black' && hasFi) warnings.push('⚠️ Key has <b>#fi</b> (White text) but Headline & Subhead color is Black');
+  const disclaimerText = document.getElementById(vid + '-disclaimer')?.value?.trim() || '';
+  if (disclaimerText) {
+    const hasLfif = parts.includes('lfi:f');
+    if (headlineColor === 'Black' && disclaimerColor === 'White' && !hasLfi) warnings.push('⚠️ Black headline + White disclaimer requires <b>#lfi</b>');
+    if (headlineColor === 'Black' && disclaimerColor === 'Black' && hasLfi) warnings.push('⚠️ Key has <b>#lfi</b> (White disclaimer) but Disclaimer color is Black');
+    if (headlineColor === 'White' && disclaimerColor === 'Black' && !hasLfif) warnings.push('⚠️ White headline + Black disclaimer requires <b>#fi#lfi:f</b> — key is missing <b>#lfi:f</b>');
+    if (headlineColor === 'White' && disclaimerColor === 'White' && hasLfif) warnings.push('⚠️ Key has <b>#lfi:f</b> (Black disclaimer) but Disclaimer color is White — use <b>#fi</b> only');
+  }
+  if (unknown.length) { preview.className = 'key-preview invalid'; preview.innerHTML = `⚠️ Unknown: ${unknown.map(u=>'#'+u).join(', ')}<br>${descriptions.join('<br>')}`; return; }
+  if (warnings.length) { preview.className = 'key-preview invalid'; preview.innerHTML = warnings.join('<br>') + (descriptions.length ? '<br><br>' + descriptions.join('<br>') : ''); return; }
+  preview.className = 'key-preview valid';
+  preview.innerHTML = '✅ Key matches selections<br>' + descriptions.join('<br>');
+}
+
+function renderLayoutFieldsFor(vid) {
+  const layout = document.getElementById(vid + '-layout')?.value || '';
+  const container = document.getElementById(vid + '-layout-fields');
+  const subheadColorField = document.getElementById(vid + '-subhead-color-field');
+  if (!container || !layout) return;
+  const lang = (document.getElementById(vid + '-language')?.value || '').trim().toLowerCase();
+  const isJP = lang === 'japanese' || lang === 'jp';
+  const limits = { headline: isJP ? 8 : 16, subhead: isJP ? 11 : 23 };
+  const hl = parseInt(layout[0] || '0'), sl = parseInt(layout[2] || '0');
+  if (subheadColorField) subheadColorField.style.display = sl > 0 ? 'flex' : 'none';
+  let html = '';
+  if (hl > 0) {
+    const maxH = hl * limits.headline;
+    html += `<div class="field"><label>Headline (max ${maxH} chars)</label><input id="${vid}-headline-1" maxlength="${maxH}" placeholder="Max ${maxH} chars" data-req="true" oninput="countField(this,'${vid}-hl-count',${maxH})" /><div class="char-counter" id="${vid}-hl-count">0 / ${maxH}</div></div>`;
+  }
+  if (sl > 0) {
+    const maxS = sl * limits.subhead;
+    html += `<div class="field"><label>Body text (max ${maxS} chars)</label><input id="${vid}-subhead-1" maxlength="${maxS}" placeholder="Max ${maxS} chars" data-req="true" oninput="countField(this,'${vid}-sh-count',${maxS})" /><div class="char-counter" id="${vid}-sh-count">0 / ${maxS}</div></div>`;
+  }
+  container.innerHTML = html;
+}
+
+function updateCharLimitsFor(vid) { renderLayoutFieldsFor(vid); }
+
+function countField(input, counterId, max) {
+  const el = document.getElementById(counterId);
+  if (!el) return;
+  const len = input.value.length;
+  el.textContent = `${len} / ${max}`;
+  el.className = len > max ? 'char-counter over' : 'char-counter';
+}
+
+function toggleHorizLogoFor(vid) {
+  const checked = document.getElementById(vid + '-horiz-chk')?.checked;
+  const field = document.getElementById(vid + '-logo-horiz-field');
+  const input = document.getElementById(vid + '-logo-nonsquare');
+  const squareInput = document.getElementById(vid + '-logo-square');
+  if (field) field.style.display = checked ? 'flex' : 'none';
+  if (input) checked ? input.setAttribute('data-req','true') : input.removeAttribute('data-req');
+  if (squareInput) checked ? squareInput.setAttribute('data-req','true') : squareInput.removeAttribute('data-req');
+}
+
+// ── WD Creative HTML (no "provided by CS" notes) ──
+function buildWDCreativeHTML(n) {
+  const vid = `wd${n}`;
+  const isVideo = document.getElementById('type-video')?.checked || false;
+  return `<div class="version-block" id="wd-creative-${n}" style="margin-bottom:1rem">
+    <div class="version-header">
+      <span>WD Creative ${n}</span>
+      ${n > 1 ? `<button class="remove-version" onclick="document.getElementById('wd-creative-${n}').remove()">Remove</button>` : ''}
+    </div>
+    <div class="grid">
+      <div class="field"><label>Ad Experience</label><input class="readonly-field" value="Component-Based Creative → Other Website" readonly /></div>
+      <div class="field"><label>Landing Page</label><input class="readonly-field" value="Other Website" readonly /></div>
+      <div class="field"><label>Takeover</label><input class="readonly-field" value="Yes" readonly /></div>
+      <div class="field"><label>Unique Identifier *</label><input id="${vid}-name" placeholder="e.g. Nike_WD_EN_v1" data-req="true" /></div>
+      <div class="field"><label>Language *</label><input id="${vid}-language" placeholder="e.g. English" data-req="true" oninput="updateCharLimitsFor('${vid}')" /></div>
+      <div class="field"><label>Click-through URL *</label><input id="${vid}-clickthrough" placeholder="https://..." data-req="true" /></div>
+      <div class="field"><label>Inventory Type (Rodeo)</label><input class="readonly-field" value="Standard display inventory ✓ + Third-party native inventory ✓" readonly /></div>
+      <div class="field"><label>Display Ad Sizes (Rodeo)</label><input class="readonly-field" value="Choose specific sizes → 980x55 only" readonly /></div>
+    </div>
+    <div style="margin-top:1rem">
+      <div class="section-title">🔑 Brand Name (Custom Styling Key)</div>
+      <div class="grid">
+        <div class="field" style="grid-column:1/-1">
+          <label>Brand Name Key *</label>
+          <input id="${vid}-brand" placeholder="e.g. #fi#lfi:f or N/A" data-req="true" oninput="parseKeyFor('${vid}')" />
+          <div class="key-preview" id="${vid}-key-preview" style="display:none"></div>
+          <div id="${vid}-blank-box" style="display:none;margin-top:0.75rem;padding:0.75rem 1rem;background:#fef2f2;border:2px solid #dc2626;border-radius:6px">
+            <p style="font-size:0.85rem;font-weight:700;color:#991b1b;margin-bottom:0.5rem">⚠️ Embedded Creative Exception (#blank#)</p>
+            <p style="font-size:0.82rem;color:#7f1d1d;margin-bottom:0.5rem">Headline = #blank#. Layout, Headline, Body text, Logo embedded in image. Disclaimer still required in Rodeo.</p>
+            <label style="display:flex;align-items:flex-start;gap:0.5rem;cursor:pointer;font-size:0.85rem;font-weight:600;color:#991b1b">
+              <input type="checkbox" id="${vid}-blank-chk" style="width:14px;height:14px;margin-top:2px;accent-color:#dc2626" />
+              I confirm this advertiser has an approved exception.
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:1rem" id="${vid}-layout-section">
+      <div class="section-title">📐 Layout</div>
+      <div class="grid">
+        <div class="field">
+          <label>Layout Option *</label>
+          <select id="${vid}-layout" onchange="renderLayoutFieldsFor('${vid}'); parseKeyFor('${vid}');" data-req="true">
+            <option value="">-- Select layout --</option>
+            <option value="1h0s">1-line headline only</option>
+            <option value="1h1s">1-line headline + 1-line subhead</option>
+            <option value="1h2s">1-line headline + 2-line subhead</option>
+            <option value="2h0s">2-line headline only</option>
+            <option value="2h1s">2-line headline + 1-line subhead</option>
+            <option value="2h2s">2-line headline + 2-line subhead (non-EN only)</option>
+            <option value="3h0s">3-line headline only (exception/non-EN)</option>
+            <option value="3h1s">3-line headline + 1-line subhead (non-EN)</option>
+            <option value="4h0s">4-line headline only (non-EN HVE)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Headline Placement</label>
+          <select id="${vid}-headline-placement" onchange="parseKeyFor('${vid}')">
+            <option value="above">Headline above subhead</option>
+            <option value="below">Headline below subhead (use #sf key)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Headline & Subhead Color *</label>
+          <select id="${vid}-headline-color" data-req="true" onchange="parseKeyFor('${vid}')">
+            <option value="Black">Black</option><option value="White">White</option>
+          </select>
+        </div>
+        <div class="field" id="${vid}-subhead-color-field" style="display:none">
+          <label>Subhead Color</label>
+          <input class="readonly-field" value="Same as Headline (per spec)" readonly />
+        </div>
+      </div>
+      <div id="${vid}-layout-fields" class="layout-fields"></div>
+    </div>
+    <div style="margin-top:1rem">
+      <div class="section-title">🖼️ Assets</div>
+      <div class="grid">
+        <div class="field"><label>Background Image File Name *</label><input id="${vid}-bg-image" placeholder="e.g. Nike_WD_Background.psd" data-req="true" /></div>
+        <div class="field" id="${vid}-logo-square-field"><label>Logo File Name — Square (400x400px) (optional)</label><input id="${vid}-logo-square" placeholder="e.g. Nike_Logo_Square.png" /></div>
+        <div class="field full">
+          <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
+            <input type="checkbox" id="${vid}-horiz-chk" onchange="toggleHorizLogoFor('${vid}')" style="width:14px;height:14px;accent-color:var(--accent2)" />
+            Horizontal logo?
+          </label>
+        </div>
+        <div class="field" id="${vid}-logo-horiz-field" style="display:none">
+          <label>Logo File Name — Horizontal (400x400px+) *</label>
+          <input id="${vid}-logo-nonsquare" placeholder="e.g. Nike_Logo_Horizontal.png" />
+        </div>
+        ${isVideo ? `<div class="field"><label>Video File Name *</label><input id="${vid}-video" placeholder="e.g. Nike_WD_Video.mp4" data-req="true" /></div>` : ''}
+      </div>
+      ${isVideo ? `<div style="margin-top:0.75rem">
+        <label style="display:flex;align-items:center;gap:0.5rem;cursor:not-allowed;font-size:0.85rem;font-weight:600;color:var(--muted)">
+          <input type="checkbox" id="${vid}-native-video" checked disabled style="width:16px;height:16px;accent-color:var(--accent2);cursor:not-allowed" />
+          Choose Native Video (enable native video in Rodeo)
+        </label>
+        <span class="field-note">Always enabled for Video WD campaigns.</span>
+      </div>` : ''}
+    </div>
+    <div style="margin-top:1rem">
+      <div class="section-title">⚖️ Disclaimer (Optional)</div>
+      <div class="grid">
+        <div class="field">
+          <label>Disclaimer (max 42 chars)</label>
+          <input id="${vid}-disclaimer" maxlength="42" placeholder="Optional" oninput="countField(this, '${vid}-disc-count', 42); parseKeyFor('${vid}')" />
+          <div class="char-counter" id="${vid}-disc-count">0 / 42</div>
+        </div>
+        <div class="field">
+          <label>Disclaimer Color</label>
+          <select id="${vid}-disclaimer-color" onchange="parseKeyFor('${vid}')">
+            <option value="Black">Black</option><option value="White">White</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── Legacy Creative HTML ──
+function buildLegacyCreativeHTML(n) {
+  const lid = `leg${n}`;
+  const isVideo = document.getElementById('type-video')?.checked || false;
+  return `<div class="version-block" id="leg-creative-${n}" style="margin-bottom:1rem">
+    <div class="version-header">
+      <span>Legacy Creative ${n}</span>
+      ${n > 1 ? `<button class="remove-version" onclick="document.getElementById('leg-creative-${n}').remove()">Remove</button>` : ''}
+    </div>
+    <div class="grid">
+      <div class="field"><label>Creative Type (Rodeo)</label><input class="readonly-field" value="${isVideo ? 'Online Video' : 'Standard Display'}" readonly /></div>
+      <div class="field"><label>Ad Experience</label><input class="readonly-field" value="${isVideo ? 'Online Video' : 'Single Image'}" readonly /></div>
+      <div class="field"><label>Unique Identifier *</label><input id="${lid}-name" placeholder="e.g. Nike_Legacy_EN_v1" data-req="true" /></div>
+      <div class="field"><label>Language *</label><input id="${lid}-language" placeholder="e.g. English" data-req="true" /></div>
+      <div class="field"><label>Click-through Type *</label>
+        <select id="${lid}-clickthrough-type" data-req="true">
+          <option value="Brand Store">Brand Store</option>
+          <option value="Other Website">Other Website</option>
+        </select>
+      </div>
+      <div class="field"><label>Click-through URL *</label><input id="${lid}-clickthrough" placeholder="https://..." data-req="true" /></div>
+      ${!isVideo ? `
+      <div class="field"><label>Image File Name 1500x600 *</label><input id="${lid}-image-1x" placeholder="e.g. Nike_Legacy_1500x600.jpg" data-req="true" /></div>
+      <div class="field"><label>Image File Name 3000x1200 (2x) *</label><input id="${lid}-image-2x" placeholder="e.g. Nike_Legacy_3000x1200.jpg" data-req="true" /></div>
+      ` : `
+      <div class="field"><label>Video File Name *</label><input id="${lid}-video" placeholder="e.g. Nike_Legacy_Video.mp4" data-req="true" /></div>
+      <div class="field"><label>Companion Banner File Name *</label><input id="${lid}-companion" placeholder="e.g. Nike_Companion_3000x600.jpg" data-req="true" /></div>
+      <div class="field full"><label>Native Display with Video</label><input class="readonly-field" value="OFF — Do NOT enable" readonly /><span class="field-note" style="color:var(--danger)">⚠️ Keep OFF in Rodeo</span></div>
+      `}
+    </div>
+  </div>`;
+}
+
+function addWDCreative() {
+  wdCreativeCount++;
+  const container = document.getElementById('wd-creatives-container');
+  if (!container) return;
+  const div = document.createElement('div');
+  div.innerHTML = buildWDCreativeHTML(wdCreativeCount);
+  container.appendChild(div.firstElementChild);
+}
+
+function addLegacyCreative() {
+  legCreativeCount++;
+  const container = document.getElementById('legacy-creatives-container');
+  if (!container) return;
+  const div = document.createElement('div');
+  div.innerHTML = buildLegacyCreativeHTML(legCreativeCount);
+  container.appendChild(div.firstElementChild);
+}
+
+// ── Campaign type toggle ──
+function onCampaignTypeChange() {
+  const isVideo = document.getElementById('type-video').checked;
+  const legTitle = document.getElementById('legacy-title');
+  if (isVideo) {
+    if (legTitle) legTitle.innerHTML = 'Legacy Desktop Banner <span class="tag video">Online Video</span>';
+  } else {
+    if (legTitle) legTitle.innerHTML = 'Legacy Desktop Banner <span class="tag legacy">Standard Display</span> <span class="tag legacy">1500x600 + 3000x1200</span>';
+  }
+  updateTypeNote();
+  // Re-init creatives
+  const wdContainer = document.getElementById('wd-creatives-container');
+  const legContainer = document.getElementById('legacy-creatives-container');
+  if (wdContainer) wdContainer.innerHTML = '';
+  if (legContainer) legContainer.innerHTML = '';
+  wdCreativeCount = 0; legCreativeCount = 0;
+  if (document.getElementById('chk-hero-wd')?.checked) {
+    addWDCreative();
+    if (!isLegacySunset()) addLegacyCreative();
+  }
+}
+
+// ── Init ──
+function initCreatives() {
+  // Sections start hidden — creatives are initialized when product checkboxes are selected
+  wdCreativeCount = 0; legCreativeCount = 0;
+}
+initCreatives();
+
+// ── Validation ──
+function validate() {
+  document.querySelectorAll('.field-error').forEach(el => el.classList.remove('field-error'));
+  document.getElementById('error-banner')?.remove();
+  const errors = [];
+
+  const heroWDChecked = document.getElementById('chk-hero-wd')?.checked;
+  const spotlightChecked = document.getElementById('chk-product-spotlight')?.checked;
+
+  // Must select at least one product
+  if (!heroWDChecked && !spotlightChecked) {
+    const banner = document.createElement('div');
+    banner.id = 'error-banner';
+    banner.style.cssText = 'background:#fee2e2;border:2px solid #dc2626;border-radius:8px;padding:1rem;margin-bottom:1rem;color:#991b1b;font-weight:700;font-size:0.9rem;';
+    banner.textContent = '🚫 Please select at least one product (Hero/WD or Product Spotlight) before downloading.';
+    document.querySelector('.container').prepend(banner);
+    banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return [true];
+  }
+
+  // Launch details
+  ['launch-date', 'locale'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el?.value.trim()) { el?.classList.add('field-error'); errors.push(el); }
+  });
+
+  // Product Spotlight — require file if checked
+  if (spotlightChecked) {
+    const fileInput = document.getElementById('ps-asin-file');
+    if (fileInput && !fileInput.files.length) {
+      fileInput.style.borderColor = 'var(--danger)';
+      fileInput.style.background = '#fff5f5';
+      errors.push(fileInput);
+    }
+  }
+
+  // All required fields in visible sections only
+  document.querySelectorAll('[data-req="true"]').forEach(el => {
+    // Skip fields inside hidden sections
+    if (!heroWDChecked && el.closest('#hero-wd-section')) return;
+    if (isLegacySunset() && el.closest('#legacy-card')) return;
+    if (!el.value.trim()) { el.classList.add('field-error'); errors.push(el); }
+  });
+
+  if (errors.length > 0) {
+    const banner = document.createElement('div');
+    banner.id = 'error-banner';
+    banner.style.cssText = 'background:#fee2e2;border:2px solid #dc2626;border-radius:8px;padding:1rem;margin-bottom:1.5rem;color:#991b1b;font-weight:600;font-size:0.9rem;';
+    const firstEl = errors[0];
+    banner.innerHTML = `⚠️ ${errors.length} required field${errors.length > 1 ? 's are' : ' is'} missing.
+      ${firstEl?.id ? `<br><a href="#" onclick="document.getElementById('${firstEl.id}').scrollIntoView({behavior:'smooth',block:'center'});return false;" style="color:#991b1b">↓ Jump to first missing field</a>` : ''}`;
+    document.querySelector('.container').prepend(banner);
+    banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  return errors;
+}
+
+// ── Excel generation ──
+function downloadExcel() {
+  if (typeof XLSX === 'undefined') { alert('The Excel library failed to load.'); return; }
+  if (validate().length > 0) return;
+  document.getElementById('error-banner')?.remove();
+
+  const locale = document.getElementById('locale')?.value || '';
+  const launchDate = document.getElementById('launch-date')?.value || '';
+  const isVideo = document.getElementById('type-video').checked;
+  const campaignType = isVideo ? 'Video' : 'Static';
+  const sunset = isLegacySunset();
+  const heroWDChecked = document.getElementById('chk-hero-wd')?.checked;
+  const spotlightChecked = document.getElementById('chk-product-spotlight')?.checked;
+  const products = [];
+  if (heroWDChecked) products.push('Hero/WD');
+  if (spotlightChecked) products.push('Product Spotlight');
+
+  const wb = XLSX.utils.book_new();
+  const ws = {};
+  const merges = [];
+  let row = 0;
+
+  function c(r, col, value, fill, font, align) {
+    const addr = XLSX.utils.encode_cell({ r, c: col });
+    ws[addr] = { v: value ?? '', t: 's', s: {
+      fill: fill ? { patternType: 'solid', fgColor: fill } : undefined,
+      font: font || { sz: 10 },
+      alignment: align || { vertical: 'center', wrapText: true },
+      border: { top:{style:'thin',color:{rgb:'CCCCCC'}}, bottom:{style:'thin',color:{rgb:'CCCCCC'}}, left:{style:'thin',color:{rgb:'CCCCCC'}}, right:{style:'thin',color:{rgb:'CCCCCC'}} }
+    }};
+  }
+  function merge(r1, c1, r2, c2) { merges.push({ s:{r:r1,c:c1}, e:{r:r2,c:c2} }); }
+  function addRow(label, value, labelFill, valueFill) {
+    c(row, 0, label, labelFill || {rgb:'E8E8E8'}, {bold:true,sz:10}, {vertical:'center',wrapText:true});
+    merge(row, 1, row, 3);
+    c(row, 1, value, valueFill || {rgb:'FFFFFF'}, {sz:10}, {vertical:'center',wrapText:true});
+    row++;
+  }
+  function addHeader(title, color) {
+    merge(row, 0, row, 3);
+    c(row, 0, title, color, {bold:true,color:{rgb:'FFFFFF'},sz:11}, {horizontal:'left',vertical:'center'});
+    row++;
+  }
+
+  // Header
+  merge(row, 0, row, 3);
+  c(row, 0, `TIER 1 ASSET DELIVERY  ·  ${products.join(' + ')}  ·  ${locale}  ·  ${campaignType}  ·  Launch: ${launchDate}`,
+    {rgb:'232F3E'}, {bold:true,color:{rgb:'FFFFFF'},sz:12}, {horizontal:'center',vertical:'center'});
+  row += 2;
+
+  // WD Creative (only if Hero/WD selected)
+  if (heroWDChecked) {
+  const wdColor = {rgb:'5B21B6'}, wdLabel = {rgb:'EDE9FE'}, wdValue = {rgb:'FAF5FF'};
+  const wdBlocks = document.getElementById('wd-creatives-container')?.querySelectorAll('.version-block') || [];
+  wdBlocks.forEach((block, idx) => {
+    const n = idx + 1, vid = `wd${n}`;
+    const get = (fid) => document.getElementById(`${vid}-${fid}`)?.value || '';
+    const isBlankException = get('brand').toLowerCase() === '#blank#';
+    const headlineVal = get('headline-1'), subheadVal = get('subhead-1'), disclaimer = get('disclaimer');
+
+    addHeader(`WD CREATIVE ${n} — Component-Based Creative → Other Website  |  WD Mobile + WD Desktop`, wdColor);
+    addRow('Unique Identifier', get('name'), wdLabel, wdValue);
+    addRow('Locale', locale, wdLabel, wdValue);
+    addRow('Language', get('language'), wdLabel, wdValue);
+    addRow('Launch Date', launchDate, wdLabel, wdValue);
+    addRow('Landing page', 'Other website', wdLabel, wdValue);
+    addRow('URL', get('clickthrough'), wdLabel, wdValue);
+    addRow('Ad experiences', 'Asset-based creative', wdLabel, wdValue);
+    addRow('Brand name', get('brand'), wdLabel, wdValue);
+    const nativeVideoOn = isVideo;
+    addRow('Native video', nativeVideoOn ? 'ON — Enable native video' : 'OFF — Do NOT enable', nativeVideoOn ? {rgb:'DCFCE7'} : {rgb:'FEF2F2'}, wdValue);
+    addRow('Images (file name)', get('bg-image'), wdLabel, wdValue);
+
+    if (isBlankException) {
+      addRow('Headline', '#blank#', {rgb:'FEF2F2'}, {rgb:'FFF5F5'});
+      addRow('Body text', 'Embedded in image', {rgb:'FEF2F2'}, {rgb:'FFF5F5'});
+      addRow('Logo', 'Embedded in image', {rgb:'FEF2F2'}, {rgb:'FFF5F5'});
+    } else {
+      const logoSquare = get('logo-square'), logoNonSquare = get('logo-nonsquare');
+      if (logoSquare) addRow('Logo (square, 400x400px)', logoSquare, wdLabel, wdValue);
+      if (logoNonSquare) addRow('Logo (horizontal, 400x400px+)', logoNonSquare, wdLabel, wdValue);
+      if (headlineVal) addRow('Headline', headlineVal, wdLabel, wdValue);
+      if (subheadVal) addRow('Body text', subheadVal, wdLabel, wdValue);
+      if (disclaimer) addRow('Disclaimer', disclaimer, wdLabel, wdValue);
+    }
+
+    if (!isVideo) {
+      addRow('Placements — Inventory type', 'Standard display inventory ✓ + Third-party native inventory ✓', wdLabel, wdValue);
+      addRow('Placements — Display ad sizes', 'Choose specific sizes → On-Amazon only: 980x55 ✓', wdLabel, wdValue);
+    } else {
+      addRow('Placements — Native display with video', 'ON — Native video enabled', {rgb:'DCFCE7'}, wdValue);
+      const wdVid = get('video'); if (wdVid) addRow('Video file name', wdVid, wdLabel, wdValue);
+    }
+    row++;
+  });
+
+  // Legacy Desktop Banner (only if not sunset)
+  if (!sunset) {
+    const legColor = {rgb:'0369A1'}, legLabel = {rgb:'E0F2FE'}, legValue = {rgb:'F0F9FF'};
+    const legCreativeType = isVideo ? 'Online Video' : 'Standard Display';
+    const legBlocks = document.getElementById('legacy-creatives-container')?.querySelectorAll('.version-block') || [];
+    legBlocks.forEach((block, idx) => {
+      const n = idx + 1, lid = `leg${n}`;
+      const get = (fid) => document.getElementById(`${lid}-${fid}`)?.value || '';
+      addHeader(`LEGACY DESKTOP BANNER ${n} — ${legCreativeType}  |  ${isVideo ? 'Video + Companion Image' : '1500x600 + 3000x1200'}`, legColor);
+      addRow('Unique Identifier', get('name'), legLabel, legValue);
+      addRow('Locale', locale, legLabel, legValue);
+      addRow('Language', get('language'), legLabel, legValue);
+      addRow('Launch Date', launchDate, legLabel, legValue);
+      addRow('Creative Type (Rodeo)', legCreativeType, legLabel, legValue);
+      if (!isVideo) {
+        addRow('Click-through destination', get('clickthrough-type'), legLabel, legValue);
+        addRow('Click-through URL', get('clickthrough'), legLabel, legValue);
+        addRow('2x image file name (3000x1200)', get('image-2x'), legLabel, legValue);
+        addRow('1x image file name (1500x600)', get('image-1x'), legLabel, legValue);
+      } else {
+        addRow('Click-through destination', get('clickthrough-type'), legLabel, legValue);
+        addRow('Click-through URL', get('clickthrough'), legLabel, legValue);
+        addRow('Video file name', get('video'), legLabel, legValue);
+        addRow('Ad experiences', 'Online Video', legLabel, legValue);
+        addRow('Companion Image file name (3000x600, JPG only, 110KB max)', get('companion'), legLabel, legValue);
+        addRow('Native Display with Video', 'OFF — Do NOT enable', {rgb:'FEF2F2'}, {rgb:'FFF5F5'});
+      }
+      row++;
+    });
+  }
+  } // end heroWDChecked
+
+  // Product Spotlight
+  if (spotlightChecked) {
+    const psColor = {rgb:'0D9488'}, psLabel = {rgb:'CCFBF1'}, psValue = {rgb:'F0FDFA'};
+    addHeader('PRODUCT SPOTLIGHT — ASIN REC', psColor);
+    addRow('Locale', locale, psLabel, psValue);
+    addRow('Launch Date', launchDate, psLabel, psValue);
+    const fileInput = document.getElementById('ps-asin-file');
+    const fileName = fileInput?.files?.length ? fileInput.files[0].name : 'No file uploaded';
+    addRow('ASIN REC File', fileName, psLabel, psValue);
+    addRow('Browse Node Reminder', 'ASIN list should have been provided separately to APM for browse node setup', psLabel, psValue);
+    row++;
+  }
+
+  ws['!ref'] = XLSX.utils.encode_range({s:{r:0,c:0},e:{r:row,c:3}});
+  ws['!merges'] = merges;
+  ws['!cols'] = [{wch:38},{wch:65},{wch:5},{wch:5}];
+  ws['!rows'] = Array(row).fill({hpt:20});
+  ws['!rows'][0] = {hpt:30};
+  XLSX.utils.book_append_sheet(wb, ws, 'Asset Delivery');
+
+  const filename = `Tier1_Asset_Delivery_${locale}_${launchDate}.xlsx`;
+  XLSX.writeFile(wb, filename);
+}
+
+function clearAll() {
+  if (!confirm('Clear all entries?')) return;
+  document.querySelectorAll('input, select, textarea').forEach(el => {
+    if (!el.classList.contains('readonly-field') && el.type !== 'radio') el.value = '';
+  });
+  document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+  document.getElementById('wd-creatives-container').innerHTML = '';
+  document.getElementById('legacy-creatives-container').innerHTML = '';
+  document.getElementById('legacy-card').style.display = 'block';
+  document.getElementById('legacy-sunset-msg').style.display = 'none';
+  document.getElementById('hero-wd-section').style.display = 'none';
+  document.getElementById('product-spotlight-section').style.display = 'none';
+  const fileInput = document.getElementById('ps-asin-file');
+  if (fileInput) fileInput.value = '';
+  wdCreativeCount = 0; legCreativeCount = 0;
+}
+</script>
+</body>
+</html>
