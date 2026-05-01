@@ -143,6 +143,9 @@
       <p style="font-size:0.88rem;font-weight:700;color:#991b1b;margin-bottom:0.5rem">⚠️ Desktop Double Wide (285x184) and Desktop WP1 (138x184) cannot run together</p>
       <p style="font-size:0.82rem;color:#7f1d1d;margin-bottom:0.75rem">These two desktop placements are mutually exclusive. Selecting one will disable the other.</p>
     </div>
+    <div id="dw-locale-note" style="display:none;margin-top:1rem;padding:0.75rem 1rem;background:#fff8ee;border:1px solid var(--accent2);border-radius:6px;font-size:0.82rem;color:var(--accent)">
+      ℹ️ <strong>Double Wide Window Pane</strong> is currently launching as an experiment for Prime Day Lead Up campaigns only. Please use the <strong>Desktop WP1</strong> slot instead.
+    </div>
   </div>
 
   <div class="actions">
@@ -170,7 +173,7 @@ const PLACEMENTS = [
   { id: 'p6', name: 'AMZN_{Locale}_320x50_Mobile_Web_Home_Page', device: 'Mobile', types: ['Static', 'Autogen REC', 'Custom REC'] },
   { id: 'p7', name: 'AMZN_{Locale}_Mobile_414x125_Homepage_BTF', device: 'Mobile', types: ['Autogen REC'] },
   { id: 'p8', name: 'AMZN_{Locale}_Desktop_284x184_Homepage_Doublewide', device: 'Desktop', types: ['Asset-Based Creative'] },
-  { id: 'p9', name: 'AMZN_{Locale}_Desktop_138x184_WP_1', device: 'Desktop', types: ['Asset-Based Creative'] },
+  { id: 'p9', name: 'AMZN_{Locale}_Desktop_138x184_WP_1', device: 'Desktop', types: ['Asset-Based Creative', 'Autogen REC'] },
   { id: 'p10', name: 'AMZN_{Locale}_Desktop_138x184_WP_2', device: 'Desktop', types: ['Autogen REC'] },
 ];
 
@@ -315,32 +318,45 @@ function enforceWPMobileRule(changedPid) {
 }
 
 // ── Desktop Double Wide (p8) vs Desktop WP1 (p9) mutual exclusion ──
+// Also: Double Wide is only available for MX locale
 function enforceDesktopWPRule(changedPid) {
+  const locale = document.getElementById('locale')?.value || '';
+  const isMX = locale === 'MX';
   const dwChecked = document.getElementById('chk-p8')?.checked;
   const wp1Checked = document.getElementById('chk-p9')?.checked;
+  const dwChk = document.getElementById('chk-p8');
+  const dwCard = document.getElementById('card-p8');
+  const dwNote = document.getElementById('dw-locale-note');
 
-  // Grey out WP1 if Double Wide is selected
+  // Non-MX: always grey out Double Wide
+  if (!isMX) {
+    if (dwChk) { dwChk.disabled = true; dwChk.checked = false; }
+    if (dwCard) { dwCard.style.opacity = '0.4'; dwCard.style.pointerEvents = 'none'; }
+    document.getElementById('body-p8')?.classList.remove('open');
+    if (dwNote) dwNote.style.display = 'block';
+  } else {
+    if (dwNote) dwNote.style.display = 'none';
+    // MX: apply normal mutual exclusion with WP1
+    if (wp1Checked) {
+      if (dwChk) { dwChk.disabled = true; dwChk.checked = false; }
+      if (dwCard) { dwCard.style.opacity = '0.4'; dwCard.style.pointerEvents = 'none'; }
+      document.getElementById('body-p8')?.classList.remove('open');
+    } else {
+      if (dwChk) dwChk.disabled = false;
+      if (dwCard) { dwCard.style.opacity = '1'; dwCard.style.pointerEvents = ''; }
+    }
+  }
+
+  // Grey out WP1 if Double Wide is selected (only possible in MX)
   const wp1Chk = document.getElementById('chk-p9');
   const wp1Card = document.getElementById('card-p9');
-  if (dwChecked) {
+  if (dwChecked && isMX) {
     if (wp1Chk) { wp1Chk.disabled = true; wp1Chk.checked = false; }
     if (wp1Card) { wp1Card.style.opacity = '0.4'; wp1Card.style.pointerEvents = 'none'; }
     document.getElementById('body-p9')?.classList.remove('open');
   } else {
     if (wp1Chk) wp1Chk.disabled = false;
     if (wp1Card) { wp1Card.style.opacity = '1'; wp1Card.style.pointerEvents = ''; }
-  }
-
-  // Grey out Double Wide if WP1 is selected
-  const dwChk = document.getElementById('chk-p8');
-  const dwCard = document.getElementById('card-p8');
-  if (wp1Checked) {
-    if (dwChk) { dwChk.disabled = true; dwChk.checked = false; }
-    if (dwCard) { dwCard.style.opacity = '0.4'; dwCard.style.pointerEvents = 'none'; }
-    document.getElementById('body-p8')?.classList.remove('open');
-  } else {
-    if (dwChk) dwChk.disabled = false;
-    if (dwCard) { dwCard.style.opacity = '1'; dwCard.style.pointerEvents = ''; }
   }
 
   // Show/hide Desktop WP confirmation box
@@ -497,6 +513,7 @@ function renderFields(vid, pid) {
   // Asset-Based Creative on ABC placements → layout-driven
   if (type === 'Asset-Based Creative' && ABC_PLACEMENTS.includes(pid)) {
     renderABCFields(vid, pid, 'Layout 1');
+    showWP1RecWarning(vid, pid, type);
     return;
   }
 
@@ -506,6 +523,22 @@ function renderFields(vid, pid) {
     return true;
   });
   container.innerHTML = fields.map(f => renderField(vid, f)).join('');
+  showWP1RecWarning(vid, pid, type);
+}
+
+// ── WP_1 REC deduplication warning ──
+function showWP1RecWarning(vid, pid, type) {
+  const existingWarning = document.getElementById('wp1-rec-warning-' + vid);
+  if (existingWarning) existingWarning.remove();
+
+  if (pid === 'p9' && (type === 'Autogen REC' || type === 'Custom REC')) {
+    const warning = document.createElement('div');
+    warning.id = 'wp1-rec-warning-' + vid;
+    warning.style.cssText = 'margin-top:0.75rem;padding:0.75rem 1rem;background:#fef2f2;border:2px solid #dc2626;border-radius:6px;font-size:0.85rem;color:#991b1b;line-height:1.5';
+    warning.innerHTML = '⚠️ <strong>ASIN Deduplication Required:</strong> If using REC on Desktop 138x184 WP_1, the ASINs must be different from those assigned to Desktop 138x184 WP_2. The same ASINs cannot appear on both WP_1 and WP_2.';
+    const fieldsContainer = document.getElementById('fields-' + vid);
+    if (fieldsContainer) fieldsContainer.parentNode.insertBefore(warning, fieldsContainer.nextSibling);
+  }
 }
 
 function renderABCFields(vid, pid, selectedLayout) {
@@ -971,11 +1004,18 @@ function clearAll() {
     versionCounters = {};
     document.getElementById('select-all-chk').checked = false;
     renderPlacements();
+    enforceDesktopWPRule();
   }
 }
 
 // Init
 renderPlacements();
+
+// Enforce Double Wide locale restriction on locale change and on init
+document.getElementById('locale')?.addEventListener('change', function() {
+  enforceDesktopWPRule();
+});
+enforceDesktopWPRule();
 </script>
 </body>
 </html>
