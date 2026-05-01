@@ -204,6 +204,33 @@ function parseKeyFor(vid) {
   if (blankBox) blankBox.style.display = isBlank ? 'block' : 'none';
   if (layoutSection) layoutSection.style.display = isBlank ? 'none' : 'block';
 
+  // Hide logo fields when #blank# — logo is embedded in image
+  const logoSquareField = document.getElementById(vid + '-logo-square-field');
+  const horizChkField = document.getElementById(vid + '-horiz-chk-field');
+  const logoHorizField = document.getElementById(vid + '-logo-horiz-field');
+  if (logoSquareField) logoSquareField.style.display = isBlank ? 'none' : 'flex';
+  if (horizChkField) horizChkField.style.display = isBlank ? 'none' : 'flex';
+  if (logoHorizField) logoHorizField.style.display = isBlank ? 'none' : (document.getElementById(vid + '-horiz-chk')?.checked ? 'flex' : 'none');
+
+  // Toggle data-req on hidden fields so validation skips them
+  if (isBlank) {
+    // Disable required on layout section fields
+    if (layoutSection) layoutSection.querySelectorAll('[data-req]').forEach(el => { el.setAttribute('data-req-saved', 'true'); el.removeAttribute('data-req'); });
+    // Disable required on logo fields
+    [vid + '-logo-square', vid + '-logo-nonsquare'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.hasAttribute('data-req')) { el.setAttribute('data-req-saved', 'true'); el.removeAttribute('data-req'); }
+    });
+  } else {
+    // Restore required on layout section fields
+    if (layoutSection) layoutSection.querySelectorAll('[data-req-saved]').forEach(el => { el.setAttribute('data-req', 'true'); el.removeAttribute('data-req-saved'); });
+    // Restore required on logo fields
+    [vid + '-logo-square', vid + '-logo-nonsquare'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.hasAttribute('data-req-saved')) { el.setAttribute('data-req', 'true'); el.removeAttribute('data-req-saved'); }
+    });
+  }
+
   if (isBlank) {
     if (preview) { preview.className = 'key-preview invalid'; preview.innerHTML = '⚠️ Embedded exception — Headline = <strong>#blank#</strong>'; }
     return;
@@ -398,7 +425,7 @@ function buildWDCreativeHTML(n) {
       <div class="grid">
         <div class="field"><label>Background Image File Name *</label><input id="${vid}-bg-image" placeholder="e.g. Nike_WD_Background.psd" data-req="true" /></div>
         <div class="field" id="${vid}-logo-square-field"><label>Logo File Name — Square (400x400px) (optional)</label><input id="${vid}-logo-square" placeholder="e.g. Nike_Logo_Square.png" /></div>
-        <div class="field full">
+        <div class="field full" id="${vid}-horiz-chk-field">
           <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
             <input type="checkbox" id="${vid}-horiz-chk" onchange="toggleHorizLogoFor('${vid}')" style="width:14px;height:14px;accent-color:var(--accent2)" />
             Horizontal logo? (CS provides both square + horizontal)
@@ -832,8 +859,8 @@ function downloadExcel() {
     if (isBlankException) {
       addRow('Headline', '#blank#', { rgb: 'FEF2F2' }, { rgb: 'FFF5F5' });
       addRow('⚠️ AdOps instruction', 'Enter #blank# in Headline. All elements embedded in image.', { rgb: 'FFF7ED' }, { rgb: 'FFFBEB' });
-      addRow('Body text', 'Leave empty — embedded in image', { rgb: 'FEF2F2' }, { rgb: 'FFF5F5' });
-      addRow('Logo', 'Leave empty — embedded in image', { rgb: 'FEF2F2' }, { rgb: 'FFF5F5' });
+      addRow('Body text', '', wdLabel, wdValue);
+      addRow('Logo', '', wdLabel, wdValue);
     } else {
       const logoSquare = get('logo-square');
       const logoNonSquare = get('logo-nonsquare');
