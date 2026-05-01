@@ -851,7 +851,7 @@ function downloadExcel() {
     addRow('Landing page', 'Other website', wdLabel, wdValue);
     addRow('URL', get('clickthrough'), wdLabel, wdValue);
     addRow('Ad experiences', 'Asset-based creative', wdLabel, wdValue);
-    addRow('Brand name', get('brand'), wdLabel, wdValue);
+    addRow('Brand name', isBlankException ? 'N/A' : get('brand'), wdLabel, wdValue);
     const nativeVideoOn = isVideo;
     addRow('Native video', nativeVideoOn ? 'ON — Enable native video' : 'OFF — Do NOT enable', nativeVideoOn ? { rgb: 'DCFCE7' } : { rgb: 'FEF2F2' }, wdValue);
     addRow('Images (file name)', get('bg-image'), wdLabel, wdValue);
