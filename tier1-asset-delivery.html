@@ -296,6 +296,34 @@ function parseKeyFor(vid) {
   const isBlank = raw.toLowerCase() === '#blank#';
   if (blankBox) blankBox.style.display = isBlank ? 'block' : 'none';
   if (layoutSection) layoutSection.style.display = isBlank ? 'none' : 'block';
+
+  // Hide logo fields when #blank# — logo is embedded in image
+  const logoSquareField = document.getElementById(vid + '-logo-square-field');
+  const horizChkField = document.getElementById(vid + '-horiz-chk-field');
+  const logoHorizField = document.getElementById(vid + '-logo-horiz-field');
+  if (logoSquareField) logoSquareField.style.display = isBlank ? 'none' : 'flex';
+  if (horizChkField) horizChkField.style.display = isBlank ? 'none' : 'flex';
+  if (logoHorizField) logoHorizField.style.display = isBlank ? 'none' : (document.getElementById(vid + '-horiz-chk')?.checked ? 'flex' : 'none');
+
+  // Also hide disclaimer section when #blank#
+  const disclaimerSection = document.getElementById(vid + '-disclaimer-section');
+  if (disclaimerSection) disclaimerSection.style.display = isBlank ? 'none' : 'block';
+
+  // Toggle data-req on hidden fields so validation skips them
+  if (isBlank) {
+    if (layoutSection) layoutSection.querySelectorAll('[data-req]').forEach(el => { el.setAttribute('data-req-saved', 'true'); el.removeAttribute('data-req'); });
+    [vid + '-logo-square', vid + '-logo-nonsquare'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.hasAttribute('data-req')) { el.setAttribute('data-req-saved', 'true'); el.removeAttribute('data-req'); }
+    });
+  } else {
+    if (layoutSection) layoutSection.querySelectorAll('[data-req-saved]').forEach(el => { el.setAttribute('data-req', 'true'); el.removeAttribute('data-req-saved'); });
+    [vid + '-logo-square', vid + '-logo-nonsquare'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.hasAttribute('data-req-saved')) { el.setAttribute('data-req', 'true'); el.removeAttribute('data-req-saved'); }
+    });
+  }
+
   if (isBlank) {
     if (preview) { preview.className = 'key-preview invalid'; preview.innerHTML = '⚠️ Embedded exception — Headline = <strong>#blank#</strong>'; }
     return;
@@ -467,9 +495,9 @@ function buildWDCreativeHTML(n) {
     <div style="margin-top:1rem">
       <div class="section-title">🖼️ Assets</div>
       <div class="grid">
-        <div class="field"><label>Background Image URL * <span class="spec-tip">ℹ<span class="spec-bubble"><b>WD Background Image</b><br>Format: Layered PSD<br>Dimensions: 855 × 1368 px min<br>No embedded text, logo, or copy. Clean background only.</span></span></label><input id="${vid}-bg-image" placeholder="https://..." data-req="true" /></div>
+        <div class="field"><label>Background Image URL * <span class="spec-tip">ℹ<span class="spec-bubble"><b>WD Background Image</b><br>Format: Layered PSD<br>Dimensions: 855 × 1368 px min<br>No embedded text, logo, or copy. Clean background only.</span></span> <a href="https://design.amazon.com/styleguide/724BA9F0B089/homepage-design-guidelines/mobile-guidelines/window-display---single-creative-card/" target="_blank" class="spec-tip" style="background:#0369a1;text-decoration:none;color:#fff" title="View WD design guidelines">↗<span class="spec-bubble"><b>WD Design Guidelines</b><br>Click to view the Window Display single creative card guidelines.</span></a></label><input id="${vid}-bg-image" placeholder="https://..." data-req="true" /></div>
         <div class="field" id="${vid}-logo-square-field"><label>Logo URL — Square (400x400px) (optional) <span class="spec-tip">ℹ<span class="spec-bubble"><b>WD Logo — Square</b><br>Format: PNG (transparent bg)<br>Dimensions: 400 × 400 px min<br>No &amp; or + symbols.</span></span></label><input id="${vid}-logo-square" placeholder="https://..." /></div>
-        <div class="field full">
+        <div class="field full" id="${vid}-horiz-chk-field">
           <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
             <input type="checkbox" id="${vid}-horiz-chk" onchange="toggleHorizLogoFor('${vid}')" style="width:14px;height:14px;accent-color:var(--accent2)" />
             Horizontal logo?
@@ -489,7 +517,7 @@ function buildWDCreativeHTML(n) {
         <span class="field-note">Always enabled for Video WD campaigns.</span>
       </div>` : ''}
     </div>
-    <div style="margin-top:1rem">
+    <div style="margin-top:1rem" id="${vid}-disclaimer-section">
       <div class="section-title">⚖️ Disclaimer (Optional)</div>
       <div class="grid">
         <div class="field">
@@ -712,15 +740,16 @@ function downloadExcel() {
     addRow('Landing page', 'Other website', wdLabel, wdValue);
     addRow('URL', get('clickthrough'), wdLabel, wdValue);
     addRow('Ad experiences', 'Asset-based creative', wdLabel, wdValue);
-    addRow('Brand name', get('brand'), wdLabel, wdValue);
+    addRow('Brand name', isBlankException ? 'N/A' : get('brand'), wdLabel, wdValue);
     const nativeVideoOn = isVideo;
     addRow('Native video', nativeVideoOn ? 'ON — Enable native video' : 'OFF — Do NOT enable', nativeVideoOn ? {rgb:'DCFCE7'} : {rgb:'FEF2F2'}, wdValue);
     addRow('Background Image URL', get('bg-image'), wdLabel, wdValue);
 
     if (isBlankException) {
       addRow('Headline', '#blank#', {rgb:'FEF2F2'}, {rgb:'FFF5F5'});
-      addRow('Body text', 'Embedded in image', {rgb:'FEF2F2'}, {rgb:'FFF5F5'});
-      addRow('Logo', 'Embedded in image', {rgb:'FEF2F2'}, {rgb:'FFF5F5'});
+      addRow('Body text', '', wdLabel, wdValue);
+      addRow('Logo', '', wdLabel, wdValue);
+      addRow('Disclaimer', '', wdLabel, wdValue);
     } else {
       const logoSquare = get('logo-square'), logoNonSquare = get('logo-nonsquare');
       if (logoSquare) addRow('Logo URL (square, 400x400px)', logoSquare, wdLabel, wdValue);
