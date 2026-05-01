@@ -60,6 +60,10 @@
     .tag.video { background: #dc2626; }
     .tag.t1 { background: #0d9488; }
     .legacy-sunset-note { background: #fef2f2; border: 1px solid #fca5a5; border-radius: 6px; padding: 0.75rem 1rem; font-size: 0.82rem; color: #991b1b; margin-bottom: 1rem; }
+    .spec-tip { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; background: var(--accent2); color: var(--accent); border-radius: 50%; font-size: 0.65rem; font-weight: 700; cursor: help; margin-left: 0.35rem; flex-shrink: 0; vertical-align: middle; }
+    .spec-tip .spec-bubble { display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; padding: 0.6rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 400; line-height: 1.45; white-space: normal; width: 260px; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.15); text-transform: none; letter-spacing: 0; }
+    .spec-tip .spec-bubble::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: var(--accent); }
+    .spec-tip:hover .spec-bubble { display: block; }
   </style>
 </head>
 <body>
@@ -165,11 +169,11 @@
     <div class="card">
       <h2>Product Spotlight <span class="tag t1">ASIN REC</span></h2>
       <div style="margin-bottom:1rem">
-        <div class="section-title">📋 ASIN REC Upload</div>
+        <div class="section-title">📋 ASIN REC</div>
         <div class="field" style="max-width:500px">
-          <label>ASIN REC File *</label>
-          <input id="ps-asin-file" type="file" accept=".xlsx,.xls,.csv,.txt" style="border:1px solid var(--border);border-radius:6px;padding:0.5rem 0.75rem;font-size:0.9rem;background:var(--white)" />
-          <span class="field-note">Upload the ASIN REC file for the Product Spotlight placement.</span>
+          <label>ASIN REC File URL *</label>
+          <input id="ps-asin-url" type="text" placeholder="https://..." data-req="true" />
+          <span class="field-note">Provide the URL to the uploaded ASIN REC file. Ensure the link is accessible.</span>
         </div>
       </div>
       <div style="padding:0.75rem 1rem;background:#fff8ee;border:1px solid var(--accent2);border-radius:6px;font-size:0.85rem;color:var(--accent);line-height:1.5">
@@ -463,8 +467,8 @@ function buildWDCreativeHTML(n) {
     <div style="margin-top:1rem">
       <div class="section-title">🖼️ Assets</div>
       <div class="grid">
-        <div class="field"><label>Background Image File Name *</label><input id="${vid}-bg-image" placeholder="e.g. Nike_WD_Background.psd" data-req="true" /></div>
-        <div class="field" id="${vid}-logo-square-field"><label>Logo File Name — Square (400x400px) (optional)</label><input id="${vid}-logo-square" placeholder="e.g. Nike_Logo_Square.png" /></div>
+        <div class="field"><label>Background Image URL * <span class="spec-tip">ℹ<span class="spec-bubble"><b>WD Background Image</b><br>Format: Layered PSD<br>Dimensions: 855 × 1368 px min<br>No embedded text, logo, or copy. Clean background only.</span></span></label><input id="${vid}-bg-image" placeholder="https://..." data-req="true" /></div>
+        <div class="field" id="${vid}-logo-square-field"><label>Logo URL — Square (400x400px) (optional) <span class="spec-tip">ℹ<span class="spec-bubble"><b>WD Logo — Square</b><br>Format: PNG (transparent bg)<br>Dimensions: 400 × 400 px min<br>No &amp; or + symbols.</span></span></label><input id="${vid}-logo-square" placeholder="https://..." /></div>
         <div class="field full">
           <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
             <input type="checkbox" id="${vid}-horiz-chk" onchange="toggleHorizLogoFor('${vid}')" style="width:14px;height:14px;accent-color:var(--accent2)" />
@@ -472,10 +476,10 @@ function buildWDCreativeHTML(n) {
           </label>
         </div>
         <div class="field" id="${vid}-logo-horiz-field" style="display:none">
-          <label>Logo File Name — Horizontal (400x400px+) *</label>
-          <input id="${vid}-logo-nonsquare" placeholder="e.g. Nike_Logo_Horizontal.png" />
+          <label>Logo URL — Horizontal (400x400px+) * <span class="spec-tip">ℹ<span class="spec-bubble"><b>WD Logo — Horizontal</b><br>Format: PNG (transparent bg)<br>Dimensions: 401 × 400 px min<br>Also provide a square logo file — required by Ads systems but will not be displayed in the ad.</span></span></label>
+          <input id="${vid}-logo-nonsquare" placeholder="https://..." />
         </div>
-        ${isVideo ? `<div class="field"><label>Video File Name *</label><input id="${vid}-video" placeholder="e.g. Nike_WD_Video.mp4" data-req="true" /></div>` : ''}
+        ${isVideo ? `<div class="field"><label>Video URL * <span class="spec-tip">ℹ<span class="spec-bubble"><b>WD Video</b><br>Format: MP4<br>Dimensions: 854 × 1368 px<br>Max size: 4.43 MB<br>H.264 · AAC 300 kbps · 24 fps · 500–1,500 kbps · max 8 sec</span></span></label><input id="${vid}-video" placeholder="https://..." data-req="true" /></div>` : ''}
       </div>
       ${isVideo ? `<div style="margin-top:0.75rem">
         <label style="display:flex;align-items:center;gap:0.5rem;cursor:not-allowed;font-size:0.85rem;font-weight:600;color:var(--muted)">
@@ -489,7 +493,7 @@ function buildWDCreativeHTML(n) {
       <div class="section-title">⚖️ Disclaimer (Optional)</div>
       <div class="grid">
         <div class="field">
-          <label>Disclaimer (max 42 chars)</label>
+          <label>Disclaimer (max 42 chars) <span class="spec-tip">ℹ<span class="spec-bubble"><b>Disclaimer</b><br>42 chars total (incl. spaces)<br>Optional. Color: Black or White.</span></span></label>
           <input id="${vid}-disclaimer" maxlength="42" placeholder="Optional" oninput="countField(this, '${vid}-disc-count', 42); parseKeyFor('${vid}')" />
           <div class="char-counter" id="${vid}-disc-count">0 / 42</div>
         </div>
@@ -526,11 +530,11 @@ function buildLegacyCreativeHTML(n) {
       </div>
       <div class="field"><label>Click-through URL *</label><input id="${lid}-clickthrough" placeholder="https://..." data-req="true" /></div>
       ${!isVideo ? `
-      <div class="field"><label>Image File Name 1500x600 *</label><input id="${lid}-image-1x" placeholder="e.g. Nike_Legacy_1500x600.jpg" data-req="true" /></div>
-      <div class="field"><label>Image File Name 3000x1200 (2x) *</label><input id="${lid}-image-2x" placeholder="e.g. Nike_Legacy_3000x1200.jpg" data-req="true" /></div>
+      <div class="field"><label>Image URL 1500x600 * <span class="spec-tip">ℹ<span class="spec-bubble"><b>Legacy H1 — 1x</b><br>Format: JPG<br>Dimensions: 1500 × 600 px<br>Max size: 95 KB<br>Required during transition period.</span></span></label><input id="${lid}-image-1x" placeholder="https://..." data-req="true" /></div>
+      <div class="field"><label>Image URL 3000x1200 (2x) * <span class="spec-tip">ℹ<span class="spec-bubble"><b>Legacy H1 — 2x</b><br>Format: JPG<br>Dimensions: 3000 × 1200 px<br>Max size: 150 KB<br>Required during transition period.</span></span></label><input id="${lid}-image-2x" placeholder="https://..." data-req="true" /></div>
       ` : `
-      <div class="field"><label>Video File Name *</label><input id="${lid}-video" placeholder="e.g. Nike_Legacy_Video.mp4" data-req="true" /></div>
-      <div class="field"><label>Companion Banner File Name *</label><input id="${lid}-companion" placeholder="e.g. Nike_Companion_3000x600.jpg" data-req="true" /></div>
+      <div class="field"><label>Video URL * <span class="spec-tip">ℹ<span class="spec-bubble"><b>Desktop H1 Video</b><br>Format: MP4<br>Dimensions: 3000 × 600 or 1500 × 300 px<br>Max size: 1.5 MB<br>H.264 · AAC. Required during transition.</span></span></label><input id="${lid}-video" placeholder="https://..." data-req="true" /></div>
+      <div class="field"><label>Companion Banner URL * <span class="spec-tip">ℹ<span class="spec-bubble"><b>Desktop H1 Slate</b><br>Format: JPG<br>Dimensions: 3000 × 600 px<br>Max size: 150 KB<br>Start/end frame — must match video content. Required during transition.</span></span></label><input id="${lid}-companion" placeholder="https://..." data-req="true" /></div>
       <div class="field full"><label>Native Display with Video</label><input class="readonly-field" value="OFF — Do NOT enable" readonly /><span class="field-note" style="color:var(--danger)">⚠️ Keep OFF in Rodeo</span></div>
       `}
     </div>
@@ -610,13 +614,12 @@ function validate() {
     if (!el?.value.trim()) { el?.classList.add('field-error'); errors.push(el); }
   });
 
-  // Product Spotlight — require file if checked
+  // Product Spotlight — require URL if checked
   if (spotlightChecked) {
-    const fileInput = document.getElementById('ps-asin-file');
-    if (fileInput && !fileInput.files.length) {
-      fileInput.style.borderColor = 'var(--danger)';
-      fileInput.style.background = '#fff5f5';
-      errors.push(fileInput);
+    const urlInput = document.getElementById('ps-asin-url');
+    if (urlInput && !urlInput.value.trim()) {
+      urlInput.classList.add('field-error');
+      errors.push(urlInput);
     }
   }
 
@@ -712,7 +715,7 @@ function downloadExcel() {
     addRow('Brand name', get('brand'), wdLabel, wdValue);
     const nativeVideoOn = isVideo;
     addRow('Native video', nativeVideoOn ? 'ON — Enable native video' : 'OFF — Do NOT enable', nativeVideoOn ? {rgb:'DCFCE7'} : {rgb:'FEF2F2'}, wdValue);
-    addRow('Images (file name)', get('bg-image'), wdLabel, wdValue);
+    addRow('Background Image URL', get('bg-image'), wdLabel, wdValue);
 
     if (isBlankException) {
       addRow('Headline', '#blank#', {rgb:'FEF2F2'}, {rgb:'FFF5F5'});
@@ -720,8 +723,8 @@ function downloadExcel() {
       addRow('Logo', 'Embedded in image', {rgb:'FEF2F2'}, {rgb:'FFF5F5'});
     } else {
       const logoSquare = get('logo-square'), logoNonSquare = get('logo-nonsquare');
-      if (logoSquare) addRow('Logo (square, 400x400px)', logoSquare, wdLabel, wdValue);
-      if (logoNonSquare) addRow('Logo (horizontal, 400x400px+)', logoNonSquare, wdLabel, wdValue);
+      if (logoSquare) addRow('Logo URL (square, 400x400px)', logoSquare, wdLabel, wdValue);
+      if (logoNonSquare) addRow('Logo URL (horizontal, 400x400px+)', logoNonSquare, wdLabel, wdValue);
       if (headlineVal) addRow('Headline', headlineVal, wdLabel, wdValue);
       if (subheadVal) addRow('Body text', subheadVal, wdLabel, wdValue);
       if (disclaimer) addRow('Disclaimer', disclaimer, wdLabel, wdValue);
@@ -732,7 +735,7 @@ function downloadExcel() {
       addRow('Placements — Display ad sizes', 'Choose specific sizes → On-Amazon only: 980x55 ✓', wdLabel, wdValue);
     } else {
       addRow('Placements — Native display with video', 'ON — Native video enabled', {rgb:'DCFCE7'}, wdValue);
-      const wdVid = get('video'); if (wdVid) addRow('Video file name', wdVid, wdLabel, wdValue);
+      const wdVid = get('video'); if (wdVid) addRow('Video URL', wdVid, wdLabel, wdValue);
     }
     row++;
   });
@@ -754,14 +757,14 @@ function downloadExcel() {
       if (!isVideo) {
         addRow('Click-through destination', get('clickthrough-type'), legLabel, legValue);
         addRow('Click-through URL', get('clickthrough'), legLabel, legValue);
-        addRow('2x image file name (3000x1200)', get('image-2x'), legLabel, legValue);
-        addRow('1x image file name (1500x600)', get('image-1x'), legLabel, legValue);
+        addRow('2x image URL (3000x1200)', get('image-2x'), legLabel, legValue);
+        addRow('1x image URL (1500x600)', get('image-1x'), legLabel, legValue);
       } else {
         addRow('Click-through destination', get('clickthrough-type'), legLabel, legValue);
         addRow('Click-through URL', get('clickthrough'), legLabel, legValue);
-        addRow('Video file name', get('video'), legLabel, legValue);
+        addRow('Video URL', get('video'), legLabel, legValue);
         addRow('Ad experiences', 'Online Video', legLabel, legValue);
-        addRow('Companion Image file name (3000x600, JPG only, 110KB max)', get('companion'), legLabel, legValue);
+        addRow('Companion Image URL (3000x600, JPG only, 110KB max)', get('companion'), legLabel, legValue);
         addRow('Native Display with Video', 'OFF — Do NOT enable', {rgb:'FEF2F2'}, {rgb:'FFF5F5'});
       }
       row++;
@@ -775,9 +778,8 @@ function downloadExcel() {
     addHeader('PRODUCT SPOTLIGHT — ASIN REC', psColor);
     addRow('Locale', locale, psLabel, psValue);
     addRow('Launch Date', launchDate, psLabel, psValue);
-    const fileInput = document.getElementById('ps-asin-file');
-    const fileName = fileInput?.files?.length ? fileInput.files[0].name : 'No file uploaded';
-    addRow('ASIN REC File', fileName, psLabel, psValue);
+    const asinUrl = document.getElementById('ps-asin-url')?.value || '';
+    addRow('ASIN REC File URL', asinUrl, psLabel, psValue);
     addRow('Browse Node Reminder', 'ASIN list should have been provided separately to APM for browse node setup', psLabel, psValue);
     row++;
   }
@@ -805,8 +807,6 @@ function clearAll() {
   document.getElementById('legacy-sunset-msg').style.display = 'none';
   document.getElementById('hero-wd-section').style.display = 'none';
   document.getElementById('product-spotlight-section').style.display = 'none';
-  const fileInput = document.getElementById('ps-asin-file');
-  if (fileInput) fileInput.value = '';
   wdCreativeCount = 0; legCreativeCount = 0;
 }
 </script>
