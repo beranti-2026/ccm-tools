@@ -427,14 +427,9 @@ function buildWDCreativeHTML(n) {
       ${n > 1 ? `<button class="remove-version" onclick="document.getElementById('wd-creative-${n}').remove()">Remove</button>` : ''}
     </div>
     <div class="grid">
-      <div class="field"><label>Ad Experience</label><input class="readonly-field" value="Component-Based Creative → Other Website" readonly /></div>
-      <div class="field"><label>Landing Page</label><input class="readonly-field" value="Other Website" readonly /></div>
-      <div class="field"><label>Takeover</label><input class="readonly-field" value="Yes" readonly /></div>
       <div class="field"><label>Unique Identifier *</label><input id="${vid}-name" placeholder="e.g. Nike_WD_EN_v1" data-req="true" /></div>
       <div class="field"><label>Language *</label><input id="${vid}-language" placeholder="e.g. English" data-req="true" oninput="updateCharLimitsFor('${vid}')" /></div>
       <div class="field"><label>Click-through URL *</label><input id="${vid}-clickthrough" placeholder="https://..." data-req="true" /></div>
-      <div class="field"><label>Inventory Type (Rodeo)</label><input class="readonly-field" value="Standard display inventory ✓ + Third-party native inventory ✓" readonly /></div>
-      <div class="field"><label>Display Ad Sizes (Rodeo)</label><input class="readonly-field" value="Choose specific sizes → 980x55 only" readonly /></div>
     </div>
     <div style="margin-top:1rem">
       <div class="section-title">🔑 Brand Name (Custom Styling Key)</div>
@@ -546,8 +541,6 @@ function buildLegacyCreativeHTML(n) {
       ${n > 1 ? `<button class="remove-version" onclick="document.getElementById('leg-creative-${n}').remove()">Remove</button>` : ''}
     </div>
     <div class="grid">
-      <div class="field"><label>Creative Type (Rodeo)</label><input class="readonly-field" value="${isVideo ? 'Online Video' : 'Standard Display'}" readonly /></div>
-      <div class="field"><label>Ad Experience</label><input class="readonly-field" value="${isVideo ? 'Online Video' : 'Single Image'}" readonly /></div>
       <div class="field"><label>Unique Identifier *</label><input id="${lid}-name" placeholder="e.g. Nike_Legacy_EN_v1" data-req="true" /></div>
       <div class="field"><label>Language *</label><input id="${lid}-language" placeholder="e.g. English" data-req="true" /></div>
       <div class="field"><label>Click-through Type *</label>
@@ -737,9 +730,7 @@ function downloadExcel() {
     addRow('Locale', locale, wdLabel, wdValue);
     addRow('Language', get('language'), wdLabel, wdValue);
     addRow('Launch Date', launchDate, wdLabel, wdValue);
-    addRow('Landing page', 'Other website', wdLabel, wdValue);
     addRow('URL', get('clickthrough'), wdLabel, wdValue);
-    addRow('Ad experiences', 'Asset-based creative', wdLabel, wdValue);
     addRow('Brand name', isBlankException ? 'N/A' : get('brand'), wdLabel, wdValue);
     const nativeVideoOn = isVideo;
     addRow('Native video', nativeVideoOn ? 'ON — Enable native video' : 'OFF — Do NOT enable', nativeVideoOn ? {rgb:'DCFCE7'} : {rgb:'FEF2F2'}, wdValue);
@@ -759,11 +750,7 @@ function downloadExcel() {
       if (disclaimer) addRow('Disclaimer', disclaimer, wdLabel, wdValue);
     }
 
-    if (!isVideo) {
-      addRow('Placements — Inventory type', 'Standard display inventory ✓ + Third-party native inventory ✓', wdLabel, wdValue);
-      addRow('Placements — Display ad sizes', 'Choose specific sizes → On-Amazon only: 980x55 ✓', wdLabel, wdValue);
-    } else {
-      addRow('Placements — Native display with video', 'ON — Native video enabled', {rgb:'DCFCE7'}, wdValue);
+    if (isVideo) {
       const wdVid = get('video'); if (wdVid) addRow('Video URL', wdVid, wdLabel, wdValue);
     }
     row++;
@@ -782,7 +769,6 @@ function downloadExcel() {
       addRow('Locale', locale, legLabel, legValue);
       addRow('Language', get('language'), legLabel, legValue);
       addRow('Launch Date', launchDate, legLabel, legValue);
-      addRow('Creative Type (Rodeo)', legCreativeType, legLabel, legValue);
       if (!isVideo) {
         addRow('Click-through destination', get('clickthrough-type'), legLabel, legValue);
         addRow('Click-through URL', get('clickthrough'), legLabel, legValue);
@@ -792,7 +778,6 @@ function downloadExcel() {
         addRow('Click-through destination', get('clickthrough-type'), legLabel, legValue);
         addRow('Click-through URL', get('clickthrough'), legLabel, legValue);
         addRow('Video URL', get('video'), legLabel, legValue);
-        addRow('Ad experiences', 'Online Video', legLabel, legValue);
         addRow('Companion Image URL (3000x600, JPG only, 110KB max)', get('companion'), legLabel, legValue);
         addRow('Native Display with Video', 'OFF — Do NOT enable', {rgb:'FEF2F2'}, {rgb:'FFF5F5'});
       }
