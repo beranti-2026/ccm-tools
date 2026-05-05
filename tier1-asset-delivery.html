@@ -59,7 +59,6 @@
     .tag.legacy { background: #0369a1; }
     .tag.video { background: #dc2626; }
     .tag.t1 { background: #0d9488; }
-    .legacy-sunset-note { background: #fef2f2; border: 1px solid #fca5a5; border-radius: 6px; padding: 0.75rem 1rem; font-size: 0.82rem; color: #991b1b; margin-bottom: 1rem; }
     .spec-tip { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; background: var(--accent2); color: var(--accent); border-radius: 50%; font-size: 0.65rem; font-weight: 700; cursor: help; margin-left: 0.35rem; flex-shrink: 0; vertical-align: middle; }
     .spec-tip .spec-bubble { display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; padding: 0.6rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 400; line-height: 1.45; white-space: normal; width: 260px; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.15); text-transform: none; letter-spacing: 0; }
     .spec-tip .spec-bubble::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: var(--accent); }
@@ -104,11 +103,11 @@
     <div class="grid">
       <div class="field">
         <label>Launch Date *</label>
-        <input id="launch-date" type="date" data-req="true" onchange="evaluateLegacyVisibility()" />
+        <input id="launch-date" type="date" data-req="true" />
       </div>
       <div class="field">
         <label>Locale (Country) *</label>
-        <select id="locale" data-req="true" onchange="evaluateLegacyVisibility()">
+        <select id="locale" data-req="true">
           <option value="">-- Select --</option>
           <option value="DE">DE</option>
           <option value="ES">ES</option>
@@ -119,7 +118,6 @@
         </select>
       </div>
     </div>
-    <div id="legacy-sunset-msg" class="legacy-sunset-note" style="display:none;margin-top:1rem"></div>
   </div>
 
   <!-- ═══ Hero/WD Section (conditional on checkbox) ═══ -->
@@ -213,54 +211,13 @@ const KEY_MAP = {
   'lb':    'Adds a box/border around disclaimer text',
 };
 
-// ── Legacy sunset logic ──
-function isLegacySunset() {
-  const launchDate = document.getElementById('launch-date')?.value;
-  const locale = document.getElementById('locale')?.value;
-  if (!launchDate || !locale) return false;
-  const d = new Date(launchDate + 'T00:00:00');
-  if (locale === 'US' && d > new Date('2026-05-11T00:00:00')) return true;
-  if (['UK','DE','FR','IT','ES'].includes(locale) && d > new Date('2026-06-01T00:00:00')) return true;
-  return false;
-}
-
-function evaluateLegacyVisibility() {
-  const sunset = isLegacySunset();
-  const legacyCard = document.getElementById('legacy-card');
-  const msg = document.getElementById('legacy-sunset-msg');
-  const locale = document.getElementById('locale')?.value || '';
-  const launchDate = document.getElementById('launch-date')?.value || '';
-
-  if (sunset) {
-    if (legacyCard) legacyCard.style.display = 'none';
-    if (msg) {
-      const cutoff = locale === 'US' ? 'May 11, 2026' : 'June 1, 2026';
-      msg.style.display = 'block';
-      msg.innerHTML = `⚠️ Legacy Desktop Banner is <strong>not required</strong> for ${locale} launches after ${cutoff}. This section has been hidden.`;
-    }
-  } else {
-    if (legacyCard) legacyCard.style.display = document.getElementById('chk-hero-wd')?.checked ? 'block' : 'none';
-    if (msg) msg.style.display = 'none';
-    // Ensure at least 1 legacy version exists when shown
-    const legContainer = document.getElementById('legacy-creatives-container');
-    if (legContainer && legContainer.children.length === 0) { legCreativeCount = 0; addLegacyCreative(); }
-  }
-  // Update type note
-  updateTypeNote();
-}
-
 function updateTypeNote() {
   const isVideo = document.getElementById('type-video')?.checked;
-  const sunset = isLegacySunset();
   const note = document.getElementById('type-note');
   if (!note) return;
-  if (sunset) {
-    note.textContent = isVideo ? 'Video: WD creative (Component-Based Creative)' : 'Static: WD creative (Asset-Based)';
-  } else {
-    note.textContent = isVideo
-      ? 'Video: WD creative (Component-Based Creative) + Legacy Desktop Banner (Online Video)'
-      : 'Static: WD creative (Asset-Based) + Legacy Desktop Banner (1500x600 Static)';
-  }
+  note.textContent = isVideo
+    ? 'Video: WD creative (Component-Based Creative) + Legacy Desktop Banner (Online Video)'
+    : 'Static: WD creative (Asset-Based) + Legacy Desktop Banner (1500x600 Static)';
 }
 
 // ── Product selection toggle ──
@@ -277,10 +234,8 @@ function onProductSelectionChange() {
     if (heroWDChecked) {
       const wdContainer = document.getElementById('wd-creatives-container');
       if (wdContainer && wdContainer.children.length === 0) { wdCreativeCount = 0; addWDCreative(); }
-      if (!isLegacySunset()) {
-        const legContainer = document.getElementById('legacy-creatives-container');
-        if (legContainer && legContainer.children.length === 0) { legCreativeCount = 0; addLegacyCreative(); }
-      }
+      const legContainer = document.getElementById('legacy-creatives-container');
+      if (legContainer && legContainer.children.length === 0) { legCreativeCount = 0; addLegacyCreative(); }
     }
   }
   if (spotlightSection) spotlightSection.style.display = spotlightChecked ? 'block' : 'none';
@@ -598,7 +553,7 @@ function onCampaignTypeChange() {
   wdCreativeCount = 0; legCreativeCount = 0;
   if (document.getElementById('chk-hero-wd')?.checked) {
     addWDCreative();
-    if (!isLegacySunset()) addLegacyCreative();
+    addLegacyCreative();
   }
 }
 
@@ -648,7 +603,6 @@ function validate() {
   document.querySelectorAll('[data-req="true"]').forEach(el => {
     // Skip fields inside hidden sections
     if (!heroWDChecked && el.closest('#hero-wd-section')) return;
-    if (isLegacySunset() && el.closest('#legacy-card')) return;
     if (!el.value.trim()) { el.classList.add('field-error'); errors.push(el); }
   });
 
@@ -675,7 +629,6 @@ function downloadExcel() {
   const launchDate = document.getElementById('launch-date')?.value || '';
   const isVideo = document.getElementById('type-video').checked;
   const campaignType = isVideo ? 'Video' : 'Static';
-  const sunset = isLegacySunset();
   const heroWDChecked = document.getElementById('chk-hero-wd')?.checked;
   const spotlightChecked = document.getElementById('chk-product-spotlight')?.checked;
   const products = [];
@@ -756,8 +709,8 @@ function downloadExcel() {
     row++;
   });
 
-  // Legacy Desktop Banner (only if not sunset)
-  if (!sunset) {
+  // Legacy Desktop Banner
+  if (heroWDChecked) {
     const legColor = {rgb:'0369A1'}, legLabel = {rgb:'E0F2FE'}, legValue = {rgb:'F0F9FF'};
     const legCreativeType = isVideo ? 'Online Video' : 'Standard Display';
     const legBlocks = document.getElementById('legacy-creatives-container')?.querySelectorAll('.version-block') || [];
@@ -818,7 +771,6 @@ function clearAll() {
   document.getElementById('wd-creatives-container').innerHTML = '';
   document.getElementById('legacy-creatives-container').innerHTML = '';
   document.getElementById('legacy-card').style.display = 'block';
-  document.getElementById('legacy-sunset-msg').style.display = 'none';
   document.getElementById('hero-wd-section').style.display = 'none';
   document.getElementById('product-spotlight-section').style.display = 'none';
   wdCreativeCount = 0; legCreativeCount = 0;
