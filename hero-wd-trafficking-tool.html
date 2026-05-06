@@ -318,11 +318,11 @@ function renderLayoutFieldsFor(vid) {
   let html = '';
   if (hl > 0) {
     const maxH = hl * limits.headline;
-    html += `<div class="field"><label>Headline (max ${maxH} chars)</label><input id="${vid}-headline-1" maxlength="${maxH}" placeholder="Max ${maxH} chars" data-req="true" oninput="countField(this,'${vid}-hl-count',${maxH})" /><div class="char-counter" id="${vid}-hl-count">0 / ${maxH}</div></div>`;
+    html += `<div class="field"><label>Headline (recommended max ${maxH} chars)</label><input id="${vid}-headline-1" placeholder="Recommended max ${maxH} chars" data-req="true" oninput="countField(this,'${vid}-hl-count',${maxH})" /><div class="char-counter" id="${vid}-hl-count">0 / ${maxH}</div></div>`;
   }
   if (sl > 0) {
     const maxS = sl * limits.subhead;
-    html += `<div class="field"><label>Body text (max ${maxS} chars)</label><input id="${vid}-subhead-1" maxlength="${maxS}" placeholder="Max ${maxS} chars" data-req="true" oninput="countField(this,'${vid}-sh-count',${maxS})" /><div class="char-counter" id="${vid}-sh-count">0 / ${maxS}</div></div>`;
+    html += `<div class="field"><label>Body text (recommended max ${maxS} chars)</label><input id="${vid}-subhead-1" placeholder="Recommended max ${maxS} chars" data-req="true" oninput="countField(this,'${vid}-sh-count',${maxS})" /><div class="char-counter" id="${vid}-sh-count">0 / ${maxS}</div></div>`;
   }
   container.innerHTML = html;
 }
@@ -419,6 +419,7 @@ function buildWDCreativeHTML(n) {
         </div>
       </div>
       <div id="${vid}-layout-fields" class="layout-fields"></div>
+      <div class="field-note" style="margin-top:0.5rem;font-style:italic;grid-column:1/-1">* All character count estimates are approximate since character width varies (e.g., a "W" takes up more space than an "i"). Text size is fixed and can't be adjusted. Be sure to vet your creatives with CS and preview them before launch.</div>
     </div>
     <div style="margin-top:1rem">
       <div class="section-title">🖼️ Assets</div>
@@ -450,8 +451,8 @@ function buildWDCreativeHTML(n) {
       <div class="section-title">⚖️ Disclaimer (Optional)</div>
       <div class="grid">
         <div class="field">
-          <label>Disclaimer (max 42 chars)</label>
-          <input id="${vid}-disclaimer" maxlength="42" placeholder="Optional" oninput="countField(this, '${vid}-disc-count', 42); parseKeyFor('${vid}')" />
+          <label>Disclaimer (recommended max 42 chars)</label>
+          <input id="${vid}-disclaimer" placeholder="Optional" oninput="countField(this, '${vid}-disc-count', 42); parseKeyFor('${vid}')" />
           <div class="char-counter" id="${vid}-disc-count">0 / 42</div>
         </div>
         <div class="field">
@@ -655,8 +656,8 @@ function renderLayoutFields() {
   const totalHeadlineChars = headlineLines * limits.headline;
   html += `
     <div class="field">
-      <label>Headline * (${headlineLines > 1 ? headlineLines + ' lines, ' : ''}max ${totalHeadlineChars} chars incl. spaces)</label>
-      <input id="wd-headline-1" maxlength="${totalHeadlineChars}" placeholder="Max ${totalHeadlineChars} chars${headlineLines > 1 ? ' (' + limits.headline + ' per line)' : ''}" data-req="true"
+      <label>Headline * (${headlineLines > 1 ? headlineLines + ' lines, ' : ''}recommended max ${totalHeadlineChars} chars incl. spaces)</label>
+      <input id="wd-headline-1" placeholder="Recommended max ${totalHeadlineChars} chars${headlineLines > 1 ? ' (' + limits.headline + ' per line)' : ''}" data-req="true"
         oninput="countField(this, 'count-hl-1', ${totalHeadlineChars})" />
       <div class="char-counter" id="count-hl-1">0 / ${totalHeadlineChars}</div>
     </div>`;
@@ -666,8 +667,8 @@ function renderLayoutFields() {
     const totalSubheadChars = subheadLines * limits.subhead;
     html += `
       <div class="field">
-        <label>Subhead * (${subheadLines > 1 ? subheadLines + ' lines, ' : ''}max ${totalSubheadChars} chars incl. spaces)</label>
-        <input id="wd-subhead-1" maxlength="${totalSubheadChars}" placeholder="Max ${totalSubheadChars} chars${subheadLines > 1 ? ' (' + limits.subhead + ' per line)' : ''}" data-req="true"
+        <label>Subhead * (${subheadLines > 1 ? subheadLines + ' lines, ' : ''}recommended max ${totalSubheadChars} chars incl. spaces)</label>
+        <input id="wd-subhead-1" placeholder="Recommended max ${totalSubheadChars} chars${subheadLines > 1 ? ' (' + limits.subhead + ' per line)' : ''}" data-req="true"
           oninput="countField(this, 'count-sh-1', ${totalSubheadChars})" />
         <div class="char-counter" id="count-sh-1">0 / ${totalSubheadChars}</div>
       </div>`;
@@ -714,35 +715,41 @@ function validate() {
 
   const errors = [];
 
-  // #blank# exception — must confirm checkbox
-  const isBlankKey = document.getElementById('wd-brand')?.value.trim().toLowerCase() === '#blank#';
-  if (isBlankKey && !document.getElementById('chk-blank-exception')?.checked) {
-    const b = document.createElement('div');
-    b.style.cssText = 'background:#fee2e2;border:2px solid #dc2626;border-radius:8px;padding:1rem;margin-bottom:1rem;color:#991b1b;font-weight:700;font-size:0.9rem;';
-    b.textContent = '🚫 You must confirm the embedded creative exception checkbox before downloading.';
-    document.querySelector('.container').prepend(b);
-    setTimeout(() => b.remove(), 5000);
-    return [true];
+  // #blank# exception — check all WD creatives for unconfirmed #blank#
+  const wdBlocks = document.getElementById('wd-creatives-container')?.querySelectorAll('.version-block') || [];
+  for (const block of wdBlocks) {
+    const vid = block.id.replace('wd-creative-', 'wd');
+    const brandVal = document.getElementById(vid + '-brand')?.value.trim().toLowerCase();
+    const blankChk = document.getElementById(vid + '-blank-chk');
+    if (brandVal === '#blank#' && blankChk && !blankChk.checked) {
+      const b = document.createElement('div');
+      b.id = 'error-banner';
+      b.style.cssText = 'background:#fee2e2;border:2px solid #dc2626;border-radius:8px;padding:1rem;margin-bottom:1rem;color:#991b1b;font-weight:700;font-size:0.9rem;';
+      b.innerHTML = `🚫 You must confirm the embedded creative exception checkbox before downloading.<br><a href="#" onclick="document.getElementById('${vid}-blank-chk').scrollIntoView({behavior:'smooth',block:'center'});return false;" style="color:#991b1b">↓ Jump to confirmation</a>`;
+      document.querySelector('.container').prepend(b);
+      return [true];
+    }
   }
 
   // Ad Policy must be checked
   if (!document.getElementById('chk-policy')?.checked) {
     const banner2 = document.createElement('div');
+    banner2.id = 'error-banner';
     banner2.style.cssText = 'background:#fee2e2;border:2px solid #dc2626;border-radius:8px;padding:1rem;margin-bottom:1rem;color:#991b1b;font-weight:700;font-size:0.9rem;';
-    banner2.textContent = '🚫 You must confirm Ad Policy approval before downloading.';
+    banner2.innerHTML = '🚫 You must confirm Ad Policy approval before downloading.<br><a href="#" onclick="document.getElementById(\'chk-policy\').scrollIntoView({behavior:\'smooth\',block:\'center\'});return false;" style="color:#991b1b">↓ Jump to checklist</a>';
     document.querySelector('.container').prepend(banner2);
-    setTimeout(() => banner2.remove(), 5000);
     return [true];
   }
 
-  // Campaign fields removed — no validation needed for campaign level
-
+  // Line item URLs
   ['li-wd-mobile','li-wd-desktop','li-legacy'].forEach(id => {
     const el = document.getElementById(id);
     if (!el?.value.trim()) { el?.classList.add('field-error'); errors.push(el); }
   });
 
+  // All required fields — skip hidden ones
   document.querySelectorAll('[data-req="true"]').forEach(el => {
+    if (el.closest('[style*="display: none"]') || el.closest('[style*="display:none"]')) return;
     if (!el.value.trim()) { el.classList.add('field-error'); errors.push(el); }
   });
 
@@ -750,9 +757,9 @@ function validate() {
     const banner = document.createElement('div');
     banner.id = 'error-banner';
     banner.style.cssText = 'background:#fee2e2;border:2px solid #dc2626;border-radius:8px;padding:1rem;margin-bottom:1.5rem;color:#991b1b;font-weight:600;font-size:0.9rem;';
-    const firstEl = errors[0];
+    const firstEl = errors.find(e => e && e.id);
     banner.innerHTML = `⚠️ ${errors.length} required field${errors.length > 1 ? 's are' : ' is'} missing.
-      ${firstEl?.id ? `<br><a href="#" onclick="document.getElementById('${firstEl.id}').scrollIntoView({behavior:'smooth',block:'center'});return false;" style="color:#991b1b">↓ Jump to first missing field</a>` : ''}`;
+      ${firstEl?.id ? `<br><a href="#" onclick="document.getElementById('${firstEl.id}').scrollIntoView({behavior:'smooth',block:'center'});document.getElementById('${firstEl.id}').focus();return false;" style="color:#991b1b">↓ Jump to first missing field</a>` : ''}`;
     document.querySelector('.container').prepend(banner);
     banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
