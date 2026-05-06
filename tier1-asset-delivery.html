@@ -343,11 +343,11 @@ function renderLayoutFieldsFor(vid) {
   let html = '';
   if (hl > 0) {
     const maxH = hl * limits.headline;
-    html += `<div class="field"><label>Headline (max ${maxH} chars)</label><input id="${vid}-headline-1" maxlength="${maxH}" placeholder="Max ${maxH} chars" data-req="true" oninput="countField(this,'${vid}-hl-count',${maxH})" /><div class="char-counter" id="${vid}-hl-count">0 / ${maxH}</div></div>`;
+    html += `<div class="field"><label>Headline (recommended max ${maxH} chars)</label><input id="${vid}-headline-1" placeholder="Recommended max ${maxH} chars" data-req="true" oninput="countField(this,'${vid}-hl-count',${maxH})" /><div class="char-counter" id="${vid}-hl-count">0 / ${maxH}</div></div>`;
   }
   if (sl > 0) {
     const maxS = sl * limits.subhead;
-    html += `<div class="field"><label>Body text (max ${maxS} chars)</label><input id="${vid}-subhead-1" maxlength="${maxS}" placeholder="Max ${maxS} chars" data-req="true" oninput="countField(this,'${vid}-sh-count',${maxS})" /><div class="char-counter" id="${vid}-sh-count">0 / ${maxS}</div></div>`;
+    html += `<div class="field"><label>Body text (recommended max ${maxS} chars)</label><input id="${vid}-subhead-1" placeholder="Recommended max ${maxS} chars" data-req="true" oninput="countField(this,'${vid}-sh-count',${maxS})" /><div class="char-counter" id="${vid}-sh-count">0 / ${maxS}</div></div>`;
   }
   container.innerHTML = html;
 }
@@ -441,6 +441,7 @@ function buildWDCreativeHTML(n) {
         </div>
       </div>
       <div id="${vid}-layout-fields" class="layout-fields"></div>
+      <div class="field-note" style="margin-top:0.5rem;font-style:italic;grid-column:1/-1">* All character count estimates are approximate since character width varies (e.g., a "W" takes up more space than an "i"). Text size is fixed and can't be adjusted.</div>
     </div>
     <div style="margin-top:1rem">
       <div class="section-title">🖼️ Assets</div>
@@ -471,8 +472,8 @@ function buildWDCreativeHTML(n) {
       <div class="section-title">⚖️ Disclaimer (Optional)</div>
       <div class="grid">
         <div class="field">
-          <label>Disclaimer (max 42 chars) <span class="spec-tip">ℹ<span class="spec-bubble"><b>Disclaimer</b><br>42 chars total (incl. spaces)<br>Optional. Color: Black or White.</span></span></label>
-          <input id="${vid}-disclaimer" maxlength="42" placeholder="Optional" oninput="countField(this, '${vid}-disc-count', 42); parseKeyFor('${vid}')" />
+          <label>Disclaimer (recommended max 42 chars) <span class="spec-tip">ℹ<span class="spec-bubble"><b>Disclaimer</b><br>42 chars total (incl. spaces)<br>Optional. Color: Black or White.</span></span></label>
+          <input id="${vid}-disclaimer" placeholder="Optional" oninput="countField(this, '${vid}-disc-count', 42); parseKeyFor('${vid}')" />
           <div class="char-counter" id="${vid}-disc-count">0 / 42</div>
         </div>
         <div class="field">
@@ -603,6 +604,9 @@ function validate() {
   document.querySelectorAll('[data-req="true"]').forEach(el => {
     // Skip fields inside hidden sections
     if (!heroWDChecked && el.closest('#hero-wd-section')) return;
+    if (!spotlightChecked && el.closest('#product-spotlight-section')) return;
+    // Skip fields inside any hidden parent (e.g., #blank# hides layout/logo/disclaimer)
+    if (el.closest('[style*="display: none"]') || el.closest('[style*="display:none"]')) return;
     if (!el.value.trim()) { el.classList.add('field-error'); errors.push(el); }
   });
 
@@ -610,9 +614,9 @@ function validate() {
     const banner = document.createElement('div');
     banner.id = 'error-banner';
     banner.style.cssText = 'background:#fee2e2;border:2px solid #dc2626;border-radius:8px;padding:1rem;margin-bottom:1.5rem;color:#991b1b;font-weight:600;font-size:0.9rem;';
-    const firstEl = errors[0];
+    const firstEl = errors.find(e => e && e.id);
     banner.innerHTML = `⚠️ ${errors.length} required field${errors.length > 1 ? 's are' : ' is'} missing.
-      ${firstEl?.id ? `<br><a href="#" onclick="document.getElementById('${firstEl.id}').scrollIntoView({behavior:'smooth',block:'center'});return false;" style="color:#991b1b">↓ Jump to first missing field</a>` : ''}`;
+      ${firstEl?.id ? `<br><a href="#" onclick="document.getElementById('${firstEl.id}').scrollIntoView({behavior:'smooth',block:'center'});document.getElementById('${firstEl.id}').focus();return false;" style="color:#991b1b">↓ Jump to first missing field</a>` : ''}`;
     document.querySelector('.container').prepend(banner);
     banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
