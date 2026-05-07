@@ -72,6 +72,27 @@
     ⚠️ Fill in campaign details, then complete the WD creative and Legacy Desktop Banner sections. Click <strong>Download Excel</strong> when done.
   </div>
 
+  <!-- Tier 1 Brand Activation Program -->
+  <div class="card" style="border-left:4px solid var(--accent2)">
+    <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;font-size:0.9rem;font-weight:600">
+      <input type="checkbox" id="chk-tier1" style="width:16px;height:16px;accent-color:var(--accent2)" />
+      Is this campaign part of the Tier 1 Brand Activation Program?
+      <a href="https://w.amazon.com/bin/view/Tier1/Master/SOP/" target="_blank" style="font-size:0.8rem;color:#0369a1;font-weight:600;text-decoration:none;margin-left:0.25rem">View SOP ↗</a>
+    </label>
+  </div>
+
+  <!-- Region Selector -->
+  <div class="card">
+    <h2>Region</h2>
+    <div class="field" style="max-width:300px">
+      <label>Region *</label>
+      <select id="region-select" onchange="onRegionChange()">
+        <option value="standard" selected>US / CA / EU5 / JP / AU / MX</option>
+        <option value="menat-br">MENAT / BR</option>
+      </select>
+    </div>
+  </div>
+
   <!-- Campaign Info -->
   <div class="card">
     <h2>Campaign Information</h2>
@@ -111,14 +132,23 @@
       </label>
     </div>
   </div>
-  <div class="card">
+  <div class="card" id="line-items-card">
     <h2>Line Item URLs</h2>
-    <div class="grid">
-      <div class="field"><label>WD Mobile Line Item URL *</label><input id="li-wd-mobile" type="text" placeholder="https://advertising.amazon.com/..." data-req="true" /></div>
-      <div class="field"><label>WD Desktop Line Item URL *</label><input id="li-wd-desktop" type="text" placeholder="https://advertising.amazon.com/..." data-req="true" /></div>
-      <div class="field"><label>Legacy Desktop Banner Line Item URL *</label><input id="li-legacy" type="text" placeholder="https://advertising.amazon.com/..." data-req="true" /></div>
+    <!-- Standard region (US/CA/EU5/JP/AU/MX) -->
+    <div id="line-items-standard">
+      <div class="grid">
+        <div class="field"><label>WD Mobile Line Item URL *</label><input id="li-wd-mobile" type="text" placeholder="https://advertising.amazon.com/..." data-req="true" /></div>
+        <div class="field"><label>WD Desktop Line Item URL *</label><input id="li-wd-desktop" type="text" placeholder="https://advertising.amazon.com/..." data-req="true" /></div>
+        <div class="field"><label>Legacy Desktop Banner Line Item URL *</label><input id="li-legacy" type="text" placeholder="https://advertising.amazon.com/..." data-req="true" /></div>
+      </div>
+      <div class="info-box">💡 The same WD creative will be trafficked to both WD Mobile and WD Desktop line items.</div>
     </div>
-    <div class="info-box">💡 The same WD creative will be trafficked to both WD Mobile and WD Desktop line items.</div>
+    <!-- MENAT/BR region -->
+    <div id="line-items-menat" style="display:none">
+      <div class="grid">
+        <div class="field" style="grid-column:1/-1"><label>Line Item URL - Deal *</label><input id="li-deal" type="text" placeholder="https://advertising.amazon.com/..." data-req="true" /></div>
+      </div>
+    </div>
   </div>
 
   <!-- WD Creative -->
@@ -533,6 +563,21 @@ function toggleWDHorizontalLogo() {
   }
 }
 
+// ── Region toggle ──
+function onRegionChange() {
+  const region = document.getElementById('region-select')?.value;
+  const standardSection = document.getElementById('line-items-standard');
+  const menatSection = document.getElementById('line-items-menat');
+
+  if (region === 'menat-br') {
+    if (standardSection) standardSection.style.display = 'none';
+    if (menatSection) menatSection.style.display = 'block';
+  } else {
+    if (standardSection) standardSection.style.display = 'block';
+    if (menatSection) menatSection.style.display = 'none';
+  }
+}
+
 // ── Campaign type toggle ──
 function onCampaignTypeChange() {
   const isVideo = document.getElementById('type-video').checked;
@@ -741,15 +786,25 @@ function validate() {
     return [true];
   }
 
-  // Line item URLs
-  ['li-wd-mobile','li-wd-desktop','li-legacy'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el?.value.trim()) { el?.classList.add('field-error'); errors.push(el); }
-  });
+  // Line item URLs — region-aware + skip Legacy if Tier 1
+  const isTier1 = document.getElementById('chk-tier1')?.checked;
+  const isMenat = document.getElementById('region-select')?.value === 'menat-br';
 
-  // All required fields — skip hidden ones
+  if (isMenat) {
+    const dealEl = document.getElementById('li-deal');
+    if (!dealEl?.value.trim()) { dealEl?.classList.add('field-error'); errors.push(dealEl); }
+  } else {
+    const lineItemIds = isTier1 ? ['li-wd-mobile','li-wd-desktop'] : ['li-wd-mobile','li-wd-desktop','li-legacy'];
+    lineItemIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el?.value.trim()) { el?.classList.add('field-error'); errors.push(el); }
+    });
+  }
+
+  // All required fields — skip hidden ones and Legacy if Tier 1
   document.querySelectorAll('[data-req="true"]').forEach(el => {
     if (el.closest('[style*="display: none"]') || el.closest('[style*="display:none"]')) return;
+    if (isTier1 && el.closest('#legacy-card')) return;
     if (!el.value.trim()) { el.classList.add('field-error'); errors.push(el); }
   });
 
@@ -848,8 +903,12 @@ function downloadExcel() {
     const disclaimer = get('disclaimer');
 
     addHeader(`WD CREATIVE ${n} — Component-Based Creative → Other Website  |  WD Mobile + WD Desktop`, wdColor);
-    addRow('WD Mobile Line Item URL', document.getElementById('li-wd-mobile').value, wdLabel, wdValue);
-    addRow('WD Desktop Line Item URL', document.getElementById('li-wd-desktop').value, wdLabel, wdValue);
+    if (document.getElementById('region-select')?.value === 'menat-br') {
+      addRow('Line Item URL - Deal', document.getElementById('li-deal')?.value || '', wdLabel, wdValue);
+    } else {
+      addRow('WD Mobile Line Item URL', document.getElementById('li-wd-mobile').value, wdLabel, wdValue);
+      addRow('WD Desktop Line Item URL', document.getElementById('li-wd-desktop').value, wdLabel, wdValue);
+    }
     addRow('Unique Identifier', get('name'), wdLabel, wdValue);
     addRow('Marketplace', locale, wdLabel, wdValue);
     addRow('Language', get('language'), wdLabel, wdValue);
@@ -901,7 +960,11 @@ function downloadExcel() {
     const get = (fid) => document.getElementById(`${lid}-${fid}`)?.value || '';
 
     addHeader(`LEGACY DESKTOP BANNER ${n} — ${legCreativeType}  |  ${isVideo ? 'Video + Companion Image' : '1500x600 + 3000x1200'}`, legColor);
-    addRow('Line Item URL', document.getElementById('li-legacy').value, legLabel, legValue);
+    if (document.getElementById('region-select')?.value === 'menat-br') {
+      addRow('Line Item URL - Deal', document.getElementById('li-deal')?.value || '', legLabel, legValue);
+    } else {
+      addRow('Line Item URL', document.getElementById('li-legacy').value, legLabel, legValue);
+    }
     addRow('Unique Identifier', get('name'), legLabel, legValue);
     addRow('Marketplace', locale, legLabel, legValue);
     addRow('Language', get('language'), legLabel, legValue);
