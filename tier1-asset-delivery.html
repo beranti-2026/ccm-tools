@@ -123,32 +123,22 @@
   <!-- ═══ Hero/WD Section (conditional on checkbox) ═══ -->
   <div id="hero-wd-section" style="display:none">
 
-  <!-- Campaign Info — carried over as-is -->
-  <div class="card">
-    <h2>Campaign Information</h2>
-    <div style="padding:1rem;background:#f8f9fb;border:1px solid var(--border);border-radius:8px">
-      <div style="font-size:0.85rem;font-weight:700;color:var(--accent);margin-bottom:0.75rem">Campaign Type * — select one</div>
-      <div style="display:flex;gap:2rem">
-        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-weight:600;font-size:0.9rem">
-          <input type="radio" name="campaign-type" id="type-static" value="static" onchange="onCampaignTypeChange()" checked
-            style="width:16px;height:16px;accent-color:var(--accent2)" />
-          📸 Static
-        </label>
-        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-weight:600;font-size:0.9rem">
-          <input type="radio" name="campaign-type" id="type-video" value="video" onchange="onCampaignTypeChange()"
-            style="width:16px;height:16px;accent-color:var(--accent2)" />
-          🎬 Video
-        </label>
-      </div>
-      <div id="type-note" style="margin-top:0.5rem;font-size:0.8rem;color:var(--muted)">
-        Static: WD creative (Asset-Based) + Legacy Desktop Banner (1500x600 Static)
-      </div>
-    </div>
-  </div>
-
   <!-- WD Creative -->
   <div class="card">
     <h2>WD Creative <span class="tag wd">Component-Based Creative</span> <span class="tag wd">WD Mobile + WD Desktop</span></h2>
+    <div style="padding:0.75rem 1rem;background:#f8f9fb;border:1px solid var(--border);border-radius:6px;margin-bottom:1rem">
+      <div style="font-size:0.82rem;font-weight:700;color:var(--accent);margin-bottom:0.5rem">Creative Type *</div>
+      <div style="display:flex;gap:1.5rem">
+        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-weight:600;font-size:0.85rem">
+          <input type="radio" name="wd-type" id="wd-type-static" value="static" onchange="onWDTypeChange()" checked style="width:14px;height:14px;accent-color:var(--accent2)" />
+          📸 Static
+        </label>
+        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-weight:600;font-size:0.85rem">
+          <input type="radio" name="wd-type" id="wd-type-video" value="video" onchange="onWDTypeChange()" style="width:14px;height:14px;accent-color:var(--accent2)" />
+          🎬 Video
+        </label>
+      </div>
+    </div>
     <div id="wd-creatives-container"></div>
     <button class="add-version-btn" onclick="addWDCreative()" style="margin-top:0.5rem">+ Add Version</button>
   </div>
@@ -156,6 +146,22 @@
   <!-- Legacy Desktop Banner (conditionally shown) -->
   <div class="card" id="legacy-card">
     <h2 id="legacy-title">Legacy Desktop Banner <span class="tag legacy">Standard Display</span> <span class="tag legacy">1500x600 + 3000x1200</span></h2>
+    <div style="padding:0.75rem 1rem;background:#f8f9fb;border:1px solid var(--border);border-radius:6px;margin-bottom:1rem">
+      <div style="font-size:0.82rem;font-weight:700;color:var(--accent);margin-bottom:0.5rem">Creative Type *</div>
+      <div style="display:flex;gap:1.5rem">
+        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-weight:600;font-size:0.85rem">
+          <input type="radio" name="leg-type" id="leg-type-static" value="static" onchange="onLegTypeChange()" checked style="width:14px;height:14px;accent-color:var(--accent2)" />
+          📸 Static
+        </label>
+        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-weight:600;font-size:0.85rem">
+          <input type="radio" name="leg-type" id="leg-type-video" value="video" onchange="onLegTypeChange()" style="width:14px;height:14px;accent-color:var(--accent2)" />
+          🎬 Video
+        </label>
+      </div>
+    </div>
+    <div id="type-mismatch-alert" style="display:none;padding:0.75rem 1rem;background:#fff8ee;border:1px solid var(--accent2);border-radius:6px;margin-bottom:1rem;font-size:0.82rem;color:var(--accent)">
+      ⚠️ <strong>Creative Type Conflict:</strong> WD Creative and Legacy Desktop Banner have different formats selected (e.g., Video on WD + Static on Hero). Mixed-format campaigns require additional setup and coordination on the Ads side. Please check with the Ads team before proceeding to confirm feasibility and timeline impact.
+    </div>
     <div id="legacy-creatives-container"></div>
     <button class="add-version-btn" onclick="addLegacyCreative()" style="margin-top:0.5rem">+ Add Version</button>
   </div>
@@ -210,15 +216,6 @@ const KEY_MAP = {
   'sf':    'Subhead appears BEFORE headline',
   'lb':    'Adds a box/border around disclaimer text',
 };
-
-function updateTypeNote() {
-  const isVideo = document.getElementById('type-video')?.checked;
-  const note = document.getElementById('type-note');
-  if (!note) return;
-  note.textContent = isVideo
-    ? 'Video: WD creative (Component-Based Creative) + Legacy Desktop Banner (Online Video)'
-    : 'Static: WD creative (Asset-Based) + Legacy Desktop Banner (1500x600 Static)';
-}
 
 // ── Product selection toggle ──
 function onProductSelectionChange() {
@@ -375,7 +372,7 @@ function toggleHorizLogoFor(vid) {
 // ── WD Creative HTML (no "provided by CS" notes) ──
 function buildWDCreativeHTML(n) {
   const vid = `wd${n}`;
-  const isVideo = document.getElementById('type-video')?.checked || false;
+  const isVideo = document.getElementById('wd-type-video')?.checked || false;
   return `<div class="version-block" id="wd-creative-${n}" style="margin-bottom:1rem">
     <div class="version-header">
       <span>WD Creative ${n}</span>
@@ -460,13 +457,6 @@ function buildWDCreativeHTML(n) {
         </div>
         ${isVideo ? `<div class="field"><label>Video URL * <span class="spec-tip">ℹ<span class="spec-bubble"><b>WD Video</b><br>Format: MP4<br>Dimensions: 854 × 1368 px<br>Max size: 4.43 MB<br>H.264 · AAC 300 kbps · 24 fps · 500–1,500 kbps · max 8 sec</span></span></label><input id="${vid}-video" placeholder="https://..." data-req="true" /></div>` : ''}
       </div>
-      ${isVideo ? `<div style="margin-top:0.75rem">
-        <label style="display:flex;align-items:center;gap:0.5rem;cursor:not-allowed;font-size:0.85rem;font-weight:600;color:var(--muted)">
-          <input type="checkbox" id="${vid}-native-video" checked disabled style="width:16px;height:16px;accent-color:var(--accent2);cursor:not-allowed" />
-          Choose Native Video (enable native video in Rodeo)
-        </label>
-        <span class="field-note">Always enabled for Video WD campaigns.</span>
-      </div>` : ''}
     </div>
     <div style="margin-top:1rem" id="${vid}-disclaimer-section">
       <div class="section-title">⚖️ Disclaimer (Optional)</div>
@@ -490,7 +480,7 @@ function buildWDCreativeHTML(n) {
 // ── Legacy Creative HTML ──
 function buildLegacyCreativeHTML(n) {
   const lid = `leg${n}`;
-  const isVideo = document.getElementById('type-video')?.checked || false;
+  const isVideo = document.getElementById('leg-type-video')?.checked || false;
   return `<div class="version-block" id="leg-creative-${n}" style="margin-bottom:1rem">
     <div class="version-header">
       <span>Legacy Creative ${n}</span>
@@ -536,26 +526,35 @@ function addLegacyCreative() {
   container.appendChild(div.firstElementChild);
 }
 
-// ── Campaign type toggle ──
-function onCampaignTypeChange() {
-  const isVideo = document.getElementById('type-video').checked;
+// ── WD and Legacy type toggles ──
+function onWDTypeChange() {
+  const wdContainer = document.getElementById('wd-creatives-container');
+  if (wdContainer) wdContainer.innerHTML = '';
+  wdCreativeCount = 0;
+  addWDCreative();
+  checkTypeMismatch();
+}
+
+function onLegTypeChange() {
+  const isVideo = document.getElementById('leg-type-video')?.checked;
   const legTitle = document.getElementById('legacy-title');
   if (isVideo) {
     if (legTitle) legTitle.innerHTML = 'Legacy Desktop Banner <span class="tag video">Online Video</span>';
   } else {
     if (legTitle) legTitle.innerHTML = 'Legacy Desktop Banner <span class="tag legacy">Standard Display</span> <span class="tag legacy">1500x600 + 3000x1200</span>';
   }
-  updateTypeNote();
-  // Re-init creatives
-  const wdContainer = document.getElementById('wd-creatives-container');
   const legContainer = document.getElementById('legacy-creatives-container');
-  if (wdContainer) wdContainer.innerHTML = '';
   if (legContainer) legContainer.innerHTML = '';
-  wdCreativeCount = 0; legCreativeCount = 0;
-  if (document.getElementById('chk-hero-wd')?.checked) {
-    addWDCreative();
-    addLegacyCreative();
-  }
+  legCreativeCount = 0;
+  addLegacyCreative();
+  checkTypeMismatch();
+}
+
+function checkTypeMismatch() {
+  const wdIsVideo = document.getElementById('wd-type-video')?.checked;
+  const legIsVideo = document.getElementById('leg-type-video')?.checked;
+  const alert = document.getElementById('type-mismatch-alert');
+  if (alert) alert.style.display = (wdIsVideo !== legIsVideo) ? 'block' : 'none';
 }
 
 // ── Init ──
@@ -631,8 +630,9 @@ function downloadExcel() {
 
   const locale = document.getElementById('locale')?.value || '';
   const launchDate = document.getElementById('launch-date')?.value || '';
-  const isVideo = document.getElementById('type-video').checked;
-  const campaignType = isVideo ? 'Video' : 'Static';
+  const wdIsVideo = document.getElementById('wd-type-video')?.checked || false;
+  const legIsVideo = document.getElementById('leg-type-video')?.checked || false;
+  const campaignType = (wdIsVideo || legIsVideo) ? 'Video' : 'Static';
   const heroWDChecked = document.getElementById('chk-hero-wd')?.checked;
   const spotlightChecked = document.getElementById('chk-product-spotlight')?.checked;
   const products = [];
@@ -689,8 +689,6 @@ function downloadExcel() {
     addRow('Launch Date', launchDate, wdLabel, wdValue);
     addRow('URL', get('clickthrough'), wdLabel, wdValue);
     addRow('Brand name', isBlankException ? 'N/A' : get('brand'), wdLabel, wdValue);
-    const nativeVideoOn = isVideo;
-    addRow('Native video', nativeVideoOn ? 'ON — Enable native video' : 'OFF — Do NOT enable', nativeVideoOn ? {rgb:'DCFCE7'} : {rgb:'FEF2F2'}, wdValue);
     addRow('Background Image URL', get('bg-image'), wdLabel, wdValue);
 
     if (isBlankException) {
@@ -707,7 +705,7 @@ function downloadExcel() {
       if (disclaimer) addRow('Disclaimer', disclaimer, wdLabel, wdValue);
     }
 
-    if (isVideo) {
+    if (wdIsVideo) {
       const wdVid = get('video'); if (wdVid) addRow('Video URL', wdVid, wdLabel, wdValue);
     }
     row++;
@@ -716,17 +714,17 @@ function downloadExcel() {
   // Legacy Desktop Banner
   if (heroWDChecked) {
     const legColor = {rgb:'0369A1'}, legLabel = {rgb:'E0F2FE'}, legValue = {rgb:'F0F9FF'};
-    const legCreativeType = isVideo ? 'Online Video' : 'Standard Display';
+    const legCreativeType = legIsVideo ? 'Online Video' : 'Standard Display';
     const legBlocks = document.getElementById('legacy-creatives-container')?.querySelectorAll('.version-block') || [];
     legBlocks.forEach((block, idx) => {
       const n = idx + 1, lid = `leg${n}`;
       const get = (fid) => document.getElementById(`${lid}-${fid}`)?.value || '';
-      addHeader(`LEGACY DESKTOP BANNER ${n} — ${legCreativeType}  |  ${isVideo ? 'Video + Companion Image' : '1500x600 + 3000x1200'}`, legColor);
+      addHeader(`LEGACY DESKTOP BANNER ${n} — ${legCreativeType}  |  ${legIsVideo ? 'Video + Companion Image' : '1500x600 + 3000x1200'}`, legColor);
       addRow('Unique Identifier', get('name'), legLabel, legValue);
       addRow('Locale', locale, legLabel, legValue);
       addRow('Language', get('language'), legLabel, legValue);
       addRow('Launch Date', launchDate, legLabel, legValue);
-      if (!isVideo) {
+      if (!legIsVideo) {
         addRow('Click-through destination', get('clickthrough-type'), legLabel, legValue);
         addRow('Click-through URL', get('clickthrough'), legLabel, legValue);
         addRow('2x image URL (3000x1200)', get('image-2x'), legLabel, legValue);
