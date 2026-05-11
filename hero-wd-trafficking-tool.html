@@ -58,6 +58,10 @@
     .tag.wd { background: #7c3aed; }
     .tag.legacy { background: #0369a1; }
     .tag.video { background: #dc2626; }
+    .spec-tip { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; background: var(--accent2); color: var(--accent); border-radius: 50%; font-size: 0.65rem; font-weight: 700; cursor: help; margin-left: 0.35rem; flex-shrink: 0; vertical-align: middle; }
+    .spec-tip .spec-bubble { display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; padding: 0.6rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 400; line-height: 1.45; white-space: normal; width: 260px; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.15); text-transform: none; letter-spacing: 0; }
+    .spec-tip .spec-bubble::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: var(--accent); }
+    .spec-tip:hover .spec-bubble { display: block; }
   </style>
 </head>
 <body>
@@ -454,8 +458,8 @@ function buildWDCreativeHTML(n) {
     <div style="margin-top:1rem">
       <div class="section-title">🖼️ Assets</div>
       <div class="grid">
-        <div class="field"><label>Background Image File Name *</label><input id="${vid}-bg-image" placeholder="e.g. Nike_WD_Background.psd" data-req="true" /></div>
-        <div class="field" id="${vid}-logo-square-field"><label>Logo File Name — Square (400x400px) (optional)</label><input id="${vid}-logo-square" placeholder="e.g. Nike_Logo_Square.png" /></div>
+        <div class="field"><label>Background Image File Name * <span class="spec-tip">ℹ<span class="spec-bubble"><b>WD Background Image</b><br>Format: Layered PSD<br>Dimensions: ${isVideo ? '854' : '855'} × 1368 px min<br>No embedded text, logo, or copy. Clean background only.</span></span></label><input id="${vid}-bg-image" placeholder="e.g. Nike_WD_Background.psd" data-req="true" /></div>
+        <div class="field" id="${vid}-logo-square-field"><label>Logo File Name — Square (400x400px) (optional) <span class="spec-tip">ℹ<span class="spec-bubble"><b>WD Logo — Square</b><br>Format: PNG (transparent bg)<br>Dimensions: 400 × 400 px min<br>No &amp; or + symbols.</span></span></label><input id="${vid}-logo-square" placeholder="e.g. Nike_Logo_Square.png" /></div>
         <div class="field full" id="${vid}-horiz-chk-field">
           <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
             <input type="checkbox" id="${vid}-horiz-chk" onchange="toggleHorizLogoFor('${vid}')" style="width:14px;height:14px;accent-color:var(--accent2)" />
@@ -463,10 +467,10 @@ function buildWDCreativeHTML(n) {
           </label>
         </div>
         <div class="field" id="${vid}-logo-horiz-field" style="display:none">
-          <label>Logo File Name — Horizontal (400x400px+) *</label>
+          <label>Logo File Name — Horizontal (400x400px+) * <span class="spec-tip">ℹ<span class="spec-bubble"><b>WD Logo — Horizontal</b><br>Format: PNG (transparent bg)<br>Dimensions: 401×400 or 400×401 px min (at least 401px on one side)<br>Also provide a square logo file — required by Ads systems but will not be displayed in the ad.</span></span></label>
           <input id="${vid}-logo-nonsquare" placeholder="e.g. Nike_Logo_Horizontal.png" />
         </div>
-        ${isVideo ? `<div class="field"><label>Video File Name *</label><input id="${vid}-video" placeholder="e.g. Nike_WD_Video.mp4" data-req="true" /></div>` : ''}
+        ${isVideo ? `<div class="field"><label>Video File Name * <span class="spec-tip">ℹ<span class="spec-bubble"><b>WD Video</b><br>Format: MP4<br>Dimensions: 854 × 1368 px<br>Max size: 4.43 MB<br>H.264 · AAC 300 kbps · 24 fps · 500–1,500 kbps · max 8 sec</span></span></label><input id="${vid}-video" placeholder="e.g. Nike_WD_Video.mp4" data-req="true" /></div>` : ''}
       </div>
       ${isVideo ? `<div style="margin-top:0.75rem">
         <label style="display:flex;align-items:center;gap:0.5rem;cursor:not-allowed;font-size:0.85rem;font-weight:600;color:var(--muted)">
@@ -481,7 +485,7 @@ function buildWDCreativeHTML(n) {
       <div class="section-title">⚖️ Disclaimer (Optional)</div>
       <div class="grid">
         <div class="field">
-          <label>Disclaimer (recommended max 42 chars)</label>
+          <label>Disclaimer (recommended max 42 chars) <span class="spec-tip">ℹ<span class="spec-bubble"><b>Disclaimer</b><br>42 chars total (incl. spaces)<br>Optional. Color: Black or White.</span></span></label>
           <input id="${vid}-disclaimer" placeholder="Optional" oninput="countField(this, '${vid}-disc-count', 42); parseKeyFor('${vid}')" />
           <div class="char-counter" id="${vid}-disc-count">0 / 42</div>
         </div>
@@ -517,8 +521,8 @@ function buildLegacyCreativeHTML(n) {
       </div>
       <div class="field"><label>Click-through URL *</label><input id="${lid}-clickthrough" placeholder="https://..." data-req="true" /></div>
       ${!isVideo ? `
-      <div class="field"><label>Image File Name 1500x600 *</label><input id="${lid}-image-1x" placeholder="e.g. Nike_Legacy_1500x600.jpg" data-req="true" /></div>
-      <div class="field"><label>Image File Name 3000x1200 (2x) *</label><input id="${lid}-image-2x" placeholder="e.g. Nike_Legacy_3000x1200.jpg" data-req="true" /></div>
+      <div class="field"><label>Image File Name 1500x600 * <span class="spec-tip">ℹ<span class="spec-bubble"><b>Legacy H1 — 1x</b><br>Format: JPG<br>Dimensions: 1500 × 600 px<br>Max size: 95 KB<br>Required during transition period.</span></span></label><input id="${lid}-image-1x" placeholder="e.g. Nike_Legacy_1500x600.jpg" data-req="true" /></div>
+      <div class="field"><label>Image File Name 3000x1200 (2x) * <span class="spec-tip">ℹ<span class="spec-bubble"><b>Legacy H1 — 2x</b><br>Format: JPG<br>Dimensions: 3000 × 1200 px<br>Max size: 150 KB<br>Required during transition period.</span></span></label><input id="${lid}-image-2x" placeholder="e.g. Nike_Legacy_3000x1200.jpg" data-req="true" /></div>
       ` : `
       <div class="field"><label>Video File Name *</label><input id="${lid}-video" placeholder="e.g. Nike_Legacy_Video.mp4" data-req="true" /></div>
       <div class="field"><label>Companion Banner File Name *</label><input id="${lid}-companion" placeholder="e.g. Nike_Companion_3000x600.jpg" data-req="true" /></div>
