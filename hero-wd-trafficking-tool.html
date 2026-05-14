@@ -166,7 +166,7 @@
 
   <!-- Legacy Desktop Banner -->
   <div class="card" id="legacy-card">
-    <h2 id="legacy-title">Legacy Desktop Banner <span class="tag legacy">Standard Display</span> <span class="tag legacy">1500x600 + 3000x1200</span></h2>
+    <h2 id="legacy-title">Legacy Desktop Banner <span class="tag legacy">Image</span> <span class="tag legacy">1500x600 + 3000x1200</span></h2>
     <div id="legacy-creatives-container">
       <!-- Version 1 fields rendered inline by default — visible without user action -->
     </div>
@@ -509,8 +509,8 @@ function buildLegacyCreativeHTML(n) {
       ${n > 1 ? `<button class="remove-version" onclick="document.getElementById('leg-creative-${n}').remove()">Remove</button>` : ''}
     </div>
     <div class="grid">
-      <div class="field"><label>Creative Type (Rodeo)</label><input class="readonly-field" value="${isVideo ? 'Online Video' : 'Standard Display'}" readonly /></div>
-      <div class="field"><label>Ad Experience</label><input class="readonly-field" value="${isVideo ? 'Online Video' : 'Single Image'}" readonly /></div>
+      <div class="field"><label>Creative Type (Rodeo)</label><input class="readonly-field" value="${isVideo ? 'Online Video' : 'Image'}" readonly /></div>
+      <div class="field"><label>${isVideo ? 'Ad Experience' : 'Size'}</label><input class="readonly-field" value="${isVideo ? 'Online Video' : '1500x600'}" readonly /></div>
       <div class="field"><label>Unique Identifier *</label><input id="${lid}-name" placeholder="e.g. Nike_Legacy_EN_v1" data-req="true" /></div>
       <div class="field"><label>Language *</label><input id="${lid}-language" placeholder="e.g. English" data-req="true" /></div>
       <div class="field"><label>Click-through Type *</label>
@@ -621,10 +621,10 @@ function onCampaignTypeChange() {
     if (wdVF) wdVF.style.display = 'flex';
     if (wdV) wdV.setAttribute('data-req', 'true');
   } else {
-    note.textContent = 'Static: WD creative (Component-Based Creative) + Legacy Desktop Banner (Standard Display)';
-    legTitle.innerHTML = 'Legacy Desktop Banner <span class="tag legacy">Standard Display</span> <span class="tag legacy">1500x600 + 3000x1200</span>';
-    if (legCreativeType) legCreativeType.value = 'Standard Display';
-    if (document.getElementById('leg-ad-exp')) document.getElementById('leg-ad-exp').value = 'Single Image';
+    note.textContent = 'Static: WD creative (Component-Based Creative) + Legacy Desktop Banner (Image)';
+    legTitle.innerHTML = 'Legacy Desktop Banner <span class="tag legacy">Image</span> <span class="tag legacy">1500x600 + 3000x1200</span>';
+    if (legCreativeType) legCreativeType.value = 'Image';
+    if (document.getElementById('leg-ad-exp')) document.getElementById('leg-ad-exp').value = '1500x600';
 
     if (legVideoLinkField) legVideoLinkField.style.display = 'none';
     if (legCompanionField) legCompanionField.style.display = 'none';
@@ -844,7 +844,7 @@ function downloadExcel() {
   const isVideo = document.getElementById('type-video').checked;
   const campaignType = isVideo ? 'Video' : 'Static';
   const wdCreativeType = 'Component-Based Creative → Other Website';
-  const legCreativeType = isVideo ? 'Online Video' : 'Standard Display';
+  const legCreativeType = isVideo ? 'Online Video' : 'Image';
 
   const wb = XLSX.utils.book_new();
   const ws = {};
