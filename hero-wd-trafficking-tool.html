@@ -916,8 +916,6 @@ function downloadExcel() {
     addRow('Unique Identifier', get('name'), wdLabel, wdValue);
     addRow('Marketplace', locale, wdLabel, wdValue);
     addRow('Language', get('language'), wdLabel, wdValue);
-    addRow('Flight Start', flightStart, wdLabel, wdValue);
-    addRow('Flight End', flightEnd, wdLabel, wdValue);
     addRow('Landing page', 'Other website', wdLabel, wdValue);
     addRow('URL', get('clickthrough'), wdLabel, wdValue);
     addRow('Ad experiences', 'Asset-based creative', wdLabel, wdValue);
@@ -972,8 +970,6 @@ function downloadExcel() {
     addRow('Unique Identifier', get('name'), legLabel, legValue);
     addRow('Marketplace', locale, legLabel, legValue);
     addRow('Language', get('language'), legLabel, legValue);
-    addRow('Flight Start', flightStart, legLabel, legValue);
-    addRow('Flight End', flightEnd, legLabel, legValue);
     addRow('Creative Type (Rodeo)', legCreativeType, legLabel, legValue);
 
     if (!isVideo) {
