@@ -336,6 +336,70 @@ function validateKeyVsLayoutFor(vid, raw, preview) {
   preview.innerHTML = '✅ Key matches selections<br>' + descriptions.join('<br>');
 }
 
+// ── Brand Name Key Guardrail ──
+const LAYOUT_KEY_MAP = {
+  '1h0s': '#tr',
+  '1h1s': '#tr',
+  '1h2s': '#tr#sr',
+  '2h0s': '',
+  '2h1s': '',
+  '2h2s': '#sr',
+  '3h0s': '#tr:3',
+  '3h1s': '#tr:3',
+  '4h0s': '#tr:4',
+};
+
+function buildExpectedKey(vid) {
+  const layout = document.getElementById(vid + '-layout')?.value || '';
+  const placement = document.getElementById(vid + '-headline-placement')?.value || 'above';
+  const headlineColor = document.getElementById(vid + '-headline-color')?.value || 'Black';
+
+  if (!layout) return '';
+
+  let parts = [];
+
+  // Color keys
+  if (headlineColor === 'White') parts.push('fi');
+
+  // Layout-based keys
+  const hl = parseInt(layout[0] || '0');
+  const sl = parseInt(layout[2] || '0');
+  if (hl === 1) parts.push('tr');
+  if (hl === 3) parts.push('tr:3');
+  if (hl === 4) parts.push('tr:4');
+  if (sl === 2) parts.push('sr');
+
+  // Placement key
+  if (placement === 'below') parts.push('sf');
+
+  return parts.length > 0 ? '#' + parts.join('#') : 'N/A';
+}
+
+function onLayoutChangeGuardrail(vid) {
+  checkBrandKeyReminder(vid);
+}
+
+function checkBrandKeyReminder(vid) {
+  const brandVal = document.getElementById(vid + '-brand')?.value.trim() || '';
+  const layout = document.getElementById(vid + '-layout')?.value || '';
+  const reminder = document.getElementById(vid + '-brand-reminder');
+
+  if (!reminder) return;
+
+  // Show reminder only when layout is selected AND brand key is empty
+  if (layout && !brandVal) {
+    const isTier1 = document.getElementById('chk-tier1')?.checked;
+    const suggestedKey = buildExpectedKey(vid) || 'N/A';
+    const source = isTier1
+      ? 'Please confirm this matches the key provided in the Asset Delivery File provided by Retail.'
+      : 'Please confirm this matches the key provided in the Creative Request Final Files.';
+    reminder.innerHTML = '⚠️ Brand Name Key is required. Based on your selections, the expected key is <strong>' + suggestedKey + '</strong>. ' + source;
+    reminder.style.display = 'block';
+  } else {
+    reminder.style.display = 'none';
+  }
+}
+
 function renderLayoutFieldsFor(vid) {
   const layout = document.getElementById(vid + '-layout')?.value || '';
   const container = document.getElementById(vid + '-layout-fields');
@@ -402,8 +466,9 @@ function buildWDCreativeHTML(n) {
       <div class="section-title">🔑 Brand Name (Custom Styling Key)</div>
       <div class="grid">
         <div class="field" style="grid-column:1/-1">
-          <label>Brand Name Key * (provided by CS)</label>
-          <input id="${vid}-brand" placeholder="e.g. #fi#lfi:f or N/A" data-req="true" oninput="parseKeyFor('${vid}')" />
+          <label>Brand Name Key * (provided by CS) <a href="https://w.amazon.com/bin/view/Ads/APM/Stores/APEX/PRAOps/" target="_blank" class="spec-tip" style="background:#0369a1;text-decoration:none;color:#fff" title="View custom keys reference">ℹ<span class="spec-bubble"><b>Custom Keys Reference</b><br>Click to view the full key reference guide on the PRAOps wiki.</span></a></label>
+          <input id="${vid}-brand" placeholder="e.g. #fi#lfi:f or N/A" data-req="true" oninput="parseKeyFor('${vid}'); checkBrandKeyReminder('${vid}')" />
+          <div id="${vid}-brand-reminder" style="display:none;margin-top:0.5rem;padding:0.6rem 0.75rem;background:#fff8ee;border:2px solid var(--accent2);border-radius:6px;font-size:0.82rem;color:var(--accent);font-weight:600"></div>
           <div class="key-preview" id="${vid}-key-preview" style="display:none"></div>
           <div id="${vid}-blank-box" style="display:none;margin-top:0.75rem;padding:0.75rem 1rem;background:#fef2f2;border:2px solid #dc2626;border-radius:6px">
             <p style="font-size:0.85rem;font-weight:700;color:#991b1b;margin-bottom:0.5rem">⚠️ Embedded Creative Exception (#blank#)</p>
@@ -421,7 +486,7 @@ function buildWDCreativeHTML(n) {
       <div class="grid">
         <div class="field">
           <label>Layout Option *</label>
-          <select id="${vid}-layout" onchange="renderLayoutFieldsFor('${vid}'); parseKeyFor('${vid}');" data-req="true">
+          <select id="${vid}-layout" onchange="renderLayoutFieldsFor('${vid}'); parseKeyFor('${vid}'); onLayoutChangeGuardrail('${vid}');" data-req="true">
             <option value="">-- Select layout --</option>
             <option value="1h0s">1-line headline only</option>
             <option value="1h1s">1-line headline + 1-line subhead</option>
@@ -436,14 +501,14 @@ function buildWDCreativeHTML(n) {
         </div>
         <div class="field">
           <label>Headline Placement</label>
-          <select id="${vid}-headline-placement" onchange="parseKeyFor('${vid}')">
+          <select id="${vid}-headline-placement" onchange="parseKeyFor('${vid}'); checkBrandKeyReminder('${vid}')">
             <option value="above">Headline above subhead</option>
             <option value="below">Headline below subhead (use #sf key)</option>
           </select>
         </div>
         <div class="field">
           <label>Headline & Subhead Color *</label>
-          <select id="${vid}-headline-color" data-req="true" onchange="parseKeyFor('${vid}')">
+          <select id="${vid}-headline-color" data-req="true" onchange="parseKeyFor('${vid}'); checkBrandKeyReminder('${vid}')">>
             <option value="Black">Black</option><option value="White">White</option>
           </select>
         </div>
