@@ -359,6 +359,8 @@ function countField(input, counterId, max) {
   el.className = len > max ? 'char-counter over' : 'char-counter';
 }
 
+const SQUARE_LOGO_DEFAULT = 'https://amazon.awsapps.com/workdocs-amazon/index.html#/document/9dacb98ee2da583e9c98c200ad5324a0d3004f9b980b41c9a2b8346c7544e590';
+
 function toggleHorizLogoFor(vid) {
   const checked = document.getElementById(vid + '-horiz-chk')?.checked;
   const field = document.getElementById(vid + '-logo-horiz-field');
@@ -367,6 +369,14 @@ function toggleHorizLogoFor(vid) {
   if (field) field.style.display = checked ? 'flex' : 'none';
   if (input) checked ? input.setAttribute('data-req','true') : input.removeAttribute('data-req');
   if (squareInput) checked ? squareInput.setAttribute('data-req','true') : squareInput.removeAttribute('data-req');
+  // Auto-populate square logo with default when horizontal is selected; clear only if unchanged
+  if (squareInput) {
+    if (checked && !squareInput.value) {
+      squareInput.value = SQUARE_LOGO_DEFAULT;
+    } else if (!checked && squareInput.value === SQUARE_LOGO_DEFAULT) {
+      squareInput.value = '';
+    }
+  }
 }
 
 // ── WD Creative HTML (no "provided by CS" notes) ──
@@ -387,7 +397,7 @@ function buildWDCreativeHTML(n) {
       <div class="section-title">🔑 Brand Name (Custom Styling Key)</div>
       <div class="grid">
         <div class="field" style="grid-column:1/-1">
-          <label>Brand Name Key * <a href="https://w.amazon.com/bin/view/Ads/APM/Stores/APEX/PRAOps/" target="_blank" class="spec-tip" style="background:#0369a1;text-decoration:none;color:#fff" title="View custom keys reference">↗<span class="spec-bubble"><b>Custom Keys Reference</b><br>Click to view the full key reference guide.</span></a></label>
+          <label>Brand Name Key * <a href="https://w.amazon.com/bin/view/Ads/APM/Stores/APEX/PRAOps/" target="_blank" class="spec-tip" style="background:#0369a1;text-decoration:none;color:#fff" title="View custom keys reference">↗<span class="spec-bubble"><b>Custom Keys Reference</b><br>Click to view the full key reference guide.</span></a> <span class="spec-tip">ℹ<span class="spec-bubble"><b>Do NOT enter the Brand Name here.</b><br>This field requires a special code that controls how the ad will render. Refer to the wiki linked here for available codes. The code will start with a #. If no code is needed, enter N/A.</span></span> <span style="font-size:0.72rem;color:var(--danger);font-weight:700;text-transform:none;letter-spacing:0">⚠️ Read before entering value</span></label>
           <input id="${vid}-brand" placeholder="e.g. #fi#lfi:f or N/A" data-req="true" oninput="parseKeyFor('${vid}')" />
           <div class="key-preview" id="${vid}-key-preview" style="display:none"></div>
           <div id="${vid}-blank-box" style="display:none;margin-top:0.75rem;padding:0.75rem 1rem;background:#fef2f2;border:2px solid #dc2626;border-radius:6px">
@@ -452,7 +462,7 @@ function buildWDCreativeHTML(n) {
           </label>
         </div>
         <div class="field" id="${vid}-logo-horiz-field" style="display:none">
-          <label>Logo URL — Horizontal (400x400px+) * <span class="spec-tip">ℹ<span class="spec-bubble"><b>WD Logo — Horizontal</b><br>Format: PNG (transparent bg)<br>Dimensions: 401 × 400 px min<br>Also provide a square logo file — required by Ads systems but will not be displayed in the ad.</span></span></label>
+          <label>Logo URL — Horizontal (400x400px+) * <span class="spec-tip">ℹ<span class="spec-bubble"><b>WD Logo — Horizontal</b><br>• Format: PNG (transparent background)<br>• Dimensions: 400 × 400 px minimum — each side must meet a 400 px minimum. If your logo is non-square (e.g., 500 × 82), scale the shorter side up to 400 px and increase the other side proportionally to maintain the original aspect ratio<br>• When this box is selected, a square logo URL is automatically populated in the square field. Keep it there — it is required by Ads systems but will not be displayed in the ad</span></span></label>
           <input id="${vid}-logo-nonsquare" placeholder="https://..." />
         </div>
         ${isVideo ? `<div class="field"><label>Video URL * <span class="spec-tip">ℹ<span class="spec-bubble"><b>WD Video</b><br>Format: MP4<br>Dimensions: 854 × 1368 px<br>Max size: 4.43 MB<br>H.264 · AAC 300 kbps · 24 fps · 500–1,500 kbps · max 8 sec</span></span></label><input id="${vid}-video" placeholder="https://..." data-req="true" /></div>` : ''}
