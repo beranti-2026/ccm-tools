@@ -57,6 +57,10 @@
     .tag { display: inline-block; background: var(--accent); color: white; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.72rem; margin-right: 0.25rem; }
     .tag.wd { background: #7c3aed; }
     .tag.pa { background: #0d9488; }
+    .spec-tip { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; background: var(--accent2); color: var(--accent); border-radius: 50%; font-size: 0.65rem; font-weight: 700; cursor: help; margin-left: 0.35rem; flex-shrink: 0; vertical-align: middle; }
+    .spec-tip .spec-bubble { display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; padding: 0.6rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 400; line-height: 1.45; white-space: normal; width: 260px; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.15); text-transform: none; letter-spacing: 0; }
+    .spec-tip .spec-bubble::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: var(--accent); }
+    .spec-tip:hover .spec-bubble { display: block; }
   </style>
 </head>
 <body>
@@ -277,7 +281,7 @@ function buildWDCreativeHTML(n) {
       <div class="section-title">🔑 Brand Name (Custom Styling Key)</div>
       <div class="grid">
         <div class="field" style="grid-column:1/-1">
-          <label>Brand Name Key * (provided by CS)</label>
+          <label>Brand Name Key * <span class="spec-tip">ℹ<span class="spec-bubble"><b>Provided by CS in the Creative Request.</b><br>Look for "Formatting Keys" in the chatter section once final files are delivered.<br><br>This field is NOT for the Brand Name — it is a formatting key that tells our system how the creative should render.<br><br>If no key is needed, CS will enter "N/A"; enter N/A here as well. Otherwise, enter the formatting key, which will start with a #.</span></span> <span style="font-size:0.72rem;color:var(--danger);font-weight:700;text-transform:none;letter-spacing:0">⚠️ Read before entering value</span></label>
           <input id="${vid}-brand" placeholder="e.g. #fi#lfi:f or N/A" data-req="true" oninput="parseKeyFor('${vid}')" />
           <div class="key-preview" id="${vid}-key-preview" style="display:none"></div>
         </div>
