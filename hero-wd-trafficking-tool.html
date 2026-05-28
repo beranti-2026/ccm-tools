@@ -466,7 +466,7 @@ function buildWDCreativeHTML(n) {
       <div class="section-title">🔑 Brand Name (Custom Styling Key)</div>
       <div class="grid">
         <div class="field" style="grid-column:1/-1">
-          <label>Brand Name Key * (provided by CS) <a href="https://w.amazon.com/bin/view/Ads/APM/Stores/APEX/PRAOps/" target="_blank" class="spec-tip" style="background:#0369a1;text-decoration:none;color:#fff" title="View custom keys reference">ℹ<span class="spec-bubble"><b>Custom Keys Reference</b><br>Click to view the full key reference guide on the PRAOps wiki.</span></a></label>
+          <label>Brand Name Key * <span class="spec-tip">ℹ<span class="spec-bubble"><b>Provided by CS in the Creative Request.</b><br>Look for "Formatting Keys" in the chatter section once final files are delivered.<br><br>This field is NOT for the Brand Name — it is a formatting key that tells our system how the creative should render.<br><br>If no key is needed, CS will enter "N/A"; enter N/A here as well. Otherwise, enter the formatting key, which will start with a #.</span></span> <span style="font-size:0.72rem;color:var(--danger);font-weight:700;text-transform:none;letter-spacing:0">⚠️ Read before entering value</span></label>
           <input id="${vid}-brand" placeholder="e.g. #fi#lfi:f or N/A" data-req="true" oninput="parseKeyFor('${vid}'); checkBrandKeyReminder('${vid}')" />
           <div id="${vid}-brand-reminder" style="display:none;margin-top:0.5rem;padding:0.6rem 0.75rem;background:#fff8ee;border:2px solid var(--accent2);border-radius:6px;font-size:0.82rem;color:var(--accent);font-weight:600"></div>
           <div class="key-preview" id="${vid}-key-preview" style="display:none"></div>
@@ -532,7 +532,7 @@ function buildWDCreativeHTML(n) {
           </label>
         </div>
         <div class="field" id="${vid}-logo-horiz-field" style="display:none">
-          <label>Logo File Name — Horizontal (400x400px+) * <span class="spec-tip">ℹ<span class="spec-bubble"><b>WD Logo — Horizontal</b><br>Format: PNG (transparent bg)<br>Dimensions: 401×400 or 400×401 px min (at least 401px on one side)<br>Also provide a square logo file — required by Ads systems but will not be displayed in the ad.</span></span></label>
+          <label>Logo File Name — Horizontal (400x400px+) * <span class="spec-tip">ℹ<span class="spec-bubble"><b>WD Logo — Horizontal</b><br>• Format: PNG (transparent background)<br>• Dimensions: 400 × 400 px minimum — each side must meet a 400 px minimum<br>• Also provide a square logo file — required by Ads systems but will not be displayed in the ad</span></span></label>
           <input id="${vid}-logo-nonsquare" placeholder="e.g. Nike_Logo_Horizontal.png" />
         </div>
         ${isVideo ? `<div class="field"><label>Video File Name * <span class="spec-tip">ℹ<span class="spec-bubble"><b>WD Video</b><br>Format: MP4<br>Dimensions: 854 × 1368 px<br>Max size: 4.43 MB<br>H.264 · AAC 300 kbps · 24 fps · 500–1,500 kbps · max 8 sec</span></span></label><input id="${vid}-video" placeholder="e.g. Nike_WD_Video.mp4" data-req="true" /></div>` : ''}
