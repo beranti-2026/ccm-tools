@@ -82,6 +82,10 @@
     .btn-secondary:hover { background: #1a2530; }
 
     .notice { background: #fff8ee; border: 1px solid var(--accent2); border-radius: 6px; padding: 0.75rem 1rem; font-size: 0.82rem; color: var(--accent); margin-bottom: 1.5rem; }
+    .spec-tip { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; background: var(--accent2); color: var(--accent); border-radius: 50%; font-size: 0.65rem; font-weight: 700; cursor: help; margin-left: 0.35rem; flex-shrink: 0; vertical-align: middle; }
+    .spec-tip .spec-bubble { display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; padding: 0.6rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 400; line-height: 1.45; white-space: normal; width: 260px; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.15); text-transform: none; letter-spacing: 0; }
+    .spec-tip .spec-bubble::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: var(--accent); }
+    .spec-tip:hover .spec-bubble { display: block; }
   </style>
 </head>
 <body>
@@ -185,7 +189,7 @@ const PLACEMENTS = [
   { id: 'p4', name: 'AMZN_{Locale}_138x184_Mobile_Home_Page', device: 'Mobile', types: ['Autogen REC', 'Asset-Based Creative'] },
   { id: 'p5', name: 'AMZN_{Locale}_320x50_Mobile_App_Home_Page', device: 'Mobile', types: ['Static', 'Autogen REC', 'Custom REC'] },
   { id: 'p6', name: 'AMZN_{Locale}_320x50_Mobile_Web_Home_Page', device: 'Mobile', types: ['Static', 'Autogen REC', 'Custom REC'] },
-  { id: 'p7', name: 'AMZN_{Locale}_Mobile_414x125_Homepage_BTF', device: 'Mobile', types: ['Autogen REC'] },
+  { id: 'p7', name: 'AMZN_{Locale}_Mobile_414x125_Homepage_BTF', device: 'Mobile', types: ['Static', 'Autogen REC'] },
   { id: 'p8', name: 'AMZN_{Locale}_Desktop_284x184_Homepage_Doublewide', device: 'Desktop', types: ['Asset-Based Creative'] },
   { id: 'p9', name: 'AMZN_{Locale}_Desktop_138x184_WP_1', device: 'Desktop', types: ['Asset-Based Creative', 'Autogen REC'] },
   { id: 'p10', name: 'AMZN_{Locale}_Desktop_138x184_WP_2', device: 'Desktop', types: ['Autogen REC'] },
@@ -648,7 +652,7 @@ function renderABCFields(vid, pid, selectedLayout) {
       <label>Logo File Name (optional)</label>
       <input id="f-${vid}-logo" type="text" placeholder="e.g. Nike_Logo.png" />
     </div>`}
-    <div class="field"><label>Third-party Impression Tracking URL</label><input id="f-${vid}-tracker_impression" type="text" placeholder="Optional" /></div>
+    <div class="field"><label>Third-party Impression Tracking URL ${['p4','p9','p10'].includes(pid) ? `<a href="https://w.amazon.com/bin/view/Ads/APM/Stores/APEX/PRA/S2S3P/" target="_blank" class="spec-tip" style="background:#0369a1;text-decoration:none;color:#fff" title="View S2S/3P tracking guide">ℹ<span class="spec-bubble"><b>Third-party Impression Tracking</b><br>Click to view the S2S/3P tracking setup guide on the PRA wiki.</span></a>` : ''}</label><input id="f-${vid}-tracker_impression" type="text" placeholder="Optional" /></div>
     ${!(['p4','p8','p9','p10','mp1','mp2'].includes(pid)) ? `<div class="field"><label>Third-party Click Tracking URL</label><input id="f-${vid}-tracker_click" type="text" placeholder="Optional" /></div>
     <div class="field"><label>Additional HTML</label><input id="f-${vid}-additional_html" type="text" placeholder="Optional" /></div>` : ''}`;
 
